@@ -8,6 +8,7 @@ import { Energy } from "./components/Energy";
 import { Security } from "./components/Security";
 import { Scenes } from "./components/Scenes";
 import { CommandPalette } from "./components/CommandPalette";
+import { useTheme } from "./lib/theme";
 
 function ConnectionBanner() {
   const { status, error } = useHass();
@@ -40,9 +41,10 @@ function Toasts() {
 function Dashboard() {
   const [palette, setPalette] = useState(false);
   const { status } = useHass();
+  const theme = useTheme();
   return (
     <main className="app" aria-busy={status === "connecting"} style={status === "reconnecting" || status === "error" ? { pointerEvents: "auto" } : undefined}>
-      <TopBar onOpenPalette={() => setPalette(true)} />
+      <TopBar onOpenPalette={() => setPalette(true)} theme={theme.mode} setTheme={theme.setMode} />
       <ConnectionBanner />
       <Scenes />
       <Kpis />
@@ -55,7 +57,7 @@ function Dashboard() {
           <Security />
         </div>
       </div>
-      <CommandPalette open={palette} setOpen={setPalette} />
+      <CommandPalette open={palette} setOpen={setPalette} theme={theme.mode} setTheme={theme.setMode} />
       <Toasts />
     </main>
   );

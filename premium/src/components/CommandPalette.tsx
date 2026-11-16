@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { Command } from "cmdk";
-import { Search, CornerDownLeft, ArrowUpDown } from "lucide-react";
+import { Search, CornerDownLeft, ArrowUpDown, Sun, Moon, MonitorSmartphone } from "lucide-react";
+import type { ThemeMode } from "../lib/theme";
 import { useHass, isUnavailable } from "../ha/store";
 import { domainIcon } from "../lib/icons";
 import { Badge } from "./ui";
@@ -17,7 +18,7 @@ const ACTIONABLE: Record<string, { label: (s: string) => string; run: (s: string
 const GROUP_ORDER = ["scene", "light", "switch", "vacuum", "automation", "script", "button"];
 const label = (d: string) => ({ scene: "Scenes", light: "Lights", switch: "Switches", vacuum: "Vacuums", automation: "Automations", script: "Scripts", button: "Buttons" } as Record<string, string>)[d] ?? "Other";
 
-export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
+export function CommandPalette({ open, setOpen, theme, setTheme }: { open: boolean; setOpen: (v: boolean) => void; theme: ThemeMode; setTheme: (m: ThemeMode) => void }) {
   const { entities, get, call } = useHass();
 
   useEffect(() => {
@@ -46,6 +47,15 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (v: 
         <div className="cmdk-input-wrap"><Search size={18} aria-hidden /><Command.Input placeholder="Search entities, scenes, automations…" autoFocus /></div>
         <Command.List>
           <Command.Empty>No matching entities.</Command.Empty>
+          <Command.Group heading="Appearance">
+            {([["day", "Day mode", Sun], ["night", "Night mode", Moon], ["auto", "Auto theme (follow device)", MonitorSmartphone]] as const).map(([m, name, I]) => (
+              <Command.Item key={m} value={`theme ${name} appearance light dark`} onSelect={() => { setTheme(m); setOpen(false); }}>
+                <I size={16} aria-hidden />
+                <span className="grow">{name}</span>
+                {theme === m && <Badge tone="accent" label="Current" />}
+              </Command.Item>
+            ))}
+          </Command.Group>
           {groups.map(([d, ids]) => (
             <Command.Group key={d} heading={label(d)}>
               {ids.map((id) => {
