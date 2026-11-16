@@ -1,6 +1,7 @@
 ---
 name: ng-premium-deploy
-description: Change, build or deploy the NG Premium dashboard (premium/ React app served inside Home Assistant), e.g. "add a card for X to the dashboard", "make the badge red", "deploy the dashboard", "the dashboard doesn't show Y". Covers config mapping, design rules, build, deploy and verifying what HA serves.
+description: >-
+  Change, build or deploy the NG Premium dashboard (premium/ React app served inside Home Assistant), e.g. "add a card for X to the dashboard", "make the badge red", "deploy the dashboard", "the dashboard doesn't show Y". Covers config mapping, design rules, build, deploy and verifying what HA serves.
 ---
 
 # NG Premium: change → build → deploy → verify

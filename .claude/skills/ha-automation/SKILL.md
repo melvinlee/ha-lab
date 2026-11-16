@@ -1,6 +1,7 @@
 ---
 name: ha-automation
-description: Create or change a Home Assistant automation in this lab, e.g. "when the button is double-clicked toggle the lamp", "turn off the lights after 15 min without motion", "the slider should dim the bedlamp", "pause the auto-off when X is on". Covers payload capture, creation via the REST config API, testing with traces, export and docs.
+description: >-
+  Create or change a Home Assistant automation in this lab, e.g. "when the button is double-clicked toggle the lamp", "turn off the lights after 15 min without motion", "the slider should dim the bedlamp", "pause the auto-off when X is on". Covers payload capture, creation via the REST config API, testing with traces, export and docs.
 ---
 
 # Automation workflow

@@ -1,6 +1,7 @@
 ---
 name: sleepy-device-settings
-description: Change a setting or run a firmware (OTA) update on a battery-powered Zigbee device (Aqara P1 motion sensor, IKEA TRADFRI button, E1 switch, temperature sensor), e.g. "set the motion detection interval to 5 s", "update the TRADFRI firmware", "the setting won't apply". Explains the queue/wake behaviour and the debug route.
+description: >-
+  Change a setting or run a firmware (OTA) update on a battery-powered Zigbee device (Aqara P1 motion sensor, IKEA TRADFRI button, E1 switch, temperature sensor), e.g. "set the motion detection interval to 5 s", "update the TRADFRI firmware", "the setting won't apply". Explains the queue/wake behaviour and the debug route.
 ---
 
 # Battery (sleepy) Zigbee devices

@@ -1,6 +1,7 @@
 ---
 name: ha-zigbee-device
-description: Add, rename or move a Zigbee device in this Home Assistant lab, e.g. "rename 0x54ef… to Bathroom Switch", "add this zigbee device to the Office", "create area X and put device Y in it", "name the left rocker LED Cove". Covers the Z2M rename, area assignment, entity naming and checking that old IDs are gone.
+description: >-
+  Add, rename or move a Zigbee device in this Home Assistant lab, e.g. "rename 0x54ef… to Bathroom Switch", "add this zigbee device to the Office", "create area X and put device Y in it", "name the left rocker LED Cove". Covers the Z2M rename, area assignment, entity naming and checking that old IDs are gone.
 ---
 
 # Zigbee device: rename, area, entity names

@@ -1,6 +1,7 @@
 ---
 name: ha-scene
-description: Create or change a Home Assistant scene in this lab, e.g. "add an Office hour scene at 6000K", "Movie scene: cove on, bedlamp dim", "make the scene also turn off the ring". Covers range checks, creation via the config API, testing, export and dashboard buttons.
+description: >-
+  Create or change a Home Assistant scene in this lab, e.g. "add an Office hour scene at 6000K", "Movie scene: cove on, bedlamp dim", "make the scene also turn off the ring". Covers range checks, creation via the config API, testing, export and dashboard buttons.
 ---
 
 # Scene workflow

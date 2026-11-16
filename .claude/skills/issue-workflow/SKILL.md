@@ -1,6 +1,7 @@
 ---
 name: issue-workflow
-description: Run this repo's GitHub issue workflow, e.g. "create an issue for X", "work on issue #N, start with a new branch", "update the issue", "commit and open PR", "document everything". Covers issue writing, branching, worklog and README updates, issue progress, and PRs without attribution.
+description: >-
+  Run this repo's GitHub issue workflow, e.g. "create an issue for X", "work on issue #N, start with a new branch", "update the issue", "commit and open PR", "document everything". Covers issue writing, branching, worklog and README updates, issue progress, and PRs without attribution.
 ---
 
 # Issue → branch → PR
