@@ -12,6 +12,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
+| `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
@@ -163,6 +164,15 @@ exported to `automations/master_bedroom_tradfri_button.yaml`.
 - Trigger: MQTT topic `zigbee2mqtt/TRADFRI`, `value_json.action == "on"` (IKEA E1812, `0xb4e3f9fffe249914`).
   Payload confirmed with `node scripts/mqtt-listen.mjs zigbee2mqtt/TRADFRI 60`.
 - Long press (`brightness_move_up` / `brightness_stop`) isn't used.
+
+### Master Bedroom: motion turns on Main light
+
+`automation.master_bedroom_motion_turns_on_main_light` (id `master_bedroom_motion_main_light_on`),
+exported to `automations/master_bedroom_motion_main_light_on.yaml`.
+
+- Trigger: `binary_sensor.aqara_motion_sensor_p1_occupancy` `off` → `on`.
+- Condition: Main light is off. Action: `switch.turn_on` → `switch.smart_wall_switch_z1_pro_top` (Main light).
+- No time or light-level condition, so it fires day and night. Pairs with the auto-off below (no motion 5 min → off).
 
 ### Master Bedroom: no motion 5 min turns off lights
 
