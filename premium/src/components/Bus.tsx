@@ -20,7 +20,6 @@ function eta(iso: string | undefined, now: number) {
   if (mins < 60) return `${mins} min`;
   return `${Math.floor(mins / 60)} h ${mins % 60} min`;
 }
-const clockOf = (iso?: string) => (iso ? new Date(iso).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) : "");
 
 export function Bus() {
   const { entities, get } = useHass();
@@ -59,16 +58,15 @@ export function Bus() {
                     const m = minsUntil(arr[0].a?.EstimatedArrival, now);
                     const soon = m != null && m < 5;
                     return soon
-                      ? <Badge tone="bad" flash icon={AlarmClock} label={arr[0].label === "Arriving" ? "Arriving" : `${arr[0].label} · leave now`} />
+                      ? <Badge tone="bad" flash icon={AlarmClock} label={arr[0].label!} />
                       : <Badge tone="accent" label={arr[0].label!} />;
                   })() : <Badge tone="muted" label="No more buses" />}
                 </div>
                 {arr.length > 0 && (
                   <div className="bus-etas">
-                    {arr.map(({ a, label }, i) => (
+                    {arr.map(({ label }, i) => (
                       <div className={`bus-eta${i === 0 ? " next" : ""}`} key={i}>
                         <div className="num v">{label}</div>
-                        <div className="num l">{clockOf(a?.EstimatedArrival)}{a?.Monitored ? " · live" : " · scheduled"}</div>
                       </div>
                     ))}
                   </div>
