@@ -69,7 +69,7 @@ function Bus({ sensor: BUS_SENSOR }: { sensor: string }) {
                 {arr.length > 0 && (
                   <div className="bus-etas">
                     {arr.map(({ label }, i) => (
-                      <div className={`bus-eta${i === 0 ? " next" : ""}`} key={i}>
+                      <div className={`bus-eta eta-${i + 1}`} key={i}>
                         <div className="num v">{label}</div>
                       </div>
                     ))}
