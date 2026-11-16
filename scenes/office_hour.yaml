@@ -1,0 +1,8 @@
+# Exported from HA via GET /api/config/scene/config/office_hour
+id: office_hour
+name: Office hour
+entities:
+  light.aqara_ceiling_light_t1_white:
+    state: 'on'
+    color_temp_kelvin: 6000
+icon: mdi:briefcase
