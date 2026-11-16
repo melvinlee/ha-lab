@@ -12,6 +12,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
+| `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
 | `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |
@@ -140,6 +141,17 @@ exported to `automations/master_bedroom_tradfri_button.yaml`.
 - Trigger: MQTT topic `zigbee2mqtt/TRADFRI`, `value_json.action == "on"` (IKEA E1812, `0xb4e3f9fffe249914`).
   Payload confirmed with `node scripts/mqtt-listen.mjs zigbee2mqtt/TRADFRI 60`.
 - Long press (`brightness_move_up` / `brightness_stop`) isn't used.
+
+### Master Bedroom: no motion 5 min turns off lights
+
+`automation.master_bedroom_no_motion_5_min_turns_off_lights` (id `master_bedroom_no_motion_lights_off`),
+exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
+
+- Turns off **Main light** + **LED Cove** (`switch.smart_wall_switch_z1_pro_top` / `_center`). **Night Curtain is left alone.**
+- Triggers: `binary_sensor.aqara_motion_sensor_p1_occupancy` → `off` for 5 min, **or** either light → `on` for 5 min
+  (covers lights turned on while the room is already empty, e.g. via the TRADFRI button).
+- Conditions: occupancy has been `off` for ≥ 5 min, and at least one of the two lights is on.
+- Real delay ≈ 5 min + the P1's own clear time. The P1 only reports `off` after its occupancy timeout / detection interval (30 s).
 
 ## Dashboard
 
