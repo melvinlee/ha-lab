@@ -17,6 +17,7 @@ function ControlRow({ c }: { c: RoomControl }) {
 
   if (c.kind === "vacuum") return <VacuumRow c={c} e={e} />;
   if (c.kind === "curtain") return <CurtainRow c={c} />;
+  if (c.kind === "mode") return <ModeRow c={c} />;
 
   const on = e?.state === "on";
   const supportsBrightness = c.kind === "light" && Array.isArray(e?.attributes.supported_color_modes) && (e!.attributes.supported_color_modes as string[]).some((m) => m !== "onoff");
@@ -54,6 +55,34 @@ function ControlRow({ c }: { c: RoomControl }) {
           }
         />
       )}
+    </div>
+  );
+}
+
+/** Mode switch (e.g. Bath mode): ON pauses an automation. Status shows the automation's real state. */
+function ModeRow({ c }: { c: RoomControl }) {
+  const { get, call, isPending } = useHass();
+  const e = get(c.entity);
+  const auto = c.pauses ? get(c.pauses) : undefined;
+  const unavailable = isUnavailable(e);
+  const on = e?.state === "on";
+  const Icon = controlIcon[c.icon];
+  const paused = auto?.state === "off";
+  return (
+    <div className="row">
+      <div className="row-h">
+        <div className={`row-icon${on && !unavailable ? " on" : ""}`}><Icon size={16} aria-hidden /></div>
+        <div className="row-name">
+          <div>{c.name}</div>
+          <div>
+            {unavailable ? <Badge tone="muted" label={e ? "Unavailable" : "Not found"} /> :
+              !auto ? <span>{on ? "On" : "Off"}</span> :
+              <span>{on ? "On" : "Off"} · auto-off {paused ? "paused" : "active"}</span>}
+          </div>
+        </div>
+        <Switch label={`${c.name} ${on ? "off" : "on"}`} checked={on} disabled={unavailable} pending={isPending(c.entity)}
+          onChange={(v) => call("switch", v ? "turn_on" : "turn_off", { entity_id: c.entity }, { entity: c.entity, state: v ? "on" : "off" })} />
+      </div>
     </div>
   );
 }

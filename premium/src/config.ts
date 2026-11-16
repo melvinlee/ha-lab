@@ -1,13 +1,15 @@
 // Single place that maps HA entities to dashboard panels.
 // Empty arrays are intentional: the panel renders a designed empty state until a device exists.
 
-export type ControlKind = "light" | "switch" | "vacuum" | "climate" | "curtain";
+export type ControlKind = "light" | "switch" | "vacuum" | "climate" | "curtain" | "mode";
 
 export interface RoomControl {
   entity: string;
   name: string;
   kind: ControlKind;
-  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate";
+  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate" | "shower";
+  /** mode: automation this switch pauses while on (shown as the status line). */
+  pauses?: string;
   /** curtain on a relay: which relay state means "open". */
   openState?: "on" | "off";
 }
@@ -76,6 +78,8 @@ export const ROOMS: Room[] = [
     controls: [
       { entity: "switch.bathroom_switch_d1_center", name: "Main Light", kind: "switch", icon: "ceiling" },
       { entity: "switch.bathroom_switch_d1_left", name: "LED Cove", kind: "switch", icon: "strip" },
+      // Right rocker (decoupled): ON pauses the 15-min no-motion auto-off; 2 h safety timeout
+      { entity: "switch.bathroom_switch_d1_right", name: "Bath mode", kind: "mode", icon: "shower", pauses: "automation.bathroom_no_motion_15_min_turns_off_lights" },
     ],
   },
   {
@@ -122,6 +126,8 @@ export const TIMELINE_ENTITIES = [
   "binary_sensor.bathroom_motion_sensor_p1_occupancy",
   "automation.bathroom_motion_turns_on_lights",
   "automation.bathroom_no_motion_15_min_turns_off_lights",
+  "switch.bathroom_switch_d1_right",
+  "automation.bathroom_right_rocker_pauses_auto_off",
   "scene.office_hour",
   "scene.after_office",
 ];
