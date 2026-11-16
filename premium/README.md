@@ -29,7 +29,7 @@ Empty arrays (locks, doors, cameras, solar, room climate) render designed empty 
 
 ## Design system (`src/styles.css`)
 
-- 8px spacing tokens (`--s-*`), one accent (`--accent`), neutral greys
+- 8px spacing tokens (`--s-*`), one accent per theme (`--accent`: Day = blue `#2563eb`, Night = indigo `#7c7cf0`), neutral greys
 - **Theme: Auto / Day / Night** (top-bar switch, or Cmd/Ctrl+K → "Day mode" / "Night mode"). Auto follows the device
   (`prefers-color-scheme`). The choice is saved per device in localStorage (`ng-premium-theme`) and applied before first paint
 - Inter, `.num` = tabular numerals on every metric
