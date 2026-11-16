@@ -1,4 +1,4 @@
-import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader } from "lucide-react";
+import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds } from "lucide-react";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { useHass, isUnavailable } from "../ha/store";
 import { ROOMS, type Room, type RoomControl } from "../config";
@@ -13,6 +13,7 @@ function ControlRow({ c }: { c: RoomControl }) {
   const pending = isPending(c.entity);
 
   if (c.kind === "vacuum") return <VacuumRow c={c} e={e} />;
+  if (c.kind === "curtain") return <CurtainRow c={c} />;
 
   const on = e?.state === "on";
   const supportsBrightness = c.kind === "light" && Array.isArray(e?.attributes.supported_color_modes) && (e!.attributes.supported_color_modes as string[]).some((m) => m !== "onoff");
@@ -50,6 +51,33 @@ function ControlRow({ c }: { c: RoomControl }) {
           }
         />
       )}
+    </div>
+  );
+}
+
+/** Curtain driven by a relay switch: shown as Open/Closed, never as a light. */
+function CurtainRow({ c }: { c: RoomControl }) {
+  const { get, call, isPending } = useHass();
+  const e = get(c.entity);
+  const unavailable = isUnavailable(e);
+  const openState = c.openState ?? "on";
+  const closedState = openState === "on" ? "off" : "on";
+  const isOpen = e?.state === openState;
+  const Icon = Blinds;
+  const set = (open: boolean) => {
+    const target = open ? openState : closedState;
+    call("switch", target === "on" ? "turn_on" : "turn_off", { entity_id: c.entity }, { entity: c.entity, state: target });
+  };
+  return (
+    <div className="row">
+      <div className="row-h">
+        <div className={`row-icon${isOpen && !unavailable ? " on" : ""}`}><Icon size={16} aria-hidden /></div>
+        <div className="row-name">
+          <div>{c.name}</div>
+          <div>{unavailable ? <Badge tone="muted" label={e ? "Unavailable" : "Not found"} /> : <span>{isOpen ? "Open" : "Closed"}</span>}</div>
+        </div>
+        <Switch label={`${isOpen ? "Close" : "Open"} ${c.name}`} checked={isOpen} disabled={unavailable} pending={isPending(c.entity)} onChange={set} />
+      </div>
     </div>
   );
 }
@@ -92,7 +120,7 @@ function RoomCard({ room }: { room: Room }) {
   const Icon = roomIcon[room.icon];
   const motion = room.motion ? get(room.motion) : undefined;
   const thermostat = room.climate.thermostat ? get(room.climate.thermostat) : undefined;
-  const onCount = room.controls.filter((c) => get(c.entity)?.state === "on").length;
+  const onCount = room.controls.filter((c) => (c.kind === "light" || c.kind === "switch") && get(c.entity)?.state === "on").length;
 
   return (
     <Card
