@@ -77,7 +77,7 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
 ## Conventions
 
 - **No `Co-Authored-By` or Claude attribution** in commits or PR descriptions.
-- One GitHub issue per piece of work → branch `feature/<issue>-<slug>` from `main` → PR to `main` with "Closes #n".
+- One GitHub issue per piece of work → branch `feature/<issue>-<slug>` from the **latest `main`** (fetch + `pull --ff-only` first) → PR to `main` with "Closes #n".
   Update the issue (checklist + comment) as work progresses.
 - After each change: export what was created in HA, update `README.md` (reference) and add a numbered step to `docs/WORKLOG.md`
   (dated log + summary + open items). Record what was **verified** vs **not yet verified** on real devices.
