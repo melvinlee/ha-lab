@@ -131,6 +131,9 @@ Paired devices appear in HA under the MQTT integration.
   (Supervisor logs only show the exit code). Usual causes: `serial.port` left as a placeholder,
   wrong `adapter`, or another client (ZHA) holding the SLZB socket.
 - Check the socket from the Mac: `nc -z 192.168.1.41 6638`
+- **Settings on battery (sleepy) devices**, e.g. the P1 detection interval: send the change **once** and press the device's button
+  to wake it. Z2M queues the write. Re-sending replaces the queued write (`Request superseded` in the debug log).
+- To see Z2M write errors, set `select.zigbee2mqtt_bridge_log_level` to `debug` and watch `node scripts/mqtt-listen.mjs zigbee2mqtt/bridge/logging 60`. Set it back to `info` afterwards.
 - SLZB health in HA: `sensor.office_slzb_06_zigbee_type` should be `coordinator` and
   `sensor.office_slzb_06_connection_mode` should be `eth`.
 
@@ -183,7 +186,7 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
 - Triggers: `binary_sensor.aqara_motion_sensor_p1_occupancy` → `off` for 5 min, **or** either light → `on` for 5 min
   (covers lights turned on while the room is already empty, e.g. via the TRADFRI button).
 - Conditions: occupancy has been `off` for ≥ 5 min, and at least one of the two lights is on.
-- Real delay ≈ 5 min + the P1's own clear time. The P1 only reports `off` after its occupancy timeout / detection interval (30 s).
+- Real delay ≈ 5 min + the P1's clear time. The P1 reports `off` once its detection interval (now **5 s**) has passed.
 
 ## Dashboard
 
