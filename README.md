@@ -13,6 +13,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
+| `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
 | `.mcp.json` | Project MCP server config (uses `HA_URL`, `HA_TOKEN`) |
 
 ## Setup
