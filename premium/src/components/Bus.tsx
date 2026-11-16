@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bus as BusIcon, MapPin, CircleAlert, AlarmClock } from "lucide-react";
 import { useHass, isUnavailable } from "../ha/store";
-import { BUS_SENSOR } from "../config";
+import { BUS_SENSORS } from "../config";
 import { Card, Badge, Empty, Skeleton } from "./ui";
 
 interface Arrival { OriginCode?: string; DestinationCode?: string; EstimatedArrival?: string; Monitored?: number }
@@ -21,7 +21,11 @@ function eta(iso: string | undefined, now: number) {
   return `${Math.floor(mins / 60)} h ${mins % 60} min`;
 }
 
-export function Bus() {
+export function BusStops() {
+  return <>{BUS_SENSORS.map((id) => <Bus key={id} sensor={id} />)}</>;
+}
+
+function Bus({ sensor: BUS_SENSOR }: { sensor: string }) {
   const { entities, get } = useHass();
   const [now, setNow] = useState(Date.now());
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 15e3); return () => clearInterval(t); }, []);

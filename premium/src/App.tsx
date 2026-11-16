@@ -7,7 +7,7 @@ import { Rooms } from "./components/Rooms";
 import { Energy } from "./components/Energy";
 import { Security } from "./components/Security";
 import { Scenes } from "./components/Scenes";
-import { Bus } from "./components/Bus";
+import { BusStops } from "./components/Bus";
 import { CommandPalette } from "./components/CommandPalette";
 import { useTheme } from "./lib/theme";
 
@@ -55,7 +55,7 @@ function Dashboard() {
           <Energy />
         </div>
         <div className="col">
-          <Bus />
+          <BusStops />
           <Security />
         </div>
       </div>

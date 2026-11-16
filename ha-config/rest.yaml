@@ -14,3 +14,18 @@
       json_attributes:
         - BusStopCode
         - Services
+
+- resource: https://ngshuttle-cyas5qjv.manus.space/api/v1/bus-arrival?BusStopCode=Yishun%20MRT
+  scan_interval: 60
+  timeout: 15
+  sensor:
+    - name: "Yishun MRT shuttle arrivals"
+      unique_id: yishun_mrt_shuttle_bus_arrivals
+      icon: mdi:bus-clock
+      device_class: timestamp
+      value_template: >-
+        {% set s = value_json.Services | default([]) %}
+        {{ s[0].NextBus.EstimatedArrival if s and s[0].NextBus.EstimatedArrival else None }}
+      json_attributes:
+        - BusStopCode
+        - Services
