@@ -1,0 +1,41 @@
+# Exported from HA via GET /api/config/automation/config/bathroom_no_motion_lights_off
+id: bathroom_no_motion_lights_off
+alias: 'Bathroom: no motion 15 min turns off lights'
+description: No occupancy for 15 minutes -> turn off LED Cove and Main Light. Also
+  covers lights switched on in an empty bathroom.
+triggers:
+- id: no_motion
+  trigger: state
+  entity_id: binary_sensor.bathroom_motion_sensor_p1_occupancy
+  to: 'off'
+  for:
+    minutes: 15
+- id: light_on
+  trigger: state
+  entity_id:
+  - switch.bathroom_switch_d1_left
+  - switch.bathroom_switch_d1_center
+  to: 'on'
+  for:
+    minutes: 15
+conditions:
+- condition: state
+  entity_id: binary_sensor.bathroom_motion_sensor_p1_occupancy
+  state: 'off'
+  for:
+    minutes: 15
+- condition: or
+  conditions:
+  - condition: state
+    entity_id: switch.bathroom_switch_d1_left
+    state: 'on'
+  - condition: state
+    entity_id: switch.bathroom_switch_d1_center
+    state: 'on'
+actions:
+- action: switch.turn_off
+  target:
+    entity_id:
+    - switch.bathroom_switch_d1_left
+    - switch.bathroom_switch_d1_center
+mode: single

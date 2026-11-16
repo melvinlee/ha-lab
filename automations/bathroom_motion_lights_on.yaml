@@ -1,0 +1,26 @@
+# Exported from HA via GET /api/config/automation/config/bathroom_motion_lights_on
+id: bathroom_motion_lights_on
+alias: 'Bathroom: motion turns on lights'
+description: Bathroom Motion Sensor P1 detects motion -> turn on LED Cove and Main
+  Light.
+triggers:
+- trigger: state
+  entity_id: binary_sensor.bathroom_motion_sensor_p1_occupancy
+  from: 'off'
+  to: 'on'
+conditions:
+- condition: or
+  conditions:
+  - condition: state
+    entity_id: switch.bathroom_switch_d1_left
+    state: 'off'
+  - condition: state
+    entity_id: switch.bathroom_switch_d1_center
+    state: 'off'
+actions:
+- action: switch.turn_on
+  target:
+    entity_id:
+    - switch.bathroom_switch_d1_left
+    - switch.bathroom_switch_d1_center
+mode: single
