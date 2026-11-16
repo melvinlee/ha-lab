@@ -13,7 +13,7 @@ How-to and reference details live in the [README](../README.md).
 | Areas | Office, Living Room, **Master Bedroom** (new), Bedroom, Kitchen (empty) |
 | Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button, Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
-| Automations | 3: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
+| Automations | 4: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
 | Dashboard | **North Gaia** at `/dashboard-north-gaia`, from `dashboards/home.yaml` (phone + 10" landscape tablet) |
 | Repo / tracking | github.com/melvinlee/ha-lab. Issue #1 (Master Bedroom) → PR #2 from `feature/1-master-bedroom` (open) |
 
@@ -158,7 +158,8 @@ because MCP can't create automations.
 ## Open items
 
 **Master Bedroom (issue #1 / PR #2)**
-- [ ] Test the auto-off: turn on Main light or LED Cove, leave, and check it turns off after ~5–6 min.
+- [ ] Test motion → Main light on, then leave and check auto-off after ~5–6 min.
+- [ ] Consider a darkness/night condition for motion → Main light (e.g. illuminance below X lx, or not while sleeping).
 - [ ] Aqara Motion sensor P1 shows **battery 0%** but reports in fine (2800 mV). Check or replace the CR2450 (×2).
 - [ ] Merge PR #2 (closes issue #1).
 - [ ] Optional: TRADFRI firmware update (v587290161 → v604241926, adds double-click). Press the button to wake it before starting.
