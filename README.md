@@ -214,7 +214,7 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
 
 | `automation.bathroom_right_rocker_toggles_its_light` (`bathroom_right_rocker_toggle`) | MQTT `zigbee2mqtt/Bathroom Switch D1`, `action == "single_right"` | `switch.toggle` → `switch.bathroom_switch_d1_right` (its own relay) |
 
-| `automation.bathroom_right_rocker_pauses_auto_off` (`bathroom_right_rocker_override`) | right-rocker light `on` / `off` | **on** → disable the 15-min auto-off (manual override, e.g. showering) · **off** → re-enable it and run its check once |
+| `automation.bathroom_right_rocker_pauses_auto_off` (`bathroom_right_rocker_override`) | right-rocker light `on` / `off` | **on** → disable the 15-min auto-off (manual override, e.g. showering) · **off** → re-enable it and run its check once · **on for 2 h** → turn the right light off (safety; ends the override) |
 
 Exported to `automations/bathroom_*.yaml`. No night mode (optional on #8). The right rocker is **decoupled**, so its relay only switches
 through HA (if HA or Z2M is down, the right rocker does nothing).
