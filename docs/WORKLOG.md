@@ -157,6 +157,11 @@ because MCP can't create automations.
 
 ## Open items
 
+**Premium dashboard (issue #3)**
+- [ ] Install and start the **Samba share** app, mount `smb://192.168.1.40/config`, run `scripts/deploy-premium.sh`.
+- [ ] Approve the 4 scene definitions, then create them in HA.
+- [ ] Visual QA on the 10" landscape tablet and a phone.
+
 **Master Bedroom (issue #1 / PR #2)**
 - [x] ~~Test motion → Main light on~~: fired 12:56:17. Still to check: auto-off after leaving (~5–6 min).
 - [ ] Consider a darkness/night condition for motion → Main light (e.g. illuminance below X lx, or not while sleeping).

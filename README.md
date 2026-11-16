@@ -18,6 +18,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
 | `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |
 | `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
+| `premium/` | Premium SaaS-style dashboard app (issue #3), see `premium/README.md` |
+| `scripts/deploy-premium.sh` | Build the premium app, copy to HA `/config/www/premium`, create the **Premium** dashboard |
 | `.mcp.json` | Project MCP server config (uses `HA_URL`, `HA_TOKEN`) |
 
 ## Areas & devices
