@@ -401,6 +401,16 @@ views:
             grid_options:
               columns: full
           - type: tile
+            entity: light.bedlamp
+            name: Bedlamp
+            icon: mdi:lamp
+            grid_options:
+              columns: full
+            features_position: bottom
+            features:
+              - type: light-brightness
+              - type: light-color-temp
+          - type: tile
             entity: sensor.smart_wall_switch_z1_pro_power
             name: Power
             icon: mdi:flash
