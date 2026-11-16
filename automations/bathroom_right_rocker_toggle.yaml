@@ -1,0 +1,16 @@
+# Exported from HA via GET /api/config/automation/config/bathroom_right_rocker_toggle
+id: bathroom_right_rocker_toggle
+alias: 'Bathroom: right rocker toggles its light'
+description: Bathroom Switch D1 right rocker is decoupled; each press (action single_right)
+  toggles its own relay switch.bathroom_switch_d1_right.
+triggers:
+- trigger: mqtt
+  topic: zigbee2mqtt/Bathroom Switch D1
+  value_template: "{{ value_json.action }}"
+  payload: single_right
+conditions: []
+actions:
+- action: switch.toggle
+  target:
+    entity_id: switch.bathroom_switch_d1_right
+mode: queued

@@ -1,0 +1,53 @@
+# Exported from HA via GET /api/config/automation/config/bathroom_right_rocker_override
+id: bathroom_right_rocker_override
+alias: 'Bathroom: right rocker pauses auto-off'
+description: 'Right-rocker light ON -> disable the 15-min no-motion auto-off (manual
+  override). Right light OFF -> re-enable it and run its check once. Safety: right
+  light on for 2 h -> turn it off (which ends the override).'
+triggers:
+- id: 'on'
+  trigger: state
+  entity_id: switch.bathroom_switch_d1_right
+  to: 'on'
+- id: 'off'
+  trigger: state
+  entity_id: switch.bathroom_switch_d1_right
+  to: 'off'
+- id: timeout
+  trigger: state
+  entity_id: switch.bathroom_switch_d1_right
+  to: 'on'
+  for:
+    hours: 2
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id: 'on'
+    sequence:
+    - action: automation.turn_off
+      target:
+        entity_id: automation.bathroom_no_motion_15_min_turns_off_lights
+      data:
+        stop_actions: false
+  - conditions:
+    - condition: trigger
+      id: 'off'
+    sequence:
+    - action: automation.turn_on
+      target:
+        entity_id: automation.bathroom_no_motion_15_min_turns_off_lights
+    - action: automation.trigger
+      target:
+        entity_id: automation.bathroom_no_motion_15_min_turns_off_lights
+      data:
+        skip_condition: false
+  - conditions:
+    - condition: trigger
+      id: timeout
+    sequence:
+    - action: switch.turn_off
+      target:
+        entity_id: switch.bathroom_switch_d1_right
+mode: queued

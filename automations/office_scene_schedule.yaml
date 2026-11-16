@@ -1,0 +1,43 @@
+# Exported from HA via GET /api/config/automation/config/office_scene_schedule
+id: office_scene_schedule
+alias: 'Office: switch lighting scene by time'
+description: Weekdays 09:00 -> Office hour (6000 K), 18:00 -> After office (4000 K).
+  Also applies the matching scene when the ceiling light is turned on. Only acts while
+  the ceiling light is on (never turns it on by itself).
+triggers:
+- id: office_start
+  trigger: time
+  at: '09:00:00'
+- id: office_end
+  trigger: time
+  at: '18:00:00'
+- id: light_on
+  trigger: state
+  entity_id: light.aqara_ceiling_light_t1_white
+  from: 'off'
+  to: 'on'
+conditions:
+- condition: state
+  entity_id: light.aqara_ceiling_light_t1_white
+  state: 'on'
+actions:
+- choose:
+  - conditions:
+    - condition: time
+      after: '09:00:00'
+      before: '18:00:00'
+      weekday:
+      - mon
+      - tue
+      - wed
+      - thu
+      - fri
+    sequence:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.office_hour
+  default:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.after_office
+mode: restart

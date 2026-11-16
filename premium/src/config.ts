@@ -1,13 +1,15 @@
 // Single place that maps HA entities to dashboard panels.
 // Empty arrays are intentional: the panel renders a designed empty state until a device exists.
 
-export type ControlKind = "light" | "switch" | "vacuum" | "climate" | "curtain";
+export type ControlKind = "light" | "switch" | "vacuum" | "climate" | "curtain" | "mode";
 
 export interface RoomControl {
   entity: string;
   name: string;
   kind: ControlKind;
-  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate";
+  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate" | "shower";
+  /** mode: automation this switch pauses while on (shown as the status line). */
+  pauses?: string;
   /** curtain on a relay: which relay state means "open". */
   openState?: "on" | "off";
 }
@@ -15,13 +17,15 @@ export interface RoomControl {
 export interface Room {
   id: string;
   name: string;
-  icon: "bed" | "desk" | "sofa";
+  icon: "bed" | "desk" | "sofa" | "bath";
   controls: RoomControl[];
   /** Room climate sensors (temperature/humidity). Not the drybox. */
   climate: { temperature?: string; humidity?: string; thermostat?: string };
   motion?: string;
   /** One-tap routines (HA button entities, e.g. Roborock app scenes). */
-  routines?: { entity: string; name: string; icon: "sofa" | "door" | "utensils" | "mop" }[];
+  routines?: { entity: string; name: string; icon: "sofa" | "door" | "utensils" | "mop" | "briefcase" | "sunset" }[];
+  /** Heading for the routines block (default "Routines"). */
+  routinesTitle?: string;
   /** Drybox (enclosure) climate shown inside the room card. Not counted as room climate. */
   drybox?: { humidity: string; temperature?: string; battery?: string; goodMax: number; watchMax: number };
 }
@@ -46,6 +50,12 @@ export const ROOMS: Room[] = [
     name: "Office",
     icon: "desk",
     climate: {},
+    // Office-only scenes: ceiling light colour temperature (brightness and ring untouched)
+    routinesTitle: "Lighting",
+    routines: [
+      { entity: "scene.office_hour", name: "Office hour", icon: "briefcase" },
+      { entity: "scene.after_office", name: "After office", icon: "sunset" },
+    ],
     drybox: {
       humidity: "sensor.aqara_sensor_humidity",
       temperature: "sensor.aqara_sensor_temperature",
@@ -56,6 +66,20 @@ export const ROOMS: Room[] = [
     controls: [
       { entity: "light.aqara_ceiling_light_t1_white", name: "Ceiling light", kind: "light", icon: "ceiling" },
       { entity: "light.aqara_ceiling_light_t1_rgb", name: "Ambient ring", kind: "light", icon: "ring" },
+    ],
+  },
+  {
+    id: "bathroom",
+    name: "Bathroom",
+    icon: "bath",
+    motion: "binary_sensor.bathroom_motion_sensor_p1_occupancy",
+    climate: {},
+    // Bathroom Switch D1 (QBKG26LM): left = LED Cove, center = Main Light, right = decoupled (no load control)
+    controls: [
+      { entity: "switch.bathroom_switch_d1_center", name: "Main Light", kind: "switch", icon: "ceiling" },
+      { entity: "switch.bathroom_switch_d1_left", name: "LED Cove", kind: "switch", icon: "strip" },
+      // Right rocker (decoupled): ON pauses the 15-min no-motion auto-off; 2 h safety timeout
+      { entity: "switch.bathroom_switch_d1_right", name: "Bath mode", kind: "mode", icon: "shower", pauses: "automation.bathroom_no_motion_15_min_turns_off_lights" },
     ],
   },
   {
@@ -98,6 +122,14 @@ export const TIMELINE_ENTITIES = [
   "automation.master_bedroom_no_motion_5_min_turns_off_lights",
   "automation.master_bedroom_tradfri_button_toggles_led_cove",
   "automation.office_e1_switch_turns_on_ceiling_light",
+  "automation.office_switch_lighting_scene_by_time",
+  "binary_sensor.bathroom_motion_sensor_p1_occupancy",
+  "automation.bathroom_motion_turns_on_lights",
+  "automation.bathroom_no_motion_15_min_turns_off_lights",
+  "switch.bathroom_switch_d1_right",
+  "automation.bathroom_right_rocker_pauses_auto_off",
+  "scene.office_hour",
+  "scene.after_office",
 ];
 
 export interface SceneDef { entity: string; name: string; icon: "sunrise" | "film" | "plane" | "moon"; hint: string }

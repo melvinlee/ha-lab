@@ -7,6 +7,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 
 | Path | Contents |
 |---|---|
+| `.claude/skills/` | Project agent skills: ha-zigbee-device, ha-automation, ha-scene, ng-premium-deploy, sleepy-device-settings, issue-workflow |
+| `CLAUDE.md` | Guidance for Claude Code: commands, architecture, gotchas, conventions |
 | `README.md` | Setup and reference (areas/devices, MCP, Zigbee/MQTT, automations, dashboard, scripts, workflow) |
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
@@ -15,6 +17,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/master_bedroom_tradfri_double_click.yaml` | TRADFRI double-click → Bedlamp toggle, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
 | `automations/master_bedroom_slider_dims_bedlamp.yaml` | Z1 Pro slider → Bedlamp brightness, exported from HA |
+| `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
+| `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight, exported from HA |
@@ -24,6 +28,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
 | `premium/` | Premium SaaS-style dashboard app (issue #3), see `premium/README.md` |
 | `scripts/deploy-premium.sh` | Build the premium app, copy to HA `/config/www/premium`, create the **NG Premium** dashboard |
+| `.pre-commit-config.yaml`, `.gitleaks.toml` | Pre-commit hooks: gitleaks secret scan + basic file checks |
 | `.mcp.json` | Project MCP server config (uses `HA_URL`, `HA_TOKEN`) |
 
 ## Areas & devices
@@ -39,6 +44,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Master Bedroom | **Bedroom Switch** (Z2M: Smart wall switch Z1 Pro) | ZNQBKG45LM, 4-rocker | Z2M `0x54ef4410011fd575` | `switch.smart_wall_switch_z1_pro_top` = **Main light**, `_center` = **LED Cove**, `_bottom` = **Night Curtain** (a curtain on the relay: **ON = open, OFF = closed**) |
 | Master Bedroom | Bedlamp | IKEA TRADFRI bulb E26/E27 white spectrum 806 lm (LED2004G8) | Z2M `0x04cd15fffe73e97e` | `light.bedlamp` (2200–4000 K) |
 | Master Bedroom | TRADFRI | IKEA E1812 shortcut button | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/TRADFRI` (`action: "on"`); `sensor.tradfri_battery` |
+| Bathroom | **Bathroom Switch D1** | Aqara D1 triple rocker, with neutral (QBKG26LM) | Z2M `0x54ef441000d3a1ee` | `switch.bathroom_switch_d1_left` = **LED Cove**, `_center` = **Main Light**, `_right` = **Bath mode** (decoupled; toggled by its rocker via HA; ON pauses the auto-off) |
+| Bathroom | **Bathroom Motion Sensor P1** | RTCGQ14LM | Z2M `0x54ef4410013de0db` | `binary_sensor.bathroom_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
 | (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
 | (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
@@ -206,6 +213,28 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
 - Conditions: occupancy has been `off` for ≥ 5 min, and at least one of the two lights is on.
 - Real delay ≈ 5 min + the P1's clear time. The P1 reports `off` once its detection interval (now **5 s**) has passed.
 
+### Office: switch lighting scene by time
+
+`automation.office_switch_lighting_scene_by_time` (id `office_scene_schedule`), exported to `automations/office_scene_schedule.yaml`.
+
+- Triggers: **09:00**, **18:00**, and the ceiling light turning **on**.
+- Condition: the ceiling light is **on**, so it never turns the light on by itself (e.g. holidays or an empty office).
+- Action: weekdays 09:00–18:00 → `scene.office_hour` (6000 K); otherwise → `scene.after_office` (4000 K). Both turn the ring off.
+
+### Bathroom: motion lighting
+
+| Automation | Trigger | Action |
+|---|---|---|
+| `automation.bathroom_motion_turns_on_lights` (`bathroom_motion_lights_on`) | P1 occupancy `off` → `on`, if either light is off | LED Cove + Main Light **on** |
+| `automation.bathroom_no_motion_15_min_turns_off_lights` (`bathroom_no_motion_lights_off`) | occupancy `off` 15 min **or** a light `on` 15 min; condition: occupancy off ≥ 15 min and a light on | LED Cove + Main Light + **right-rocker light** **off** |
+
+| `automation.bathroom_right_rocker_toggles_its_light` (`bathroom_right_rocker_toggle`) | MQTT `zigbee2mqtt/Bathroom Switch D1`, `action == "single_right"` | `switch.toggle` → `switch.bathroom_switch_d1_right` (its own relay) |
+
+| `automation.bathroom_right_rocker_pauses_auto_off` (`bathroom_right_rocker_override`) | right-rocker light `on` / `off` | **on** → disable the 15-min auto-off (manual override, e.g. showering) · **off** → re-enable it and run its check once · **on for 2 h** → turn the right light off (safety; ends the override) |
+
+Exported to `automations/bathroom_*.yaml`. No night mode (optional on #8). The right rocker is **decoupled**, so its relay only switches
+through HA (if HA or Z2M is down, the right rocker does nothing).
+
 ## Scenes
 
 Created with `POST /api/config/scene/config/<id>`, exported to `scenes/<id>.yaml`.
@@ -217,6 +246,13 @@ Night Curtain = relay **ON = open, OFF = closed**.
 | `scene.movie` | off | on | **closed** (off) | on, 15% @ 2200 K | off / off |
 | `scene.away` | off | off | *unchanged* | off | off / off |
 | `scene.goodnight` | off | off | **closed** (off) | off | off / off |
+
+**Office-only scenes**: ceiling light colour temperature (brightness untouched) and the **ambient ring off**.
+
+| Scene | Ceiling light (`light.aqara_ceiling_light_t1_white`) | Ambient ring (`light.aqara_ceiling_light_t1_rgb`) |
+|---|---|---|
+| `scene.office_hour` | on, **6000 K** (the light reports 6024 K, its nearest step) | **off** |
+| `scene.after_office` | on, **4000 K** | **off** |
 
 ## Dashboard
 
@@ -279,6 +315,33 @@ Automations are created with the REST config API (`POST /api/config/automation/c
 curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $HA_TOKEN" \
   | ruby -rjson -ryaml -e 'puts JSON.parse(STDIN.read).to_yaml' > automations/<id>.yaml
 ```
+
+## Pre-commit hooks (gitleaks)
+
+`.pre-commit-config.yaml` runs **gitleaks** (v8.30.1, config `.gitleaks.toml`: default rules + a `home-assistant-token` rule) and
+basic checks (YAML with HA `!include` tags allowed, JSON, end of file, trailing whitespace, large files, merge conflicts,
+private keys) on every commit.
+
+```bash
+pre-commit install                                         # once per clone
+SSL_CERT_FILE=/etc/ssl/cert.pem pre-commit run --all-files # first run downloads the hook envs; this Mac's uv Python needs the CA bundle
+```
+
+- History scan (2026-11-16): 108 commits, **no leaks**.
+- Verified: a commit containing a fake `HA_TOKEN="eyJ…"` is **blocked** (rules `jwt` + `home-assistant-token`).
+
+## Claude Code skills
+
+Project skills in `.claude/skills/` (loaded when a Claude Code session starts in this repo):
+
+| Skill | Triggers on |
+|---|---|
+| `ha-zigbee-device` | rename / move a Zigbee device, create an area, name rockers |
+| `ha-automation` | "when X do Y", auto-off, button/slider mappings (payload capture → create → trace → export) |
+| `ha-scene` | create or change scenes (range check, create, test, export, dashboard) |
+| `ng-premium-deploy` | changes to the NG Premium app, build, deploy, verify what HA serves |
+| `sleepy-device-settings` | settings/OTA on battery devices (send once, wake; `ota-on-wake.mjs`; debug log) |
+| `issue-workflow` | create/update issues, branch, worklog, PR without attribution |
 
 ## Workflow
 

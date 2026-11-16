@@ -10,7 +10,7 @@ How-to and reference details live in the [README](../README.md).
 | Claude ↔ HA | MCP Server integration, `/api/mcp`, token in `HA_TOKEN` |
 | MQTT | Mosquitto broker app + MQTT integration: **loaded** |
 | Zigbee | Zigbee2MQTT 2.14.3 app: **running**; SMLIGHT SLZB-06 coordinator (192.168.1.41, Ethernet, `zstack`) |
-| Areas | Office, Living Room, **Master Bedroom** (new), Bedroom, Kitchen (empty) |
+| Areas | Office, Living Room, Master Bedroom, **Bathroom** (new), Bedroom, Kitchen (empty) |
 | Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button, Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
 | Scenes | 4: Good morning, Movie, Away, Goodnight (`scenes/`) |
@@ -165,6 +165,10 @@ because MCP can't create automations.
 - **Verified on the device**: 4 double-click traces toggled the Bedlamp, single presses only fired the LED Cove automation (separate traces, no cross-trigger).
 
 ## Open items
+
+**Repo setup (issue #10)**
+- [ ] New Claude Code session: check each skill triggers on a natural request.
+- [ ] Optional: gitleaks in GitHub Actions on push/PR.
 
 **NG Premium (issue #3)**
 - [ ] Visual QA on the 10" landscape tablet and a phone (Day and Night).
