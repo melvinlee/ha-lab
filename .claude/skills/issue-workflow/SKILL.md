@@ -8,7 +8,11 @@ description: >-
 
 - **Create an issue** (`gh issue create --body-file`): goal, a table of what will change, task checklist, open questions to decide, and
   **current state checked against live HA** (verify claims; fix typos in names and say so). Only create the issue unless asked to start.
-- **Start work**: `git checkout main && git pull && git checkout -b feature/<n>-<slug>`. If the previous PR was **squash-merged**, rebase
+- **Start work: always branch from the latest `main`.** Other PRs are often merged on GitHub in between, so never branch from a stale
+  local `main` or from another feature branch:
+  `git fetch origin && git switch main && git pull --ff-only origin main && git switch -c feature/<n>-<slug>`.
+  Check `git status` is clean first (stash or ask if not), and confirm `git log -1 main` matches `origin/main` before branching.
+  If `main` moves while the branch is open, merge `origin/main` into the branch (no force-push) before opening the PR. If the previous PR was **squash-merged**, rebase
   `--onto origin/main` to drop duplicated commits (back up the branch first, force-push with lease, confirm the tree is unchanged).
 - **During work**: after each meaningful step, export from HA, update `README.md` (reference) and add a numbered step to `docs/WORKLOG.md`
   (keep its Summary and Open items current), commit with a plain message (**no `Co-Authored-By` or Claude attribution**) and push.

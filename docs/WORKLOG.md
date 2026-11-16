@@ -174,6 +174,12 @@ because MCP can't create automations.
 - Theme **Auto** now follows the clock (Day 07:00–18:59, Night otherwise, re-checked every minute) instead of the device dark-mode setting.
 - Deployed. **Not yet verified** on the tablet/phone, or with live ETAs during service hours.
 
+### 16. Issue skill: always branch from the latest main (#15)
+
+- `issue-workflow` skill and `CLAUDE.md`: before a new issue branch, check the tree is clean, `git fetch`, `git pull --ff-only` on `main`,
+  confirm `main` = `origin/main`, then branch. If `main` moves while a branch is open, merge `origin/main` in (no force-push) before the PR.
+- Why: PR #12 conflicted twice after #11 and #14 merged.
+
 ## Open items
 
 **Repo setup (issue #10)**
