@@ -14,6 +14,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
+| `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |

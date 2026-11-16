@@ -110,3 +110,6 @@ export const SCENES: SceneDef[] = [
 
 /** Lights and switches counted in the devices-on KPI (curtains and vacuums excluded). */
 export const DEVICE_ENTITIES = ROOMS.flatMap((r) => r.controls.filter((c) => c.kind === "light" || c.kind === "switch").map((c) => c.entity));
+
+/** Bus arrivals: REST sensor in HA (ha-config/rest.yaml) holding the API response in attributes. */
+export const BUS_SENSOR = "sensor.ng_shuttle_arrivals";

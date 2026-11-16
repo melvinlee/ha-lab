@@ -328,3 +328,12 @@ kbd {
 .routine:disabled { cursor: not-allowed; opacity: .55; }
 .routine.fired .scene-ic { background: var(--accent-soft); color: var(--accent); }
 .routine .scene-name { font-size: var(--t-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Bus arrivals */
+.bus-etas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-2); padding-left: 44px; }
+.bus-eta { padding: var(--s-2) 12px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface-2); }
+.bus-eta .v { font-size: var(--t-lg); font-weight: 600; letter-spacing: -0.01em; }
+.bus-eta .l { font-size: var(--t-xs); color: var(--text-2); }
+.bus-eta.next { background: var(--accent-soft); border-color: transparent; }
+.bus-eta.next .v { color: var(--accent); }
+@media (max-width: 600px) { .bus-etas { padding-left: 0; } }
