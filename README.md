@@ -7,7 +7,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 
 | Path | Contents |
 |---|---|
-| `README.md` | Setup and reference (MCP, Zigbee/MQTT, automations, dashboard) |
+| `README.md` | Setup and reference (areas/devices, MCP, Zigbee/MQTT, automations, dashboard, scripts, workflow) |
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
@@ -18,6 +18,27 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |
 | `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
 | `.mcp.json` | Project MCP server config (uses `HA_URL`, `HA_TOKEN`) |
+
+## Areas & devices
+
+| Area | Device | Model | Integration | Key entities |
+|---|---|---|---|---|
+| Office | Aqara Ceiling Light T1 | HCXDD12LM | Z2M `0x54ef44100130d787` | `light.aqara_ceiling_light_t1_white` (main), `..._rgb` (ring) |
+| Office | Aqara E1 Switch | WXKG20LM (wireless) | Z2M `0x54ef441001328ec0` | presses on MQTT `zigbee2mqtt/Aqara E1 Switch`; `sensor.aqara_e1_switch_battery` |
+| Office | Aqara Sensor (**drybox**, not room climate) | WSDCGQ11LM | Z2M | `sensor.aqara_sensor_humidity`, `_temperature`, `_battery` |
+| Office | SLZB-06 Zigbee coordinator | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` |
+| Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
+| Master Bedroom | Aqara Motion sensor P1 | RTCGQ14LM | Z2M `0x54ef4410013ddb88` | `binary_sensor.aqara_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
+| Master Bedroom | **Bedroom Switch** (Z2M: Smart wall switch Z1 Pro) | ZNQBKG45LM, 4-rocker | Z2M `0x54ef4410011fd575` | `switch.smart_wall_switch_z1_pro_top` = **Main light**, `_center` = **LED Cove**, `_bottom` = **Night Curtain** |
+| Master Bedroom | TRADFRI | IKEA E1812 shortcut button | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/TRADFRI` (`action: "on"`); `sensor.tradfri_battery` |
+| Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
+| (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
+
+Kitchen has no devices yet. Wireless buttons (E1, TRADFRI) have **no press entity** in Z2M 2.x. Their automations
+use MQTT triggers on `value_json.action`.
+
+**Renaming:** rename in **Z2M** (with "update HA entity ID") to change entity IDs and the MQTT topic. Rename in **HA** (device
+`name_by_user` / entity name) for display only. "Bedroom Switch" and the rocker names are HA-only, so the entity IDs are unchanged.
 
 ## Setup
 
@@ -162,8 +183,13 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
 | Phone | 1 column; hourly weather; tablet header hidden |
 | 10" tablet, landscape (≥1024px) | up to 4 columns; greeting/clock + daily forecast header (2 columns wide) |
 
-Views: **Home** (Office lights, E1 switch, SHIELD, shopping list) and **System** (Zigbee2MQTT,
-SLZB-06, device health, updates/backups). Restart buttons ask for confirmation.
+| View | Sections |
+|---|---|
+| **Home** | tablet header (greeting, clock, weather, drybox RH) · weather (phone) · **Office** (ceiling light, ring, E1 automation, **Drybox** subsection: humidity gauge, desiccant alert >50% RH, temperature, 7-day history) · **Living Room** (Roborock controls, alerts, routines, mop settings) · Roborock map · **Master Bedroom** (Main light / LED Cove / Night Curtain toggles, power, motion, light level, TRADFRI, automation tiles, low-battery alerts) · Media (SHIELD) · Shopping list |
+| **System** | Zigbee2MQTT · SLZB-06 coordinator · Roborock maintenance · Device health (batteries, temperatures) · Updates & backups |
+
+Badges at the top: person, weather, Office light, Drybox RH, plus Bedroom motion / Roborock / SHIELD / Pairing
+(shown only when active). Restart buttons ask for confirmation. Automation tiles: tap the icon to enable or disable.
 
 Live in HA as **North Gaia**: `http://192.168.1.40/dashboard-north-gaia` (sidebar).
 
@@ -178,3 +204,27 @@ so keep the YAML as the source of truth.
 
 Wall tablet: use the HA Companion app or Fully Kiosk Browser in fullscreen, and set it as the
 default dashboard on that device (Profile → Dashboard).
+
+## Scripts
+
+All need `HA_TOKEN` (and optionally `HA_URL`, default `http://192.168.1.40`) and Node ≥ 22.
+
+| Script | Use |
+|---|---|
+| `scripts/push-dashboard.sh [file] [url_path] [title] [icon]` | YAML → JSON (ruby) → create the dashboard if missing → save config → read back |
+| `node scripts/ha-ws.mjs '<json>' ...` | Raw websocket commands. `"$1.area_id"` references an earlier result. E.g. create an area and assign a device:<br>`node scripts/ha-ws.mjs '{"type":"config/area_registry/create","name":"X"}' '{"type":"config/device_registry/update","device_id":"…","area_id":"$1.area_id"}'` |
+| `node scripts/mqtt-listen.mjs <topic> [seconds]` | Print MQTT messages through HA (read-only). E.g. `zigbee2mqtt/TRADFRI 60` to see button payloads |
+
+Automations are created with the REST config API (`POST /api/config/automation/config/<id>`), then exported:
+
+```bash
+curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $HA_TOKEN" \
+  | ruby -rjson -ryaml -e 'puts JSON.parse(STDIN.read).to_yaml' > automations/<id>.yaml
+```
+
+## Workflow
+
+- One GitHub issue per piece of work, on a branch `feature/<issue>-<slug>`, with a PR to `main` ("Closes #n").
+  Example: issue #1 Master Bedroom → PR #2.
+- Changes are applied to live HA first, then recorded here (exported automations, dashboard YAML, worklog entry).
+- Commit messages have **no `Co-Authored-By` trailer**.

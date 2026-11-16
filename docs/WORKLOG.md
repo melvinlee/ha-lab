@@ -10,9 +10,12 @@ How-to and reference details live in the [README](../README.md).
 | Claude ↔ HA | MCP Server integration, `/api/mcp`, token in `HA_TOKEN` |
 | MQTT | Mosquitto broker app + MQTT integration: **loaded** |
 | Zigbee | Zigbee2MQTT 2.14.3 app: **running**; SMLIGHT SLZB-06 coordinator (192.168.1.41, Ethernet, `zstack`) |
-| Devices paired | Aqara E1 wireless mini switch, Aqara Ceiling Light T1, Aqara temp/humidity sensor (all in Office) |
+| Areas | Office, Living Room, **Master Bedroom** (new), Bedroom, Kitchen (empty) |
+| Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button |
+| Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
 | Automations | 3: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
 | Dashboard | **North Gaia** at `/dashboard-north-gaia`, from `dashboards/home.yaml` (phone + 10" landscape tablet) |
+| Repo / tracking | github.com/melvinlee/ha-lab. Issue #1 (Master Bedroom) → PR #2 from `feature/1-master-bedroom` (open) |
 
 ---
 
@@ -153,14 +156,19 @@ because MCP can't create automations.
 
 ## Open items
 
-- [ ] Test the Master Bedroom auto-off: turn on Main light or LED Cove, leave, and check it turns off after ~5 min.
-- [ ] Aqara Motion sensor P1 battery read 0%: replace the CR2450 battery (×2) and check it reports in.
-- [ ] Drybox at 58% RH: replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.
+**Master Bedroom (issue #1 / PR #2)**
+- [ ] Test the auto-off: turn on Main light or LED Cove, leave, and check it turns off after ~5–6 min.
+- [ ] Aqara Motion sensor P1 shows **battery 0%** but reports in fine (2800 mV). Check or replace the CR2450 (×2).
+- [ ] Merge PR #2 (closes issue #1).
+- [ ] Optional: TRADFRI firmware update (v587290161 → v604241926, adds double-click). Press the button to wake it before starting.
 
+**Office**
+- [ ] Drybox at 58% RH: replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.
 - [ ] Test E1 **single** (off) and **double** (on) presses after the v3 change.
-- [ ] **Automatic backups aren't configured.** All backup sensors read `unknown`
-      (Settings → System → Backups).
-- [ ] Assign `media_player.shield` to an area (e.g. Living Room). Living Room and Kitchen have no devices yet.
-- [ ] Optional: expose more entities to Assist (Settings → Voice assistants → Expose) so
-      voice/`GetLiveContext` can see the lights.
+- [ ] Optional: turn on Z2M **experimental event entities** so wireless buttons get a press entity for the dashboard (restarts Z2M).
+
+**General**
+- [ ] **Automatic backups aren't configured.** All backup sensors read `unknown` (Settings → System → Backups).
+- [ ] Assign `media_player.shield` to an area (e.g. Living Room). Kitchen has no devices yet.
+- [ ] Optional: expose more entities to Assist (Settings → Voice assistants → Expose) so voice/`GetLiveContext` can see them.
 - [ ] Optional: restart the audio plugin (`ha audio restart`) if local audio is used.
