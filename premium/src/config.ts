@@ -112,4 +112,4 @@ export const SCENES: SceneDef[] = [
 export const DEVICE_ENTITIES = ROOMS.flatMap((r) => r.controls.filter((c) => c.kind === "light" || c.kind === "switch").map((c) => c.entity));
 
 /** Bus arrivals: REST sensor in HA (ha-config/rest.yaml) holding the API response in attributes. */
-export const BUS_SENSOR = "sensor.ng_shuttle_arrivals";
+export const BUS_SENSORS = ["sensor.ng_shuttle_arrivals", "sensor.yishun_mrt_shuttle_arrivals"];
