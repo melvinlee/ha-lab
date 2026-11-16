@@ -5,4 +5,6 @@ entities:
   light.aqara_ceiling_light_t1_white:
     state: 'on'
     color_temp_kelvin: 6000
+  light.aqara_ceiling_light_t1_rgb:
+    state: 'off'
 icon: mdi:briefcase

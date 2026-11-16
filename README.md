@@ -205,12 +205,12 @@ Night Curtain = relay **ON = open, OFF = closed**.
 | `scene.away` | off | off | *unchanged* | off | off / off |
 | `scene.goodnight` | off | off | **closed** (off) | off | off / off |
 
-**Office-only scenes**: only the ceiling light's colour temperature. Brightness and the ambient ring are untouched.
+**Office-only scenes**: ceiling light colour temperature (brightness untouched) and the **ambient ring off**.
 
-| Scene | Office ceiling light (`light.aqara_ceiling_light_t1_white`) |
-|---|---|
-| `scene.office_hour` | on, **6000 K** (the light reports 6024 K, its nearest step) |
-| `scene.after_office` | on, **4000 K** |
+| Scene | Ceiling light (`light.aqara_ceiling_light_t1_white`) | Ambient ring (`light.aqara_ceiling_light_t1_rgb`) |
+|---|---|---|
+| `scene.office_hour` | on, **6000 K** (the light reports 6024 K, its nearest step) | **off** |
+| `scene.after_office` | on, **4000 K** | **off** |
 
 ## Dashboard
 
