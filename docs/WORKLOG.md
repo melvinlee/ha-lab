@@ -158,7 +158,7 @@ because MCP can't create automations.
 ## Open items
 
 **Premium dashboard (issue #3)**
-- [ ] Approve the 4 scene definitions, then create them in HA.
+- [ ] Test each scene from NG Premium. Decide whether Movie should pause the no-motion auto-off.
 - [ ] Visual QA on the 10" landscape tablet and a phone.
 
 **Master Bedroom (issue #1 / PR #2)**

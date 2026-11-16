@@ -1,0 +1,17 @@
+# Exported from HA via GET /api/config/scene/config/goodnight
+id: goodnight
+name: Goodnight
+entities:
+  switch.smart_wall_switch_z1_pro_top:
+    state: 'off'
+  switch.smart_wall_switch_z1_pro_center:
+    state: 'off'
+  switch.smart_wall_switch_z1_pro_bottom:
+    state: 'off'
+  light.bedlamp:
+    state: 'off'
+  light.aqara_ceiling_light_t1_white:
+    state: 'off'
+  light.aqara_ceiling_light_t1_rgb:
+    state: 'off'
+icon: mdi:weather-night
