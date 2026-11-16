@@ -1,4 +1,5 @@
-import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds } from "lucide-react";
+import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow } from "lucide-react";
+import { fmt } from "../lib/format";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { useHass, isUnavailable } from "../ha/store";
 import { ROOMS, type Room, type RoomControl } from "../config";
@@ -115,6 +116,47 @@ function VacuumRow({ c, e }: { c: RoomControl; e?: HassEntity }) {
   );
 }
 
+/** Drybox enclosure climate: humidity is what matters, with colour + icon + label status. */
+function Drybox({ cfg }: { cfg: NonNullable<Room["drybox"]> }) {
+  const { get } = useHass();
+  const h = get(cfg.humidity);
+  const t = cfg.temperature ? get(cfg.temperature) : undefined;
+  const b = cfg.battery ? get(cfg.battery) : undefined;
+  const rh = isUnavailable(h) ? null : Number(h!.state);
+  const pct = rh == null ? 0 : Math.min(100, Math.max(0, rh));
+  const status =
+    rh == null ? <Badge tone="muted" label="Sensor unavailable" /> :
+    rh <= cfg.goodMax ? <Badge tone="ok" label="Dry" /> :
+    rh <= cfg.watchMax ? <Badge tone="warn" label="Watch" /> :
+    <Badge tone="bad" label="Replace desiccant" />;
+  const barColor = rh == null ? "var(--text-3)" : rh <= cfg.goodMax ? "var(--ok)" : rh <= cfg.watchMax ? "var(--warn)" : "var(--bad)";
+  const lowBatt = b && !isUnavailable(b) && Number(b.state) < 20;
+  return (
+    <div className="row">
+      <div className="row-h">
+        <div className="row-icon"><Package size={16} aria-hidden /></div>
+        <div className="row-name">
+          <div>Drybox</div>
+          <div className="num">
+            {t && !isUnavailable(t) ? <><Thermometer size={11} aria-hidden style={{ verticalAlign: -1 }} /> {fmt(Number(t.state), 1)}°C</> : "Enclosure climate"}
+            {lowBatt ? <> · <BatteryLow size={11} aria-hidden style={{ verticalAlign: -1 }} /> {b!.state}%</> : null}
+          </div>
+        </div>
+        {status}
+      </div>
+      <div className="slider-wrap" style={{ gap: 12 }}>
+        <Droplets size={14} aria-hidden style={{ color: "var(--text-2)", flex: "none" }} />
+        <div className="meter" role="meter" aria-label="Drybox humidity" aria-valuemin={0} aria-valuemax={100} aria-valuenow={rh ?? undefined}>
+          <div className="meter-fill" style={{ width: `${pct}%`, background: barColor }} />
+          <div className="meter-mark" style={{ left: `${cfg.goodMax}%` }} aria-hidden />
+          <div className="meter-mark" style={{ left: `${cfg.watchMax}%` }} aria-hidden />
+        </div>
+        <span className="num" style={{ width: 48, textAlign: "right", fontSize: 14, fontWeight: 600 }}>{rh == null ? "—" : `${fmt(rh, 0)}%`}</span>
+      </div>
+    </div>
+  );
+}
+
 function RoomCard({ room }: { room: Room }) {
   const { entities, get } = useHass();
   const Icon = roomIcon[room.icon];
@@ -138,7 +180,8 @@ function RoomCard({ room }: { room: Room }) {
       ) : (
         <div className="rows">
           {room.controls.map((c) => <ControlRow key={c.entity} c={c} />)}
-          <div className="row">
+          {room.drybox && <Drybox cfg={room.drybox} />}
+          {!room.drybox && <div className="row">
             {thermostat && !isUnavailable(thermostat) ? (
               <div className="row-h"><span className="num">{String(thermostat.attributes.current_temperature)}°</span></div>
             ) : (
@@ -146,7 +189,7 @@ function RoomCard({ room }: { room: Room }) {
                 <span className="faint" style={{ fontSize: 12 }}>Add a thermostat or AC to control temperature here.</span>
               </Empty>
             )}
-          </div>
+          </div>}
         </div>
       )}
     </Card>

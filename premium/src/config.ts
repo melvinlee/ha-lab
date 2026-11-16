@@ -20,6 +20,8 @@ export interface Room {
   /** Room climate sensors (temperature/humidity). Not the drybox. */
   climate: { temperature?: string; humidity?: string; thermostat?: string };
   motion?: string;
+  /** Drybox (enclosure) climate shown inside the room card. Not counted as room climate. */
+  drybox?: { humidity: string; temperature?: string; battery?: string; goodMax: number; watchMax: number };
 }
 
 export const ROOMS: Room[] = [
@@ -42,6 +44,13 @@ export const ROOMS: Room[] = [
     name: "Office",
     icon: "desk",
     climate: {},
+    drybox: {
+      humidity: "sensor.aqara_sensor_humidity",
+      temperature: "sensor.aqara_sensor_temperature",
+      battery: "sensor.aqara_sensor_battery",
+      goodMax: 40, // <= 40% RH good
+      watchMax: 50, // 40–50% watch, > 50% replace/recharge desiccant
+    },
     controls: [
       { entity: "light.aqara_ceiling_light_t1_white", name: "Ceiling light", kind: "light", icon: "ceiling" },
       { entity: "light.aqara_ceiling_light_t1_rgb", name: "Ambient ring", kind: "light", icon: "ring" },

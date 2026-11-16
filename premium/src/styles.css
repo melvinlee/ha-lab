@@ -307,3 +307,8 @@ kbd {
 .sec-list { display: flex; flex-direction: column; gap: var(--s-2); margin-bottom: var(--s-3); }
 .sec-row { display: flex; align-items: center; gap: 12px; }
 .sec-row .row-name { font-size: var(--t-md); }
+
+/* Drybox humidity meter */
+.meter { position: relative; flex: 1; height: 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; }
+.meter-fill { position: absolute; inset: 0 auto 0 0; border-radius: 999px; transition: width var(--d-med) var(--ease), background var(--d-med) var(--ease); }
+.meter-mark { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border-strong); }
