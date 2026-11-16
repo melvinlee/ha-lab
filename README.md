@@ -13,6 +13,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
+| `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight, exported from HA |
@@ -192,6 +193,14 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
   (covers lights turned on while the room is already empty, e.g. via the TRADFRI button).
 - Conditions: occupancy has been `off` for ≥ 5 min, and at least one of the two lights is on.
 - Real delay ≈ 5 min + the P1's clear time. The P1 reports `off` once its detection interval (now **5 s**) has passed.
+
+### Office: switch lighting scene by time
+
+`automation.office_switch_lighting_scene_by_time` (id `office_scene_schedule`), exported to `automations/office_scene_schedule.yaml`.
+
+- Triggers: **09:00**, **18:00**, and the ceiling light turning **on**.
+- Condition: the ceiling light is **on**, so it never turns the light on by itself (e.g. holidays or an empty office).
+- Action: weekdays 09:00–18:00 → `scene.office_hour` (6000 K); otherwise → `scene.after_office` (4000 K). Both turn the ring off.
 
 ## Scenes
 
