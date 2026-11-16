@@ -11,7 +11,7 @@ How-to and reference details live in the [README](../README.md).
 | MQTT | Mosquitto broker app + MQTT integration: **loaded** |
 | Zigbee | Zigbee2MQTT 2.14.3 app: **running**; SMLIGHT SLZB-06 coordinator (192.168.1.41, Ethernet, `zstack`) |
 | Devices paired | Aqara E1 wireless mini switch, Aqara Ceiling Light T1, Aqara temp/humidity sensor (all in Office) |
-| Automations | 1: E1 single = light off, double = light on |
+| Automations | 2: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove (Master Bedroom) |
 | Dashboard | **North Gaia** at `/dashboard-north-gaia`, from `dashboards/home.yaml` (phone + 10" landscape tablet) |
 
 ---
@@ -153,7 +153,6 @@ because MCP can't create automations.
 
 ## Open items
 
-- [ ] TRADFRI button: decide what a press should do, then add an automation (MQTT `zigbee2mqtt/TRADFRI`).
 - [ ] Aqara Motion sensor P1 battery read 0%: replace the CR2450 battery (×2) and check it reports in.
 - [ ] Drybox at 58% RH: replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.
 

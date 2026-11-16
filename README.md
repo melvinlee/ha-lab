@@ -11,8 +11,10 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
+| `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
+| `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |
 | `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
 | `.mcp.json` | Project MCP server config (uses `HA_URL`, `HA_TOKEN`) |
 
@@ -125,6 +127,19 @@ from the original name), created via `POST /api/config/automation/config/<id>`
   (Aqara Wireless mini switch E1, WXKG20LM, `0x54ef441001328ec0`)
 - Light: Aqara Ceiling Light T1 (`0x54ef44100130d787`), main white channel
 - The topic uses the Z2M friendly name. If the device is renamed in Z2M, update the triggers.
+
+### Master Bedroom: TRADFRI button toggles LED Cove
+
+`automation.master_bedroom_tradfri_button_toggles_led_cove` (id `master_bedroom_tradfri_button`),
+exported to `automations/master_bedroom_tradfri_button.yaml`.
+
+| TRADFRI press | Action |
+|---|---|
+| single press (`action: "on"`) | `switch.toggle` → `switch.smart_wall_switch_z1_pro_center` (LED Cove) |
+
+- Trigger: MQTT topic `zigbee2mqtt/TRADFRI`, `value_json.action == "on"` (IKEA E1812, `0xb4e3f9fffe249914`).
+  Payload confirmed with `node scripts/mqtt-listen.mjs zigbee2mqtt/TRADFRI 60`.
+- Long press (`brightness_move_up` / `brightness_stop`) isn't used.
 
 ## Dashboard
 

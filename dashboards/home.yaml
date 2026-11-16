@@ -418,6 +418,14 @@ views:
             name: TRADFRI button
             icon: mdi:gesture-tap-button
           - type: tile
+            entity: automation.master_bedroom_tradfri_button_toggles_led_cove
+            name: TRADFRI → LED Cove
+            icon: mdi:gesture-tap
+            tap_action:
+              action: more-info
+            icon_tap_action:
+              action: toggle
+          - type: tile
             entity: sensor.tradfri_battery
             name: TRADFRI button battery low
             icon: mdi:battery-alert
