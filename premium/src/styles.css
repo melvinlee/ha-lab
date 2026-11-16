@@ -337,3 +337,8 @@ kbd {
 .bus-eta.next { background: var(--accent-soft); border-color: transparent; }
 .bus-eta.next .v { color: var(--accent); }
 @media (max-width: 600px) { .bus-etas { padding-left: 0; } }
+
+/* Urgent badge: solid red + pulse (reduced motion: solid only) */
+.badge.flash { color: #fff; background: var(--bad); border-color: var(--bad); animation: flash 1s ease-in-out infinite; }
+@keyframes flash { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--bad) 45%, transparent); } 50% { opacity: .55; box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 0%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .badge.flash { animation: none; } }

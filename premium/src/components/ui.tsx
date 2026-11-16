@@ -20,9 +20,9 @@ export type Tone = "ok" | "warn" | "bad" | "muted" | "accent";
 const toneIcon: Record<Tone, LucideIcon> = { ok: CircleCheck, warn: CircleAlert, bad: CircleX, muted: CircleMinus, accent: CircleDashed };
 
 /** Status always = colour + icon + text label. */
-export function Badge({ tone, label, icon }: { tone: Tone; label: string; icon?: LucideIcon }) {
+export function Badge({ tone, label, icon, flash }: { tone: Tone; label: string; icon?: LucideIcon; flash?: boolean }) {
   const I = icon ?? toneIcon[tone];
-  return <span className={`badge ${tone}`}><I aria-hidden strokeWidth={2.25} />{label}</span>;
+  return <span className={`badge ${tone}${flash ? " flash" : ""}`}><I aria-hidden strokeWidth={2.25} />{label}</span>;
 }
 
 export function Empty({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children?: ReactNode }) {
