@@ -13,6 +13,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
+| `automations/master_bedroom_slider_dims_bedlamp.yaml` | Z1 Pro slider → Bedlamp brightness, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight, exported from HA |
@@ -181,6 +182,16 @@ exported to `automations/master_bedroom_motion_main_light_on.yaml`.
 - Trigger: `binary_sensor.aqara_motion_sensor_p1_occupancy` `off` → `on`.
 - Condition: Main light is off. Action: `switch.turn_on` → `switch.smart_wall_switch_z1_pro_top` (Main light).
 - No time or light-level condition, so it fires day and night. Pairs with the auto-off below (no motion 5 min → off).
+
+### Master Bedroom: Bedroom Switch slider dims Bedlamp
+
+`automation.master_bedroom_bedroom_switch_slider_dims_bedlamp` (id `master_bedroom_slider_dims_bedlamp`),
+exported to `automations/master_bedroom_slider_dims_bedlamp.yaml`.
+
+- Trigger: MQTT `zigbee2mqtt/Smart wall switch Z1 Pro`, `action` in `slider_up` / `slider_down` (several messages stream per slide).
+- `action_slide_speed` = displacement **delta** since the last message (signed; a full slider ≈ 0–100). Each message runs
+  `light.turn_on` `light.bedlamp` with `brightness_step_pct` = that delta (0.2 s transition), mode `queued` (max 30).
+- Up from off turns it on; down to 0 turns it off. The relays are not affected by sliding.
 
 ### Master Bedroom: no motion 5 min turns off lights
 
