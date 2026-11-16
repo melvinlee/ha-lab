@@ -1,0 +1,22 @@
+# Install once: pre-commit install
+# Run on everything: pre-commit run --all-files
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks # scans staged changes for secrets (config: .gitleaks.toml)
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+        args: [--unsafe] # HA YAML uses custom tags like !include
+      - id: check-json
+        exclude: ^premium/(tsconfig\.json)$ # JSONC (comments) is not plain JSON
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-merge-conflict
+      - id: detect-private-key

@@ -7,6 +7,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 
 | Path | Contents |
 |---|---|
+| `.claude/skills/` | Project agent skills: ha-zigbee-device, ha-automation, ha-scene, ng-premium-deploy, sleepy-device-settings, issue-workflow |
+| `CLAUDE.md` | Guidance for Claude Code: commands, architecture, gotchas, conventions |
 | `README.md` | Setup and reference (areas/devices, MCP, Zigbee/MQTT, automations, dashboard, scripts, workflow) |
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
@@ -24,6 +26,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
 | `premium/` | Premium SaaS-style dashboard app (issue #3), see `premium/README.md` |
 | `scripts/deploy-premium.sh` | Build the premium app, copy to HA `/config/www/premium`, create the **NG Premium** dashboard |
+| `.pre-commit-config.yaml`, `.gitleaks.toml` | Pre-commit hooks: gitleaks secret scan + basic file checks |
 | `.mcp.json` | Project MCP server config (uses `HA_URL`, `HA_TOKEN`) |
 
 ## Areas & devices
@@ -298,6 +301,33 @@ Automations are created with the REST config API (`POST /api/config/automation/c
 curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $HA_TOKEN" \
   | ruby -rjson -ryaml -e 'puts JSON.parse(STDIN.read).to_yaml' > automations/<id>.yaml
 ```
+
+## Pre-commit hooks (gitleaks)
+
+`.pre-commit-config.yaml` runs **gitleaks** (v8.30.1, config `.gitleaks.toml`: default rules + a `home-assistant-token` rule) and
+basic checks (YAML with HA `!include` tags allowed, JSON, end of file, trailing whitespace, large files, merge conflicts,
+private keys) on every commit.
+
+```bash
+pre-commit install                                         # once per clone
+SSL_CERT_FILE=/etc/ssl/cert.pem pre-commit run --all-files # first run downloads the hook envs; this Mac's uv Python needs the CA bundle
+```
+
+- History scan (2026-11-16): 108 commits, **no leaks**.
+- Verified: a commit containing a fake `HA_TOKEN="eyJ…"` is **blocked** (rules `jwt` + `home-assistant-token`).
+
+## Claude Code skills
+
+Project skills in `.claude/skills/` (loaded when a Claude Code session starts in this repo):
+
+| Skill | Triggers on |
+|---|---|
+| `ha-zigbee-device` | rename / move a Zigbee device, create an area, name rockers |
+| `ha-automation` | "when X do Y", auto-off, button/slider mappings (payload capture → create → trace → export) |
+| `ha-scene` | create or change scenes (range check, create, test, export, dashboard) |
+| `ng-premium-deploy` | changes to the NG Premium app, build, deploy, verify what HA serves |
+| `sleepy-device-settings` | settings/OTA on battery devices (send once, wake; `ota-on-wake.mjs`; debug log) |
+| `issue-workflow` | create/update issues, branch, worklog, PR without attribution |
 
 ## Workflow
 

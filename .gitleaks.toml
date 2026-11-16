@@ -1,0 +1,21 @@
+# gitleaks config: default rules + Home Assistant specifics.
+title = "ha-lab gitleaks config"
+
+[extend]
+useDefault = true
+
+# HA long-lived access tokens are JWTs (eyJ...). The default "jwt" rule covers them; this one also catches
+# tokens pasted next to HA-specific names (HA_TOKEN / Authorization: Bearer).
+[[rules]]
+id = "home-assistant-token"
+description = "Home Assistant long-lived access token"
+regex = '''(?i)(?:ha_token|hass_token|bearer)\s*[:=]?\s*['"]?(eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,})'''
+secretGroup = 1
+keywords = ["eyj"]
+
+[allowlist]
+description = "Lockfiles and build output"
+paths = [
+  '''premium/package-lock\.json''',
+  '''premium/dist/''',
+]

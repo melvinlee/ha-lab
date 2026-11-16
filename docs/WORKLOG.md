@@ -159,6 +159,10 @@ because MCP can't create automations.
 
 ## Open items
 
+**Repo setup (issue #10)**
+- [ ] New Claude Code session: check each skill triggers on a natural request.
+- [ ] Optional: gitleaks in GitHub Actions on push/PR.
+
 **NG Premium (issue #3)**
 - [ ] Visual QA on the 10" landscape tablet and a phone (Day and Night).
 - [ ] Confirm the Day/Night switch changes the whole page (reported broken; selected-state visibility fixed, awaiting re-test).
