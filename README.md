@@ -7,6 +7,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 
 | Path | Contents |
 |---|---|
+| `.claude/skills/` | Project agent skills: ha-zigbee-device, ha-automation, ha-scene, ng-premium-deploy, sleepy-device-settings, issue-workflow |
 | `CLAUDE.md` | Guidance for Claude Code: commands, architecture, gotchas, conventions |
 | `README.md` | Setup and reference (areas/devices, MCP, Zigbee/MQTT, automations, dashboard, scripts, workflow) |
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
@@ -314,6 +315,19 @@ SSL_CERT_FILE=/etc/ssl/cert.pem pre-commit run --all-files # first run downloads
 
 - History scan (2026-11-16): 108 commits, **no leaks**.
 - Verified: a commit containing a fake `HA_TOKEN="eyJ…"` is **blocked** (rules `jwt` + `home-assistant-token`).
+
+## Claude Code skills
+
+Project skills in `.claude/skills/` (loaded when a Claude Code session starts in this repo):
+
+| Skill | Triggers on |
+|---|---|
+| `ha-zigbee-device` | rename / move a Zigbee device, create an area, name rockers |
+| `ha-automation` | "when X do Y", auto-off, button/slider mappings (payload capture → create → trace → export) |
+| `ha-scene` | create or change scenes (range check, create, test, export, dashboard) |
+| `ng-premium-deploy` | changes to the NG Premium app, build, deploy, verify what HA serves |
+| `sleepy-device-settings` | settings/OTA on battery devices (send once, wake; `ota-on-wake.mjs`; debug log) |
+| `issue-workflow` | create/update issues, branch, worklog, PR without attribution |
 
 ## Workflow
 
