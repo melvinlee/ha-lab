@@ -210,7 +210,7 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
 | Automation | Trigger | Action |
 |---|---|---|
 | `automation.bathroom_motion_turns_on_lights` (`bathroom_motion_lights_on`) | P1 occupancy `off` → `on`, if either light is off | LED Cove + Main Light **on** |
-| `automation.bathroom_no_motion_15_min_turns_off_lights` (`bathroom_no_motion_lights_off`) | occupancy `off` 15 min **or** a light `on` 15 min; condition: occupancy off ≥ 15 min and a light on | LED Cove + Main Light **off** |
+| `automation.bathroom_no_motion_15_min_turns_off_lights` (`bathroom_no_motion_lights_off`) | occupancy `off` 15 min **or** a light `on` 15 min; condition: occupancy off ≥ 15 min and a light on | LED Cove + Main Light + **right-rocker light** **off** |
 
 | `automation.bathroom_right_rocker_toggles_its_light` (`bathroom_right_rocker_toggle`) | MQTT `zigbee2mqtt/Bathroom Switch D1`, `action == "single_right"` | `switch.toggle` → `switch.bathroom_switch_d1_right` (its own relay) |
 
