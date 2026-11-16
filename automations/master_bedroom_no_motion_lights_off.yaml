@@ -1,0 +1,42 @@
+# Exported from HA via GET /api/config/automation/config/master_bedroom_no_motion_lights_off
+id: master_bedroom_no_motion_lights_off
+alias: 'Master Bedroom: no motion 5 min turns off lights'
+description: No occupancy on the Aqara Motion sensor P1 for 5 minutes turns off Main
+  light and LED Cove (Night Curtain is left alone). Also covers lights turned on while
+  the room is already empty.
+triggers:
+- id: no_motion
+  trigger: state
+  entity_id: binary_sensor.aqara_motion_sensor_p1_occupancy
+  to: 'off'
+  for:
+    minutes: 5
+- id: light_on
+  trigger: state
+  entity_id:
+  - switch.smart_wall_switch_z1_pro_top
+  - switch.smart_wall_switch_z1_pro_center
+  to: 'on'
+  for:
+    minutes: 5
+conditions:
+- condition: state
+  entity_id: binary_sensor.aqara_motion_sensor_p1_occupancy
+  state: 'off'
+  for:
+    minutes: 5
+- condition: or
+  conditions:
+  - condition: state
+    entity_id: switch.smart_wall_switch_z1_pro_top
+    state: 'on'
+  - condition: state
+    entity_id: switch.smart_wall_switch_z1_pro_center
+    state: 'on'
+actions:
+- action: switch.turn_off
+  target:
+    entity_id:
+    - switch.smart_wall_switch_z1_pro_top
+    - switch.smart_wall_switch_z1_pro_center
+mode: single

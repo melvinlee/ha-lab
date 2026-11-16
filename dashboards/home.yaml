@@ -426,6 +426,14 @@ views:
             icon_tap_action:
               action: toggle
           - type: tile
+            entity: automation.master_bedroom_no_motion_5_min_turns_off_lights
+            name: Auto-off (no motion 5 min)
+            icon: mdi:motion-sensor-off
+            tap_action:
+              action: more-info
+            icon_tap_action:
+              action: toggle
+          - type: tile
             entity: sensor.tradfri_battery
             name: TRADFRI button battery low
             icon: mdi:battery-alert
