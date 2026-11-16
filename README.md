@@ -14,6 +14,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
+| `scenes/*.yaml` | Good morning / Movie / Away / Goodnight, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
 | `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |
@@ -189,6 +190,18 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
   (covers lights turned on while the room is already empty, e.g. via the TRADFRI button).
 - Conditions: occupancy has been `off` for ≥ 5 min, and at least one of the two lights is on.
 - Real delay ≈ 5 min + the P1's clear time. The P1 reports `off` once its detection interval (now **5 s**) has passed.
+
+## Scenes
+
+Created with `POST /api/config/scene/config/<id>`, exported to `scenes/<id>.yaml`.
+Night Curtain = relay **ON = open, OFF = closed**.
+
+| Scene | Main light | LED Cove | Night Curtain | Bedlamp | Office (T1 white / ring) |
+|---|---|---|---|---|---|
+| `scene.good_morning` | on | on | **open** (on) | on, 100% @ 4000 K | white on |
+| `scene.movie` | off | on | **closed** (off) | on, 15% @ 2200 K | off / off |
+| `scene.away` | off | off | *unchanged* | off | off / off |
+| `scene.goodnight` | off | off | **closed** (off) | off | off / off |
 
 ## Dashboard
 

@@ -1,0 +1,17 @@
+# Exported from HA via GET /api/config/scene/config/good_morning
+id: good_morning
+name: Good morning
+entities:
+  switch.smart_wall_switch_z1_pro_top:
+    state: 'on'
+  switch.smart_wall_switch_z1_pro_center:
+    state: 'on'
+  switch.smart_wall_switch_z1_pro_bottom:
+    state: 'on'
+  light.bedlamp:
+    state: 'on'
+    brightness: 255
+    color_temp_kelvin: 4000
+  light.aqara_ceiling_light_t1_white:
+    state: 'on'
+icon: mdi:weather-sunset-up
