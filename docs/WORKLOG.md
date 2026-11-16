@@ -158,9 +158,9 @@ because MCP can't create automations.
 ## Open items
 
 **Master Bedroom (issue #1 / PR #2)**
-- [ ] Test motion → Main light on, then leave and check auto-off after ~5–6 min.
+- [x] ~~Test motion → Main light on~~: fired 12:56:17. Still to check: auto-off after leaving (~5–6 min).
+- [ ] P1 detection interval 5 s not applied (stays 30 s). Set it via the Z2M UI after waking the sensor, or debug with the Z2M log level at debug.
 - [ ] Consider a darkness/night condition for motion → Main light (e.g. illuminance below X lx, or not while sleeping).
-- [ ] Aqara Motion sensor P1 shows **battery 0%** but reports in fine (2800 mV). Check or replace the CR2450 (×2).
 - [ ] Merge PR #2 (closes issue #1).
 - [ ] Optional: TRADFRI firmware update (v587290161 → v604241926, adds double-click). Press the button to wake it before starting.
 
