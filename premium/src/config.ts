@@ -106,6 +106,9 @@ export const TIMELINE_ENTITIES = [
   "automation.master_bedroom_no_motion_5_min_turns_off_lights",
   "automation.master_bedroom_tradfri_button_toggles_led_cove",
   "automation.office_e1_switch_turns_on_ceiling_light",
+  "automation.office_switch_lighting_scene_by_time",
+  "scene.office_hour",
+  "scene.after_office",
 ];
 
 export interface SceneDef { entity: string; name: string; icon: "sunrise" | "film" | "plane" | "moon"; hint: string }
