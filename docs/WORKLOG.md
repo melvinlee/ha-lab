@@ -157,6 +157,13 @@ because MCP can't create automations.
 - Then merged into the **Office** section under a "Drybox" subheading (Home has 7 sections again). The device was
   already in the Office area in HA.
 
+### 14. TRADFRI double-click toggles Bedlamp (#5)
+
+- TRADFRI firmware OTA finished: 587290161 → **604241926** ("Enables double-clicks"), via `scripts/ota-on-wake.mjs`.
+- Captured with `mqtt-listen.mjs`: **double-click publishes `action: "off"`**, single press still `"on"`.
+- New automation `master_bedroom_tradfri_double_click` (MQTT trigger `off` → `light.toggle` `light.bedlamp`), exported.
+- **Verified on the device**: 4 double-click traces toggled the Bedlamp, single presses only fired the LED Cove automation (separate traces, no cross-trigger).
+
 ## Open items
 
 **NG Premium (issue #3)**
@@ -170,7 +177,7 @@ because MCP can't create automations.
 - [x] ~~Test motion → Main light on~~: fired 12:56:17. Still to check: auto-off after leaving (~5–6 min).
 - [ ] Consider a darkness/night condition for motion → Main light (e.g. illuminance below X lx, or not while sleeping).
 - [ ] Merge PR #2 (closes issue #1).
-- [ ] Optional: TRADFRI firmware update (v587290161 → v604241926, adds double-click). Press the button to wake it before starting.
+- [x] TRADFRI firmware update (v587290161 → v604241926, adds double-click). Done 2026-11-16.
 
 **Office**
 - [ ] Drybox at ~50% RH (58% earlier): replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.

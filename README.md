@@ -12,6 +12,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
+| `automations/master_bedroom_tradfri_double_click.yaml` | TRADFRI double-click → Bedlamp toggle, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
 | `automations/master_bedroom_slider_dims_bedlamp.yaml` | Z1 Pro slider → Bedlamp brightness, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
@@ -169,6 +170,7 @@ exported to `automations/master_bedroom_tradfri_button.yaml`.
 | TRADFRI press | Action |
 |---|---|
 | single press (`action: "on"`) | `switch.toggle` → `switch.smart_wall_switch_z1_pro_center` (LED Cove) |
+| double-click (`action: "off"`, firmware ≥ 604241926) | `light.toggle` → `light.bedlamp` (automation `master_bedroom_tradfri_double_click`, `automations/master_bedroom_tradfri_double_click.yaml`) |
 
 - Trigger: MQTT topic `zigbee2mqtt/TRADFRI`, `value_json.action == "on"` (IKEA E1812, `0xb4e3f9fffe249914`).
   Payload confirmed with `node scripts/mqtt-listen.mjs zigbee2mqtt/TRADFRI 60`.
