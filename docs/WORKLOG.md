@@ -13,9 +13,11 @@ How-to and reference details live in the [README](../README.md).
 | Areas | Office, Living Room, **Master Bedroom** (new), Bedroom, Kitchen (empty) |
 | Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button, Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
+| Scenes | 4: Good morning, Movie, Away, Goodnight (`scenes/`) |
+| REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT (`ha-config/rest.yaml`) |
 | Automations | 4: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
-| Dashboard | **North Gaia** at `/dashboard-north-gaia`, from `dashboards/home.yaml` (phone + 10" landscape tablet) |
-| Repo / tracking | github.com/melvinlee/ha-lab. Issue #1 (Master Bedroom) → PR #2 from `feature/1-master-bedroom` (open) |
+| Dashboards | **North Gaia** `/dashboard-north-gaia` (Lovelace, `dashboards/home.yaml`) · **NG Premium** `/dashboard-premium` (app in `premium/`) |
+| Repo / tracking | github.com/melvinlee/ha-lab. Issue #1 → PR #2 `feature/1-master-bedroom` (open). Issue #3 → `feature/3-premium-dashboard` (stacked on #2, no PR yet) |
 
 ---
 
@@ -157,9 +159,12 @@ because MCP can't create automations.
 
 ## Open items
 
-**Premium dashboard (issue #3)**
-- [ ] Test each scene from NG Premium. Decide whether Movie should pause the no-motion auto-off.
-- [ ] Visual QA on the 10" landscape tablet and a phone.
+**NG Premium (issue #3)**
+- [ ] Visual QA on the 10" landscape tablet and a phone (Day and Night).
+- [ ] Confirm the Day/Night switch changes the whole page (reported broken; selected-state visibility fixed, awaiting re-test).
+- [ ] Test each scene, the Roborock routines, and the bus cards (red flash under 5 min).
+- [ ] Decide whether Movie should pause the no-motion auto-off.
+- [ ] PR `feature/3-premium-dashboard` → `main` after PR #2 is merged.
 
 **Master Bedroom (issue #1 / PR #2)**
 - [x] ~~Test motion → Main light on~~: fired 12:56:17. Still to check: auto-off after leaving (~5–6 min).
@@ -168,12 +173,13 @@ because MCP can't create automations.
 - [ ] Optional: TRADFRI firmware update (v587290161 → v604241926, adds double-click). Press the button to wake it before starting.
 
 **Office**
-- [ ] Drybox at 58% RH: replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.
+- [ ] Drybox at ~50% RH (58% earlier): replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.
 - [ ] Test E1 **single** (off) and **double** (on) presses after the v3 change.
 - [ ] Optional: turn on Z2M **experimental event entities** so wireless buttons get a press entity for the dashboard (restarts Z2M).
 
 **General**
 - [ ] **Automatic backups aren't configured.** All backup sensors read `unknown` (Settings → System → Backups).
+- [ ] HA backup of `configuration.yaml` before the REST change is on HA as `configuration.yaml.bak-20261116`. Delete it once things are stable.
 - [ ] Assign `media_player.shield` to an area (e.g. Living Room). Kitchen has no devices yet.
 - [ ] Optional: expose more entities to Assist (Settings → Voice assistants → Expose) so voice/`GetLiveContext` can see them.
 - [ ] Optional: restart the audio plugin (`ha audio restart`) if local audio is used.
