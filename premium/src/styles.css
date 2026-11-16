@@ -312,3 +312,16 @@ kbd {
 .meter { position: relative; flex: 1; height: 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; }
 .meter-fill { position: absolute; inset: 0 auto 0 0; border-radius: 999px; transition: width var(--d-med) var(--ease), background var(--d-med) var(--ease); }
 .meter-mark { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border-strong); }
+
+/* Routines (e.g. Roborock app scenes) */
+.routines { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-2); }
+.routine {
+  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: var(--s-2) 12px; border-radius: var(--r-md);
+  border: 1px solid var(--border); background: var(--surface); cursor: pointer; text-align: left;
+  transition: border-color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+}
+.routine:hover:not(:disabled) { border-color: var(--border-strong); }
+.routine:active:not(:disabled) { transform: scale(0.99); }
+.routine:disabled { cursor: not-allowed; opacity: .55; }
+.routine.fired .scene-ic { background: var(--accent-soft); color: var(--accent); }
+.routine .scene-name { font-size: var(--t-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

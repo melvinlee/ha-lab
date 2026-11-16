@@ -20,6 +20,8 @@ export interface Room {
   /** Room climate sensors (temperature/humidity). Not the drybox. */
   climate: { temperature?: string; humidity?: string; thermostat?: string };
   motion?: string;
+  /** One-tap routines (HA button entities, e.g. Roborock app scenes). */
+  routines?: { entity: string; name: string; icon: "sofa" | "door" | "utensils" | "mop" }[];
   /** Drybox (enclosure) climate shown inside the room card. Not counted as room climate. */
   drybox?: { humidity: string; temperature?: string; battery?: string; goodMax: number; watchMax: number };
 }
@@ -62,6 +64,13 @@ export const ROOMS: Room[] = [
     icon: "sofa",
     climate: {},
     controls: [{ entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" }],
+    // Roborock app routines, exposed by the roborock integration as buttons
+    routines: [
+      { entity: "button.living_room_qrevo_2_breeze_living_room_cleaning", name: "Living room clean", icon: "sofa" },
+      { entity: "button.living_room_qrevo_2_breeze_room_cleaning", name: "Room cleaning", icon: "door" },
+      { entity: "button.living_room_qrevo_2_breeze_after_meals", name: "After meals", icon: "utensils" },
+      { entity: "button.living_room_qrevo_2_breeze_vac_followed_by_mop", name: "Vac then mop", icon: "mop" },
+    ],
   },
 ];
 

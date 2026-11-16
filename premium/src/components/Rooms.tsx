@@ -1,5 +1,7 @@
 import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow } from "lucide-react";
-import { fmt } from "../lib/format";
+import { fmt, relTime } from "../lib/format";
+import { useState } from "react";
+import { Sofa, DoorOpen, UtensilsCrossed, Brush, Check } from "lucide-react";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { useHass, isUnavailable } from "../ha/store";
 import { ROOMS, type Room, type RoomControl } from "../config";
@@ -157,6 +159,48 @@ function Drybox({ cfg }: { cfg: NonNullable<Room["drybox"]> }) {
   );
 }
 
+const routineIcon = { sofa: Sofa, door: DoorOpen, utensils: UtensilsCrossed, mop: Brush } as const;
+
+/** Button entities: state is the last-pressed timestamp; "unknown" just means never pressed. */
+function Routines({ items }: { items: NonNullable<Room["routines"]> }) {
+  const { get, call } = useHass();
+  const [fired, setFired] = useState<string | null>(null);
+  return (
+    <div className="row">
+      <div className="card-sub" style={{ fontWeight: 500 }}>Routines</div>
+      <div className="routines">
+        {items.map((r) => {
+          const e = get(r.entity);
+          const missing = !e;
+          const unavailable = e?.state === "unavailable";
+          const last = e && !unavailable && e.state !== "unknown" ? Date.parse(e.state) : NaN;
+          const I = fired === r.entity ? Check : routineIcon[r.icon];
+          return (
+            <button
+              key={r.entity}
+              className={`routine${fired === r.entity ? " fired" : ""}`}
+              disabled={missing || unavailable}
+              onClick={() => {
+                setFired(r.entity);
+                setTimeout(() => setFired((f) => (f === r.entity ? null : f)), 1500);
+                call("button", "press", { entity_id: r.entity });
+              }}
+            >
+              <span className="scene-ic"><I size={16} aria-hidden /></span>
+              <span style={{ minWidth: 0 }}>
+                <div className="scene-name">{r.name}</div>
+                <div className="scene-sub num">
+                  {missing ? "Not found" : unavailable ? "Unavailable" : fired === r.entity ? "Started" : Number.isNaN(last) ? "Never run" : `Last run ${relTime(last)}`}
+                </div>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function RoomCard({ room }: { room: Room }) {
   const { entities, get } = useHass();
   const Icon = roomIcon[room.icon];
@@ -180,6 +224,7 @@ function RoomCard({ room }: { room: Room }) {
       ) : (
         <div className="rows">
           {room.controls.map((c) => <ControlRow key={c.entity} c={c} />)}
+          {room.routines && <Routines items={room.routines} />}
           {room.drybox && <Drybox cfg={room.drybox} />}
           {!room.drybox && <div className="row">
             {thermostat && !isUnavailable(thermostat) ? (

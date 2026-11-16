@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { Command } from "cmdk";
 import { Search, CornerDownLeft, ArrowUpDown, Sun, Moon, MonitorSmartphone } from "lucide-react";
 import type { ThemeMode } from "../lib/theme";
-import { useHass, isUnavailable } from "../ha/store";
+import { useHass, isUsable } from "../ha/store";
 import { domainIcon } from "../lib/icons";
 import { Badge } from "./ui";
 
@@ -63,7 +63,7 @@ export function CommandPalette({ open, setOpen, theme, setTheme }: { open: boole
                 const name = (e.attributes.friendly_name as string | undefined) ?? id;
                 const act = ACTIONABLE[d];
                 const I = domainIcon(id);
-                const unavailable = isUnavailable(e);
+                const unavailable = !isUsable(e);
                 return (
                   <Command.Item
                     key={id}

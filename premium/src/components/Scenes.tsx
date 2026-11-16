@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { useHass, isUnavailable } from "../ha/store";
+import { useHass, isUsable } from "../ha/store";
 import { SCENES } from "../config";
 import { sceneIcon } from "../lib/icons";
 import { Skeleton } from "./ui";
@@ -22,7 +22,7 @@ export function Scenes() {
           <button
             key={s.entity}
             className={`scene${isFired ? " fired" : ""}`}
-            disabled={missing || isUnavailable(e)}
+            disabled={!isUsable(e)}
             onClick={() => {
               setFired(s.entity);
               setTimeout(() => setFired((f) => (f === s.entity ? null : f)), 1500);
@@ -32,7 +32,7 @@ export function Scenes() {
             <span className="scene-ic">{isFired ? <Check size={16} aria-hidden /> : <Icon size={16} aria-hidden />}</span>
             <span>
               <div className="scene-name">{s.name}</div>
-              <div className="scene-sub">{missing ? "Not set up" : isFired ? "Activated" : s.hint}</div>
+              <div className="scene-sub">{missing ? "Not set up" : e.state === "unavailable" ? "Unavailable" : isFired ? "Activated" : s.hint}</div>
             </span>
           </button>
         );
