@@ -136,3 +136,8 @@ export function useHass() {
 }
 
 export const isUnavailable = (e?: HassEntity) => !e || e.state === "unavailable" || e.state === "unknown";
+
+/** Stateless entities (scenes, buttons, scripts) report "unknown" until first used. Only "unavailable" means unusable. */
+const STATELESS = new Set(["scene", "button", "script", "input_button"]);
+export const isUsable = (e?: HassEntity) =>
+  !!e && e.state !== "unavailable" && (e.state !== "unknown" || STATELESS.has(e.entity_id.split(".")[0]));
