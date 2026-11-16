@@ -129,6 +129,10 @@ because MCP can't create automations.
   not admin-only). Read back: views Home (7 sections), System (5 sections).
 - Overview and Map weren't touched. The YAML stays the source of truth, and UI edits get overwritten by the next push.
 
+### 12. Git
+- `ha-lab` is now its own repo, pushed to `git@github.com:melvinlee/ha-lab.git` (branch `main`).
+  Scanned for secrets first: none found (the token comes from `$HA_TOKEN`, and `.env` is gitignored).
+
 ---
 
 ## Open items
@@ -140,5 +144,3 @@ because MCP can't create automations.
 - [ ] Optional: expose more entities to Assist (Settings → Voice assistants → Expose) so
       voice/`GetLiveContext` can see the lights.
 - [ ] Optional: restart the audio plugin (`ha audio restart`) if local audio is used.
-- [ ] Decide whether `ha-lab` should be its own git repo (it currently sits untracked inside
-      the parent `Developer/` repo). Nothing is committed yet.
