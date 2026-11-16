@@ -1,0 +1,15 @@
+---
+id: master_bedroom_tradfri_double_click
+alias: 'Master Bedroom: TRADFRI double-click toggles Bedlamp'
+description: 'E1812 fw 604241926: double-click publishes action "off".'
+triggers:
+- trigger: mqtt
+  topic: zigbee2mqtt/TRADFRI
+  value_template: "{{ value_json.action }}"
+  payload: 'off'
+conditions: []
+actions:
+- action: light.toggle
+  target:
+    entity_id: light.bedlamp
+mode: single

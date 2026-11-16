@@ -1,0 +1,23 @@
+# Exported from HA via GET /api/config/automation/config/master_bedroom_slider_dims_bedlamp
+id: master_bedroom_slider_dims_bedlamp
+alias: 'Master Bedroom: Bedroom Switch slider dims Bedlamp'
+description: Z1 Pro touch slider adjusts Bedlamp brightness proportionally. Each slider_up/slider_down
+  message steps brightness by its displacement delta (action_slide_speed, about 0-100
+  = full slider). Up from off turns it on; down to 0 turns it off.
+triggers:
+- trigger: mqtt
+  topic: zigbee2mqtt/Smart wall switch Z1 Pro
+conditions:
+- condition: template
+  value_template: '{{ trigger.payload_json.action | default("") in ["slider_up", "slider_down"]
+    and (trigger.payload_json.action_slide_speed | float(0)) | round(0) != 0 }}'
+actions:
+- action: light.turn_on
+  target:
+    entity_id: light.bedlamp
+  data:
+    brightness_step_pct: "{{ (trigger.payload_json.action_slide_speed | float(0))
+      | round(0) | int }}"
+    transition: 0.2
+mode: queued
+max: 30

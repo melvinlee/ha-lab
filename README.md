@@ -14,7 +14,9 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
+| `automations/master_bedroom_tradfri_double_click.yaml` | TRADFRI double-click → Bedlamp toggle, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
+| `automations/master_bedroom_slider_dims_bedlamp.yaml` | Z1 Pro slider → Bedlamp brightness, exported from HA |
 | `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
@@ -175,6 +177,7 @@ exported to `automations/master_bedroom_tradfri_button.yaml`.
 | TRADFRI press | Action |
 |---|---|
 | single press (`action: "on"`) | `switch.toggle` → `switch.smart_wall_switch_z1_pro_center` (LED Cove) |
+| double-click (`action: "off"`, firmware ≥ 604241926) | `light.toggle` → `light.bedlamp` (automation `master_bedroom_tradfri_double_click`, `automations/master_bedroom_tradfri_double_click.yaml`) |
 
 - Trigger: MQTT topic `zigbee2mqtt/TRADFRI`, `value_json.action == "on"` (IKEA E1812, `0xb4e3f9fffe249914`).
   Payload confirmed with `node scripts/mqtt-listen.mjs zigbee2mqtt/TRADFRI 60`.
@@ -188,6 +191,16 @@ exported to `automations/master_bedroom_motion_main_light_on.yaml`.
 - Trigger: `binary_sensor.aqara_motion_sensor_p1_occupancy` `off` → `on`.
 - Condition: Main light is off. Action: `switch.turn_on` → `switch.smart_wall_switch_z1_pro_top` (Main light).
 - No time or light-level condition, so it fires day and night. Pairs with the auto-off below (no motion 5 min → off).
+
+### Master Bedroom: Bedroom Switch slider dims Bedlamp
+
+`automation.master_bedroom_bedroom_switch_slider_dims_bedlamp` (id `master_bedroom_slider_dims_bedlamp`),
+exported to `automations/master_bedroom_slider_dims_bedlamp.yaml`.
+
+- Trigger: MQTT `zigbee2mqtt/Smart wall switch Z1 Pro`, `action` in `slider_up` / `slider_down` (several messages stream per slide).
+- `action_slide_speed` = displacement **delta** since the last message (signed; a full slider ≈ 0–100). Each message runs
+  `light.turn_on` `light.bedlamp` with `brightness_step_pct` = that delta (0.2 s transition), mode `queued` (max 30).
+- Up from off turns it on; down to 0 turns it off. The relays are not affected by sliding.
 
 ### Master Bedroom: no motion 5 min turns off lights
 
@@ -295,6 +308,7 @@ All need `HA_TOKEN` (and optionally `HA_URL`, default `http://192.168.1.40`) and
 | `scripts/push-dashboard.sh [file] [url_path] [title] [icon]` | YAML → JSON (ruby) → create the dashboard if missing → save config → read back |
 | `node scripts/ha-ws.mjs '<json>' ...` | Raw websocket commands. `"$1.area_id"` references an earlier result. E.g. create an area and assign a device:<br>`node scripts/ha-ws.mjs '{"type":"config/area_registry/create","name":"X"}' '{"type":"config/device_registry/update","device_id":"…","area_id":"$1.area_id"}'` |
 | `scripts/deploy-premium.sh` | Build `premium/`, rsync to `/Volumes/config/www/premium/`, create/update the NG Premium dashboard |
+| `node scripts/ota-on-wake.mjs <z2m name> <update.entity> [s]` | Firmware update for a sleepy device: waits for its next message (press it), then calls `update.install` **once** |
 | `node scripts/mqtt-listen.mjs <topic> [seconds]` | Print MQTT messages through HA (read-only). E.g. `zigbee2mqtt/TRADFRI 60` to see button payloads |
 
 Automations are created with the REST config API (`POST /api/config/automation/config/<id>`), then exported:
