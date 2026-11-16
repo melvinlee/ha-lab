@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bus as BusIcon, MapPin, CircleAlert } from "lucide-react";
+import { Bus as BusIcon, MapPin, CircleAlert, AlarmClock } from "lucide-react";
 import { useHass, isUnavailable } from "../ha/store";
 import { BUS_SENSOR } from "../config";
 import { Card, Badge, Empty, Skeleton } from "./ui";
@@ -8,6 +8,8 @@ interface Arrival { OriginCode?: string; DestinationCode?: string; EstimatedArri
 interface Service { ServiceNo: string; Operator?: string; NextBus?: Arrival; NextBus2?: Arrival; NextBus3?: Arrival }
 
 /** "Arriving", "5 min", "1 h 5 min" */
+const minsUntil = (iso: string | undefined, now: number) => { const t = iso ? Date.parse(iso) : NaN; return Number.isNaN(t) ? null : (t - now) / 60000; };
+
 function eta(iso: string | undefined, now: number) {
   if (!iso) return null;
   const t = Date.parse(iso);
@@ -53,7 +55,13 @@ export function Bus() {
                     <div>{s.ServiceNo}</div>
                     <div>{dest ? <><MapPin size={11} aria-hidden style={{ verticalAlign: -1 }} /> To {dest}</> : s.Operator}</div>
                   </div>
-                  {arr[0] ? <Badge tone="accent" label={arr[0].label!} /> : <Badge tone="muted" label="No more buses" />}
+                  {arr[0] ? (() => {
+                    const m = minsUntil(arr[0].a?.EstimatedArrival, now);
+                    const soon = m != null && m < 5;
+                    return soon
+                      ? <Badge tone="bad" flash icon={AlarmClock} label={arr[0].label === "Arriving" ? "Arriving" : `${arr[0].label} · leave now`} />
+                      : <Badge tone="accent" label={arr[0].label!} />;
+                  })() : <Badge tone="muted" label="No more buses" />}
                 </div>
                 {arr.length > 0 && (
                   <div className="bus-etas">
