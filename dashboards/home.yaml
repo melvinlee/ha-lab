@@ -357,7 +357,7 @@ views:
               columns: full
 
       # ── Master Bedroom ──
-      # Z1 Pro relays are labelled by position. Rename once it's known what each rocker controls.
+      # Z1 Pro relays: top = Main light, center = LED Cove, bottom = Night Curtain
       - type: grid
         cards:
           - type: heading
@@ -375,8 +375,8 @@ views:
                 show_icon: true
           - type: tile
             entity: switch.smart_wall_switch_z1_pro_top
-            name: Top
-            icon: mdi:light-switch
+            name: Main light
+            icon: mdi:ceiling-light
             features_position: inline
             features:
               - type: toggle
@@ -384,8 +384,8 @@ views:
               columns: full
           - type: tile
             entity: switch.smart_wall_switch_z1_pro_center
-            name: Center
-            icon: mdi:light-switch
+            name: LED Cove
+            icon: mdi:led-strip-variant
             features_position: inline
             features:
               - type: toggle
@@ -393,8 +393,8 @@ views:
               columns: full
           - type: tile
             entity: switch.smart_wall_switch_z1_pro_bottom
-            name: Bottom
-            icon: mdi:light-switch
+            name: Night Curtain
+            icon: mdi:curtains-closed
             features_position: inline
             features:
               - type: toggle
