@@ -38,6 +38,7 @@ export function TopBar({ onOpenPalette, theme, setTheme }: { onOpenPalette: () =
 
   const w = get(WEATHER);
   const WIcon = weatherIcon(w?.state);
+  const raining = ["rainy", "pouring", "lightning-rainy"].includes(w?.state ?? "");
   const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
 
   return (
@@ -52,8 +53,8 @@ export function TopBar({ onOpenPalette, theme, setTheme }: { onOpenPalette: () =
         ) : isUnavailable(w) ? (
           <span className="pill"><WIcon size={16} aria-hidden /> Weather unavailable</span>
         ) : (
-          <span className="pill" title={w!.state}>
-            <WIcon size={16} aria-hidden />
+          <span className={`pill${raining ? " rain" : ""}`} title={w!.state}>
+            <span className="wx-ic"><WIcon size={16} aria-hidden /></span>
             <strong className="num">{fmt(Number(w!.attributes.temperature), 0)}{String(w!.attributes.temperature_unit ?? "°")}</strong>
             <span style={{ textTransform: "capitalize" }}>{w!.state.replace(/-/g, " ").replace("partlycloudy", "partly cloudy")}</span>
             {w!.attributes.humidity != null && <span className="num">{fmt(Number(w!.attributes.humidity))}% RH</span>}
