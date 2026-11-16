@@ -295,6 +295,8 @@ websocket connection (no token). Deploy with `scripts/deploy-premium.sh` (needs 
 |---|---|
 | Theme | Auto / Day / Night, saved per device. Day accent blue `#2563eb`, Night indigo `#7c7cf0` |
 | Panels | top bar · scenes · KPIs · rooms (lights, curtain, Roborock + routines, drybox) · bus stops · energy · security + timeline · Cmd/Ctrl+K |
+| Bus card | ETA in minutes up to 60, then clock time (`Tmr HH:MM` next day); `ServiceNotice` `NO_MORE_BUSES_TODAY` shows "No more buses today" + first bus; header shows Live / Timetable |
+| Theme | Auto = by time (Day 07:00–18:59, Night otherwise); Day / Night lock it |
 | Data gaps | no whole-home meter, solar, room climate, locks/doors/cameras, or presence tracker → designed empty states |
 
 ## Scripts
