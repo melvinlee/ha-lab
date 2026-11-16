@@ -43,10 +43,17 @@ Empty arrays (locks, doors, cameras, solar, room climate) render designed empty 
 
 | Panel | Source |
 |---|---|
-| Top bar | greeting, clock, `weather.home`, `person.*` presence, Cmd/Ctrl+K |
-| KPIs | power now (live sum + 5-min stats sparkline), energy today vs same time yesterday (stats), indoor climate (room sensors only), devices on (history sparkline) |
-| Rooms | toggles, brightness sliders, Roborock start/pause/dock, motion badge, climate empty state |
-| Energy | 24h hourly kWh area chart (stats `change`), solar series when configured, cost at tariff |
+| Top bar | greeting, clock, `weather.home`, `person.*` presence, **Auto / Day / Night** theme switch, Search (Cmd/Ctrl+K) |
+| Scenes bar | `scene.good_morning`, `scene.movie`, `scene.away`, `scene.goodnight` (never-used scenes report `unknown` but stay usable) |
+| KPIs | power now (live sum + 5-min stats sparkline), energy today vs same time yesterday (stats), indoor climate (room sensors only; drybox excluded), devices on (lights/switches; history sparkline) |
+| Rooms | header badges: lights (`N on` / `All off`) + motion (`Motion` / `No motion`); toggles and brightness sliders; Night Curtain as **Open/Closed** (relay ON = open); Roborock start/pause/dock + **routines** (`button.press`); Office **drybox** humidity meter (Dry ≤ 40 · Watch ≤ 50 · Replace desiccant) |
+| Bus stops | one card per sensor in `BUS_SENSORS` (NG, Yishun MRT): title = `OriginCode`, next 3 ETAs in minutes (yellow/blue/grey tiles), badge **flashes red under 5 min** |
+| Energy | 24h hourly kWh area chart (stats `change`), solar series when configured, cost at SGD 0.30/kWh |
 | Security | locks, doors, camera snapshot (empty states for now), recent events (logbook, 24h) |
-| Scenes | `scene.good_morning`, `scene.movie`, `scene.away`, `scene.goodnight` ("Not set up" until they exist) |
-| Command palette | every entity, grouped by domain; Enter runs toggle/activate/press |
+| Command palette | every entity, grouped by domain; Enter runs toggle/activate/press; Day/Night/Auto theme commands |
+
+## Bus data
+
+The NG Shuttle API has no CORS headers, so HA polls it with REST sensors (`ha-config/rest.yaml`, included from `configuration.yaml`)
+and the card reads the `Services` attribute. To add a stop: add a resource to `ha-config/rest.yaml`, copy it to `/Volumes/config/rest.yaml`,
+call `rest.reload`, and add the sensor to `BUS_SENSORS` in `src/config.ts`. Supported stop codes: `NG`, `Yishun MRT`.

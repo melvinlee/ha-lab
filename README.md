@@ -38,6 +38,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Master Bedroom | Bedlamp | IKEA TRADFRI bulb E26/E27 white spectrum 806 lm (LED2004G8) | Z2M `0x04cd15fffe73e97e` | `light.bedlamp` (2200–4000 K) |
 | Master Bedroom | TRADFRI | IKEA E1812 shortcut button | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/TRADFRI` (`action: "on"`); `sensor.tradfri_battery` |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
+| (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
 | (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
 
 Kitchen has no devices yet. Wireless buttons (E1, TRADFRI) have **no press entity** in Z2M 2.x. Their automations
@@ -235,6 +236,18 @@ so keep the YAML as the source of truth.
 Wall tablet: use the HA Companion app or Fully Kiosk Browser in fullscreen, and set it as the
 default dashboard on that device (Profile → Dashboard).
 
+## NG Premium dashboard
+
+SaaS-style dashboard app (issue #3) in `premium/` (details: `premium/README.md`). Live at
+`http://192.168.1.40/dashboard-premium` (sidebar **NG Premium**), served from `/config/www/premium/` and reusing HA's own
+websocket connection (no token). Deploy with `scripts/deploy-premium.sh` (needs the Samba share mounted at `/Volumes/config`).
+
+| Area | Notes |
+|---|---|
+| Theme | Auto / Day / Night, saved per device. Day accent blue `#2563eb`, Night indigo `#7c7cf0` |
+| Panels | top bar · scenes · KPIs · rooms (lights, curtain, Roborock + routines, drybox) · bus stops · energy · security + timeline · Cmd/Ctrl+K |
+| Data gaps | no whole-home meter, solar, room climate, locks/doors/cameras, or presence tracker → designed empty states |
+
 ## Scripts
 
 All need `HA_TOKEN` (and optionally `HA_URL`, default `http://192.168.1.40`) and Node ≥ 22.
@@ -243,6 +256,7 @@ All need `HA_TOKEN` (and optionally `HA_URL`, default `http://192.168.1.40`) and
 |---|---|
 | `scripts/push-dashboard.sh [file] [url_path] [title] [icon]` | YAML → JSON (ruby) → create the dashboard if missing → save config → read back |
 | `node scripts/ha-ws.mjs '<json>' ...` | Raw websocket commands. `"$1.area_id"` references an earlier result. E.g. create an area and assign a device:<br>`node scripts/ha-ws.mjs '{"type":"config/area_registry/create","name":"X"}' '{"type":"config/device_registry/update","device_id":"…","area_id":"$1.area_id"}'` |
+| `scripts/deploy-premium.sh` | Build `premium/`, rsync to `/Volumes/config/www/premium/`, create/update the NG Premium dashboard |
 | `node scripts/mqtt-listen.mjs <topic> [seconds]` | Print MQTT messages through HA (read-only). E.g. `zigbee2mqtt/TRADFRI 60` to see button payloads |
 
 Automations are created with the REST config API (`POST /api/config/automation/config/<id>`), then exported:
