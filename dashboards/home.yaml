@@ -30,8 +30,9 @@ views:
         tap_action:
           action: toggle
       - type: entity
-        entity: sensor.aqara_sensor_temperature
-        name: Office
+        entity: sensor.aqara_sensor_humidity
+        name: Drybox
+        icon: mdi:package-variant-closed
         show_name: true
       - type: entity
         entity: vacuum.living_room_qrevo_2_breeze
@@ -80,8 +81,10 @@ views:
               {{ state_attr('weather.home', 'temperature') }}{{ state_attr('weather.home', 'temperature_unit') }}
               · Sunset {{ as_timestamp(states('sensor.sun_next_setting')) | timestamp_custom('%H:%M') }}
 
-              🏠 Office {{ states('sensor.aqara_sensor_temperature') | float(0) | round(1) }}°C ·
-              {{ states('sensor.aqara_sensor_humidity') | float(0) | round(0) | int }}% RH
+              {% set rh = states('sensor.aqara_sensor_humidity') | float(0) %}
+              📦 Drybox {{ rh | round(0) | int }}% RH
+              {{ '✅' if rh <= 40 else '⚠️' if rh <= 50 else '🔴 replace desiccant' }}
+              · {{ states('sensor.aqara_sensor_temperature') | float(0) | round(1) }}°C
           - type: weather-forecast
             entity: weather.home
             forecast_type: daily
@@ -109,31 +112,6 @@ views:
             heading: Office
             icon: mdi:desk
             heading_style: title
-            badges:
-              - type: entity
-                entity: sensor.aqara_sensor_temperature
-                show_state: true
-                show_icon: true
-              - type: entity
-                entity: sensor.aqara_sensor_humidity
-                show_state: true
-                show_icon: true
-          - type: sensor
-            entity: sensor.aqara_sensor_temperature
-            name: Temperature
-            graph: line
-            hours_to_show: 24
-            detail: 2
-            grid_options:
-              columns: 6
-          - type: sensor
-            entity: sensor.aqara_sensor_humidity
-            name: Humidity
-            graph: line
-            hours_to_show: 24
-            detail: 2
-            grid_options:
-              columns: 6
           - type: tile
             entity: light.aqara_ceiling_light_t1_white
             name: Ceiling light
@@ -166,10 +144,61 @@ views:
             entity: sensor.aqara_e1_switch_battery
             name: E1 switch
             icon: mdi:light-switch-off
+          # ── Drybox (Aqara temp/humidity sensor inside the box, in Office) ──
+          # Thresholds: <=40% RH good, 40-50% watch, >50% replace/recharge desiccant.
+          - type: heading
+            heading: Drybox
+            icon: mdi:package-variant-closed
+            heading_style: subtitle
+            badges:
+              - type: entity
+                entity: sensor.aqara_sensor_temperature
+                show_state: true
+                show_icon: true
+              - type: entity
+                entity: sensor.aqara_sensor_battery
+                show_state: true
+                show_icon: true
           - type: tile
-            entity: sensor.aqara_sensor_pressure
-            name: Pressure
-            icon: mdi:gauge
+            entity: sensor.aqara_sensor_humidity
+            name: Replace / recharge desiccant
+            icon: mdi:water-alert
+            color: red
+            grid_options:
+              columns: full
+            visibility:
+              - condition: numeric_state
+                entity: sensor.aqara_sensor_humidity
+                above: 50
+          - type: gauge
+            entity: sensor.aqara_sensor_humidity
+            name: Humidity
+            unit: "%"
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 40
+              red: 50
+            grid_options:
+              columns: 6
+          - type: sensor
+            entity: sensor.aqara_sensor_temperature
+            name: Temperature
+            graph: line
+            hours_to_show: 24
+            detail: 2
+            grid_options:
+              columns: 6
+          - type: history-graph
+            title: Humidity (7 days)
+            hours_to_show: 168
+            entities:
+              - entity: sensor.aqara_sensor_humidity
+                name: Humidity
+            grid_options:
+              columns: full
 
       # ── Living Room: Roborock Qrevo 2 Breeze ──
       - type: grid
@@ -518,10 +547,10 @@ views:
             name: E1 voltage
           - type: tile
             entity: sensor.aqara_sensor_battery
-            name: Office sensor battery
+            name: Drybox sensor battery
           - type: tile
             entity: sensor.aqara_sensor_voltage
-            name: Office sensor voltage
+            name: Drybox sensor voltage
           - type: tile
             entity: sensor.aqara_ceiling_light_t1_device_temperature
             name: T1 temperature

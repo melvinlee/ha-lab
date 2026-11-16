@@ -63,7 +63,7 @@ How-to and reference details live in the [README](../README.md).
 |---|---|---|---|
 | Aqara E1 Switch | Wireless mini switch E1 (WXKG20LM) | `0x54ef441001328ec0` | Office |
 | Aqara Ceiling Light T1 | Ceiling light T1 | `0x54ef44100130d787` | Office |
-| Aqara Sensor | Temperature & humidity sensor (WSDCGQ11LM): temp, humidity, pressure, battery | n/a | Office |
+| Aqara Sensor | Temperature & humidity sensor (WSDCGQ11LM), **inside the drybox** (not room climate) | n/a | Office |
 
 The T1 has two light entities: `light.aqara_ceiling_light_t1_white` (main) and `..._rgb` (ambient ring).
 
@@ -135,7 +135,22 @@ because MCP can't create automations.
 
 ---
 
+## 2026-11-16 (cont.)
+
+### 13. Office Aqara sensor is a drybox sensor
+- The Aqara temp/humidity sensor measures a **drybox**, not the office. Its readings were removed from the
+  Office section and the "Office" temp badge.
+- New **Drybox** section on Home: humidity gauge (green ≤40%, yellow 40–50%, red >50%), alert tile
+  "Replace / recharge desiccant" when RH > 50%, 24h temperature graph, 7-day humidity history,
+  temp and battery badges. The top badge is now Drybox humidity, and the tablet header shows a drybox RH status line.
+- Pushed to HA (North Gaia: Home has 8 sections now).
+- At the time: **58% RH**, which is above the 50% alert threshold.
+- Then merged into the **Office** section under a "Drybox" subheading (Home has 7 sections again). The device was
+  already in the Office area in HA.
+
 ## Open items
+
+- [ ] Drybox at 58% RH: replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.
 
 - [ ] Test E1 **single** (off) and **double** (on) presses after the v3 change.
 - [ ] **Automatic backups aren't configured.** All backup sensors read `unknown`
