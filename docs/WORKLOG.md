@@ -154,7 +154,6 @@ because MCP can't create automations.
 ## Open items
 
 - [ ] TRADFRI button: decide what a press should do, then add an automation (MQTT `zigbee2mqtt/TRADFRI`).
-- [ ] Master Bedroom: rename the Z1 Pro rocker tiles (Top/Center/Bottom) to what each one controls.
 - [ ] Aqara Motion sensor P1 battery read 0%: replace the CR2450 battery (×2) and check it reports in.
 - [ ] Drybox at 58% RH: replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.
 
