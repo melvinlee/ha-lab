@@ -7,7 +7,7 @@ import { Card, Badge, Empty, Skeleton } from "./ui";
 interface Arrival { OriginCode?: string; DestinationCode?: string; EstimatedArrival?: string; Monitored?: number }
 interface Service { ServiceNo: string; Operator?: string; NextBus?: Arrival; NextBus2?: Arrival; NextBus3?: Arrival }
 
-/** "Arriving", "5 min", "1 h 5 min" */
+/** "Arriving", "5 min", "65 min" (minutes only, no hours) */
 const minsUntil = (iso: string | undefined, now: number) => { const t = iso ? Date.parse(iso) : NaN; return Number.isNaN(t) ? null : (t - now) / 60000; };
 
 function eta(iso: string | undefined, now: number) {
@@ -17,8 +17,7 @@ function eta(iso: string | undefined, now: number) {
   const mins = Math.floor((t - now) / 60000);
   if (mins < -1) return null; // already left
   if (mins <= 1) return "Arriving";
-  if (mins < 60) return `${mins} min`;
-  return `${Math.floor(mins / 60)} h ${mins % 60} min`;
+  return `${mins} min`;
 }
 
 export function BusStops() {
