@@ -37,6 +37,8 @@ ws.onmessage = async (ev) => {
     if (!r.success) { failed = true; break; }
   }
   ws.close();
-  process.exit(failed ? 1 : 0);
+  // Don't process.exit() here: large stdout writes to a pipe are async and would be truncated.
+  process.exitCode = failed ? 1 : 0;
+  process.stdout.write("", () => process.exit(process.exitCode));
 };
 ws.onerror = (e) => { console.error("websocket error", e.message ?? ""); process.exit(1); };
