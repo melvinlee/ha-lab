@@ -1,7 +1,7 @@
 import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow } from "lucide-react";
 import { fmt, relTime } from "../lib/format";
 import { useState } from "react";
-import { Sofa, DoorOpen, UtensilsCrossed, Brush, Check } from "lucide-react";
+import { Sofa, DoorOpen, UtensilsCrossed, Brush, Check, Lightbulb, LightbulbOff } from "lucide-react";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { useHass, isUnavailable } from "../ha/store";
 import { ROOMS, type Room, type RoomControl } from "../config";
@@ -206,17 +206,24 @@ function RoomCard({ room }: { room: Room }) {
   const Icon = roomIcon[room.icon];
   const motion = room.motion ? get(room.motion) : undefined;
   const thermostat = room.climate.thermostat ? get(room.climate.thermostat) : undefined;
-  const onCount = room.controls.filter((c) => (c.kind === "light" || c.kind === "switch") && get(c.entity)?.state === "on").length;
+  const lights = room.controls.filter((c) => c.kind === "light" || c.kind === "switch");
+  const lightCount = lights.length;
+  const onCount = lights.filter((c) => get(c.entity)?.state === "on").length;
 
   return (
     <Card
       title={room.name}
       icon={Icon}
       right={
-        room.motion ? (
-          isUnavailable(motion) ? <Badge tone="muted" label="Motion unknown" /> :
-          motion!.state === "on" ? <Badge tone="accent" icon={Activity} label="Occupied" /> : <Badge tone="muted" label="Clear" />
-        ) : onCount ? <Badge tone="accent" label={`${onCount} on`} /> : null
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          {room.motion && (
+            isUnavailable(motion) ? <Badge tone="muted" icon={Activity} label="Motion unknown" /> :
+            motion!.state === "on" ? <Badge tone="accent" icon={Activity} label="Motion" /> : <Badge tone="muted" icon={Activity} label="No motion" />
+          )}
+          {lightCount > 0 && (
+            onCount > 0 ? <Badge tone="accent" icon={Lightbulb} label={`${onCount} on`} /> : <Badge tone="muted" icon={LightbulbOff} label="All off" />
+          )}
+        </div>
       }
     >
       {!entities ? (
