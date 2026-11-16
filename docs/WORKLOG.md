@@ -157,6 +157,16 @@ because MCP can't create automations.
 - Then merged into the **Office** section under a "Drybox" subheading (Home has 7 sections again). The device was
   already in the Office area in HA.
 
+### 15. Bus card ETA fix + theme Auto by time (#13)
+
+- Root cause: after the last bus the API returns **tomorrow's timetable**, shown as minutes (~519 min). The API's `ServiceNotice`
+  (`NO_MORE_BUSES_TODAY`, `Message`, `NextArrival`) wasn't kept by HA.
+- `rest.yaml`: `ServiceNotice` added to `json_attributes` (both stops), `rest.reload`, verified live. Backup `rest.yaml.bak-20261116-notice` on HA.
+- Card: notice → "No more buses today · First bus Tmr 06:30"; ETA = minutes ≤ 60, then clock time, `Tmr HH:MM` next day;
+  header "Updated HH:MM" (was `last_updated`, only changes with the next-bus time) → **Live / Timetable** from `Monitored`.
+- Theme **Auto** now follows the clock (Day 07:00–18:59, Night otherwise, re-checked every minute) instead of the device dark-mode setting.
+- Deployed. **Not yet verified** on the tablet/phone, or with live ETAs during service hours.
+
 ## Open items
 
 **NG Premium (issue #3)**

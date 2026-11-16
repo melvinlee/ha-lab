@@ -7,7 +7,7 @@ import { Card, Badge, Empty, Skeleton } from "./ui";
 interface Arrival { OriginCode?: string; DestinationCode?: string; EstimatedArrival?: string; Monitored?: number }
 interface Service { ServiceNo: string; Operator?: string; NextBus?: Arrival; NextBus2?: Arrival; NextBus3?: Arrival }
 
-/** "Arriving", "5 min", "65 min" (minutes only, no hours) */
+/** "Arriving", "5 min" up to 60 min, then the clock time ("21:40"), or "Tmr 06:30" for tomorrow. */
 const minsUntil = (iso: string | undefined, now: number) => { const t = iso ? Date.parse(iso) : NaN; return Number.isNaN(t) ? null : (t - now) / 60000; };
 
 function eta(iso: string | undefined, now: number) {
@@ -17,7 +17,11 @@ function eta(iso: string | undefined, now: number) {
   const mins = Math.floor((t - now) / 60000);
   if (mins < -1) return null; // already left
   if (mins <= 1) return "Arriving";
-  return `${mins} min`;
+  if (mins <= 60) return `${mins} min`;
+  // Beyond an hour (e.g. after the last bus, when the API returns tomorrow's timetable) show the clock time.
+  const d = new Date(t);
+  const time = d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+  return d.toDateString() === new Date(now).toDateString() ? time : `Tmr ${time}`;
 }
 
 export function BusStops() {
@@ -32,16 +36,24 @@ function Bus({ sensor: BUS_SENSOR }: { sensor: string }) {
   const e = get(BUS_SENSOR);
   const services = (e?.attributes.Services as Service[] | undefined) ?? [];
   const stop = services[0]?.NextBus?.OriginCode || (e?.attributes.BusStopCode as string | undefined) || "Bus stop";
-  const updated = e ? new Date(e.last_updated).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) : "";
+  // last_updated only moves when the next-bus time changes (not on every poll), so "Updated HH:MM" looked stale.
+  // Show whether the times are live-tracked or the timetable instead.
+  // API notice, e.g. { Code: "NO_MORE_BUSES_TODAY", Message, NextArrival } after the last bus (rest.yaml keeps it as an attribute).
+  const notice = e?.attributes.ServiceNotice as { Code?: string; Message?: string; NextArrival?: string } | undefined;
+  const live = services.some((s) => [s.NextBus, s.NextBus2, s.NextBus3].some((a) => a?.Monitored === 1));
 
   return (
-    <Card title={stop} icon={BusIcon} right={e && !isUnavailable(e) ? <span className="card-sub num">Updated {updated}</span> : null}>
+    <Card title={stop} icon={BusIcon} right={e && !isUnavailable(e) ? <span className="card-sub">{live ? "Live" : "Timetable"}</span> : null}>
       {!entities ? (
         <div className="col" style={{ gap: 12 }}><Skeleton h={40} /><Skeleton h={40} /></div>
       ) : !e ? (
         <Empty icon={CircleAlert} title="Bus sensor not found">Expected <code>{BUS_SENSOR}</code> (see ha-config/rest.yaml).</Empty>
       ) : e.state === "unavailable" ? (
         <Empty icon={CircleAlert} title="Bus times unavailable">The arrival API didn't respond. Retrying every minute.</Empty>
+      ) : notice?.Code === "NO_MORE_BUSES_TODAY" ? (
+        <Empty icon={BusIcon} title="No more buses today">
+          {notice.NextArrival ? <>First bus {eta(notice.NextArrival, now) ?? notice.NextArrival}.</> : notice.Message}
+        </Empty>
       ) : services.length === 0 ? (
         <Empty icon={BusIcon} title="No services right now">No buses are scheduled at this stop.</Empty>
       ) : (
