@@ -7,6 +7,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 
 | Path | Contents |
 |---|---|
+| `CLAUDE.md` | Guidance for Claude Code: commands, architecture, gotchas, conventions |
 | `README.md` | Setup and reference (areas/devices, MCP, Zigbee/MQTT, automations, dashboard, scripts, workflow) |
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
