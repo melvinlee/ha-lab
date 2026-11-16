@@ -158,7 +158,6 @@ because MCP can't create automations.
 ## Open items
 
 **Premium dashboard (issue #3)**
-- [ ] Install and start the **Samba share** app, mount `smb://192.168.1.40/config`, run `scripts/deploy-premium.sh`.
 - [ ] Approve the 4 scene definitions, then create them in HA.
 - [ ] Visual QA on the 10" landscape tablet and a phone.
 

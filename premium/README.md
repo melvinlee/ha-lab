@@ -14,7 +14,7 @@ npm run build        # -> dist/
 
 Deploy into HA: `scripts/deploy-premium.sh` (from the repo root). It needs the HA **Samba share** app and
 `smb://192.168.1.40/config` mounted at `/Volumes/config`. It copies `dist/` to `/config/www/premium/` (served at
-`/local/premium/`) and creates the **Premium** sidebar dashboard (`/dashboard-premium`, a full-screen iframe).
+`/local/premium/`) and creates the **NG Premium** sidebar dashboard (`/dashboard-premium`, a full-screen iframe).
 
 ## How it connects
 

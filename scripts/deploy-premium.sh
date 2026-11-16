@@ -27,6 +27,6 @@ rsync -a --delete premium/dist/ "$MOUNT/www/premium/"
 # Cache-bust: HA and browsers cache /local aggressively.
 v=$(date +%s)
 echo "› dashboard /dashboard-premium (v=$v)"
-printf '{"title":"Premium","views":[{"title":"Home","path":"home","type":"panel","cards":[{"type":"iframe","url":"/local/premium/index.html?v=%s","aspect_ratio":"100%%"}]}]}' "$v" \
-  | node scripts/push-dashboard.mjs dashboard-premium "Premium" mdi:view-dashboard-variant
+printf '{"title":"NG Premium","views":[{"title":"Home","path":"home","type":"panel","cards":[{"type":"iframe","url":"/local/premium/index.html?v=%s","aspect_ratio":"100%%"}]}]}' "$v" \
+  | node scripts/push-dashboard.mjs dashboard-premium "NG Premium" mdi:view-dashboard-variant
 echo "✓ open ${HA_URL:-http://192.168.1.40}/dashboard-premium"
