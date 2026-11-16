@@ -257,6 +257,7 @@ All need `HA_TOKEN` (and optionally `HA_URL`, default `http://192.168.1.40`) and
 | `scripts/push-dashboard.sh [file] [url_path] [title] [icon]` | YAML → JSON (ruby) → create the dashboard if missing → save config → read back |
 | `node scripts/ha-ws.mjs '<json>' ...` | Raw websocket commands. `"$1.area_id"` references an earlier result. E.g. create an area and assign a device:<br>`node scripts/ha-ws.mjs '{"type":"config/area_registry/create","name":"X"}' '{"type":"config/device_registry/update","device_id":"…","area_id":"$1.area_id"}'` |
 | `scripts/deploy-premium.sh` | Build `premium/`, rsync to `/Volumes/config/www/premium/`, create/update the NG Premium dashboard |
+| `node scripts/ota-on-wake.mjs <z2m name> <update.entity> [s]` | Firmware update for a sleepy device: waits for its next message (press it), then calls `update.install` **once** |
 | `node scripts/mqtt-listen.mjs <topic> [seconds]` | Print MQTT messages through HA (read-only). E.g. `zigbee2mqtt/TRADFRI 60` to see button payloads |
 
 Automations are created with the REST config API (`POST /api/config/automation/config/<id>`), then exported:
