@@ -39,7 +39,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Master Bedroom | **Bedroom Switch** (Z2M: Smart wall switch Z1 Pro) | ZNQBKG45LM, 4-rocker | Z2M `0x54ef4410011fd575` | `switch.smart_wall_switch_z1_pro_top` = **Main light**, `_center` = **LED Cove**, `_bottom` = **Night Curtain** (a curtain on the relay: **ON = open, OFF = closed**) |
 | Master Bedroom | Bedlamp | IKEA TRADFRI bulb E26/E27 white spectrum 806 lm (LED2004G8) | Z2M `0x04cd15fffe73e97e` | `light.bedlamp` (2200–4000 K) |
 | Master Bedroom | TRADFRI | IKEA E1812 shortcut button | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/TRADFRI` (`action: "on"`); `sensor.tradfri_battery` |
-| Bathroom | **Bathroom Switch D1** | Aqara D1 triple rocker, with neutral (QBKG26LM) | Z2M `0x54ef441000d3a1ee` | `switch.bathroom_switch_d1_left` = **LED Cove**, `_center` = **Main Light**, `_right` = **decoupled** (sends actions only) |
+| Bathroom | **Bathroom Switch D1** | Aqara D1 triple rocker, with neutral (QBKG26LM) | Z2M `0x54ef441000d3a1ee` | `switch.bathroom_switch_d1_left` = **LED Cove**, `_center` = **Main Light**, `_right` = **Bath mode** (decoupled; toggled by its rocker via HA; ON pauses the auto-off) |
 | Bathroom | **Bathroom Motion Sensor P1** | RTCGQ14LM | Z2M `0x54ef4410013de0db` | `binary_sensor.bathroom_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
 | (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
