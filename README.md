@@ -30,6 +30,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
 | Master Bedroom | Aqara Motion sensor P1 | RTCGQ14LM | Z2M `0x54ef4410013ddb88` | `binary_sensor.aqara_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
 | Master Bedroom | **Bedroom Switch** (Z2M: Smart wall switch Z1 Pro) | ZNQBKG45LM, 4-rocker | Z2M `0x54ef4410011fd575` | `switch.smart_wall_switch_z1_pro_top` = **Main light**, `_center` = **LED Cove**, `_bottom` = **Night Curtain** |
+| Master Bedroom | Bedlamp | IKEA TRADFRI bulb E26/E27 white spectrum 806 lm (LED2004G8) | Z2M `0x04cd15fffe73e97e` | `light.bedlamp` (2200–4000 K) |
 | Master Bedroom | TRADFRI | IKEA E1812 shortcut button | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/TRADFRI` (`action: "on"`); `sensor.tradfri_battery` |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
 | (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
@@ -185,7 +186,7 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
 
 | View | Sections |
 |---|---|
-| **Home** | tablet header (greeting, clock, weather, drybox RH) · weather (phone) · **Office** (ceiling light, ring, E1 automation, **Drybox** subsection: humidity gauge, desiccant alert >50% RH, temperature, 7-day history) · **Living Room** (Roborock controls, alerts, routines, mop settings) · Roborock map · **Master Bedroom** (Main light / LED Cove / Night Curtain toggles, power, motion, light level, TRADFRI, automation tiles, low-battery alerts) · Media (SHIELD) · Shopping list |
+| **Home** | tablet header (greeting, clock, weather, drybox RH) · weather (phone) · **Office** (ceiling light, ring, E1 automation, **Drybox** subsection: humidity gauge, desiccant alert >50% RH, temperature, 7-day history) · **Living Room** (Roborock controls, alerts, routines, mop settings) · Roborock map · **Master Bedroom** (Main light / LED Cove / Night Curtain toggles, Bedlamp brightness and colour temperature, power, motion, light level, TRADFRI, automation tiles, low-battery alerts) · Media (SHIELD) · Shopping list |
 | **System** | Zigbee2MQTT · SLZB-06 coordinator · Roborock maintenance · Device health (batteries, temperatures) · Updates & backups |
 
 Badges at the top: person, weather, Office light, Drybox RH, plus Bedroom motion / Roborock / SHIELD / Pairing

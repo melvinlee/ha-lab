@@ -11,7 +11,7 @@ How-to and reference details live in the [README](../README.md).
 | MQTT | Mosquitto broker app + MQTT integration: **loaded** |
 | Zigbee | Zigbee2MQTT 2.14.3 app: **running**; SMLIGHT SLZB-06 coordinator (192.168.1.41, Ethernet, `zstack`) |
 | Areas | Office, Living Room, **Master Bedroom** (new), Bedroom, Kitchen (empty) |
-| Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button |
+| Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button, Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
 | Automations | 3: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
 | Dashboard | **North Gaia** at `/dashboard-north-gaia`, from `dashboards/home.yaml` (phone + 10" landscape tablet) |
@@ -70,6 +70,7 @@ How-to and reference details live in the [README](../README.md).
 | Aqara Motion sensor P1 | Motion sensor P1 (RTCGQ14LM) | `0x54ef4410013ddb88` | Master Bedroom |
 | Smart wall switch Z1 Pro (HA name **Bedroom Switch**) | Smart wall switch Z1 Pro, quadruple rocker (ZNQBKG45LM) | `0x54ef4410011fd575` | Master Bedroom |
 | TRADFRI | IKEA TRADFRI shortcut button (E1812) | `0xb4e3f9fffe249914` | Master Bedroom |
+| Bedlamp | IKEA TRADFRI bulb E26/E27, white spectrum, 806 lm (LED2004G8) | `0x04cd15fffe73e97e` | Master Bedroom |
 
 The T1 has two light entities: `light.aqara_ceiling_light_t1_white` (main) and `..._rgb` (ambient ring).
 
