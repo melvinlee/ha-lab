@@ -66,6 +66,7 @@ How-to and reference details live in the [README](../README.md).
 | Aqara Sensor | Temperature & humidity sensor (WSDCGQ11LM), **inside the drybox** (not room climate) | n/a | Office |
 | Aqara Motion sensor P1 | Motion sensor P1 (RTCGQ14LM) | `0x54ef4410013ddb88` | Master Bedroom |
 | Smart wall switch Z1 Pro | Smart wall switch Z1 Pro, quadruple rocker (ZNQBKG45LM) | `0x54ef4410011fd575` | Master Bedroom |
+| TRADFRI | IKEA TRADFRI shortcut button (E1812) | `0xb4e3f9fffe249914` | Master Bedroom |
 
 The T1 has two light entities: `light.aqara_ceiling_light_t1_white` (main) and `..._rgb` (ambient ring).
 
@@ -152,6 +153,7 @@ because MCP can't create automations.
 
 ## Open items
 
+- [ ] TRADFRI button: decide what a press should do, then add an automation (MQTT `zigbee2mqtt/TRADFRI`).
 - [ ] Master Bedroom: rename the Z1 Pro rocker tiles (Top/Center/Bottom) to what each one controls.
 - [ ] Aqara Motion sensor P1 battery read 0%: replace the CR2450 battery (×2) and check it reports in.
 - [ ] Drybox at 58% RH: replace/recharge the desiccant. Adjust the thresholds in `dashboards/home.yaml` if your target differs.
