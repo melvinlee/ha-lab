@@ -1,0 +1,561 @@
+# Home dashboard: phone + 10" landscape wall tablet
+#
+# One responsive "sections" dashboard, built-in cards only (no HACS).
+#   Phone   (<600px)   -> 1 column, compact tiles, tablet-only cards hidden
+#   Tablet  (>=1024px) -> up to 4 columns, hero/clock + weather forecast visible
+#
+# Apply: Settings -> Dashboards -> Add dashboard -> "New dashboard from scratch"
+#        -> open it -> ✏️ -> ⋮ -> Raw configuration editor -> paste this file.
+
+title: North Gaia
+views:
+  # ───────────────────────────── HOME ─────────────────────────────
+  - title: Home
+    path: home
+    icon: mdi:home
+    type: sections
+    max_columns: 4
+    dense_section_placement: true
+    badges:
+      - type: entity
+        entity: person.melvin
+        show_name: false
+      - type: entity
+        entity: weather.home
+        show_name: false
+      - type: entity
+        entity: light.aqara_ceiling_light_t1_white
+        name: Office
+        show_name: true
+        tap_action:
+          action: toggle
+      - type: entity
+        entity: sensor.aqara_sensor_temperature
+        name: Office
+        show_name: true
+      - type: entity
+        entity: vacuum.living_room_qrevo_2_breeze
+        name: Roborock
+        show_name: true
+        visibility:
+          - condition: state
+            entity: vacuum.living_room_qrevo_2_breeze
+            state_not: docked
+      - type: entity
+        entity: media_player.shield
+        show_name: true
+        visibility:
+          - condition: state
+            entity: media_player.shield
+            state_not: "off"
+      - type: entity
+        entity: switch.zigbee2mqtt_bridge_permit_join
+        name: Pairing
+        show_name: true
+        visibility:
+          - condition: state
+            entity: switch.zigbee2mqtt_bridge_permit_join
+            state: "on"
+
+    sections:
+      # ── Hero: greeting + clock (tablet only) ──
+      - type: grid
+        column_span: 2
+        visibility:
+          - condition: screen
+            media_query: "(min-width: 1024px)"
+        cards:
+          - type: markdown
+            grid_options:
+              columns: full
+            text_only: true
+            content: >-
+              {% set h = now().hour %}
+              ### {{ 'Good morning' if h < 12 else 'Good afternoon' if h < 18 else 'Good evening' }}, {{ state_attr('person.melvin', 'friendly_name') }}
+
+              # {{ now().strftime('%H:%M') }}
+
+              **{{ now().strftime('%A, %d %B') }}** ·
+              {{ states('weather.home') | replace('-', ' ') | title }},
+              {{ state_attr('weather.home', 'temperature') }}{{ state_attr('weather.home', 'temperature_unit') }}
+              · Sunset {{ as_timestamp(states('sensor.sun_next_setting')) | timestamp_custom('%H:%M') }}
+
+              🏠 Office {{ states('sensor.aqara_sensor_temperature') | float(0) | round(1) }}°C ·
+              {{ states('sensor.aqara_sensor_humidity') | float(0) | round(0) | int }}% RH
+          - type: weather-forecast
+            entity: weather.home
+            forecast_type: daily
+            show_current: false
+            show_forecast: true
+            grid_options:
+              columns: full
+
+      # ── Weather (phone: compact, hourly) ──
+      - type: grid
+        visibility:
+          - condition: screen
+            media_query: "(max-width: 1023px)"
+        cards:
+          - type: weather-forecast
+            entity: weather.home
+            forecast_type: hourly
+            show_current: true
+            show_forecast: true
+
+      # ── Office ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Office
+            icon: mdi:desk
+            heading_style: title
+            badges:
+              - type: entity
+                entity: sensor.aqara_sensor_temperature
+                show_state: true
+                show_icon: true
+              - type: entity
+                entity: sensor.aqara_sensor_humidity
+                show_state: true
+                show_icon: true
+          - type: sensor
+            entity: sensor.aqara_sensor_temperature
+            name: Temperature
+            graph: line
+            hours_to_show: 24
+            detail: 2
+            grid_options:
+              columns: 6
+          - type: sensor
+            entity: sensor.aqara_sensor_humidity
+            name: Humidity
+            graph: line
+            hours_to_show: 24
+            detail: 2
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: light.aqara_ceiling_light_t1_white
+            name: Ceiling light
+            icon: mdi:ceiling-light
+            vertical: false
+            grid_options:
+              columns: full
+            features_position: bottom
+            features:
+              - type: light-brightness
+              - type: light-color-temp
+          - type: tile
+            entity: light.aqara_ceiling_light_t1_rgb
+            name: Ambient ring
+            icon: mdi:led-strip-variant
+            grid_options:
+              columns: full
+            features_position: bottom
+            features:
+              - type: light-brightness
+          - type: tile
+            entity: automation.office_e1_switch_turns_on_ceiling_light
+            name: E1 switch automation
+            icon: mdi:gesture-double-tap
+            tap_action:
+              action: more-info
+            icon_tap_action:
+              action: toggle
+          - type: tile
+            entity: sensor.aqara_e1_switch_battery
+            name: E1 switch
+            icon: mdi:light-switch-off
+          - type: tile
+            entity: sensor.aqara_sensor_pressure
+            name: Pressure
+            icon: mdi:gauge
+
+      # ── Living Room: Roborock Qrevo 2 Breeze ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Living Room
+            icon: mdi:sofa
+            heading_style: title
+            badges:
+              - type: entity
+                entity: sensor.living_room_qrevo_2_breeze_battery
+                show_state: true
+                show_icon: true
+              - type: entity
+                entity: sensor.living_room_qrevo_2_breeze_status
+                show_state: true
+                show_icon: false
+          - type: tile
+            entity: vacuum.living_room_qrevo_2_breeze
+            name: Roborock
+            grid_options:
+              columns: full
+            features_position: bottom
+            features:
+              - type: vacuum-commands
+                commands:
+                  - start_pause
+                  - stop
+                  - return_home
+                  - locate
+          # Alerts: only shown when something needs attention
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_vacuum_error
+            name: Vacuum error
+            icon: mdi:alert-circle
+            color: red
+            grid_options:
+              columns: full
+            visibility:
+              - condition: state
+                entity: sensor.living_room_qrevo_2_breeze_vacuum_error
+                state_not: none
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_dock_dock_error
+            name: Dock error
+            icon: mdi:alert-circle
+            color: red
+            grid_options:
+              columns: full
+            visibility:
+              - condition: state
+                entity: sensor.living_room_qrevo_2_breeze_dock_dock_error
+                state_not: ok
+          - type: tile
+            entity: binary_sensor.living_room_qrevo_2_breeze_water_shortage
+            name: Refill clean water
+            icon: mdi:water-alert
+            color: amber
+            visibility:
+              - condition: state
+                entity: binary_sensor.living_room_qrevo_2_breeze_water_shortage
+                state: "on"
+          - type: tile
+            entity: binary_sensor.living_room_qrevo_2_breeze_dock_dirty_water_box
+            name: Empty dirty water
+            icon: mdi:water-remove
+            color: amber
+            visibility:
+              - condition: state
+                entity: binary_sensor.living_room_qrevo_2_breeze_dock_dirty_water_box
+                state: "on"
+          # Progress while cleaning
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_cleaning_progress
+            name: Progress
+            visibility:
+              - condition: state
+                entity: binary_sensor.living_room_qrevo_2_breeze_cleaning
+                state: "on"
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_current_room
+            name: Current room
+            icon: mdi:floor-plan
+            visibility:
+              - condition: state
+                entity: binary_sensor.living_room_qrevo_2_breeze_cleaning
+                state: "on"
+          # Routines (Roborock app scenes)
+          - type: tile
+            entity: button.living_room_qrevo_2_breeze_living_room_cleaning
+            name: Clean living room
+            icon: mdi:sofa-outline
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.living_room_qrevo_2_breeze_living_room_cleaning
+          - type: tile
+            entity: button.living_room_qrevo_2_breeze_after_meals
+            name: After meals
+            icon: mdi:silverware-fork-knife
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.living_room_qrevo_2_breeze_after_meals
+          - type: tile
+            entity: button.living_room_qrevo_2_breeze_vac_followed_by_mop
+            name: Vac then mop
+            icon: mdi:broom
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.living_room_qrevo_2_breeze_vac_followed_by_mop
+          - type: tile
+            entity: button.living_room_qrevo_2_breeze_room_cleaning
+            name: Room cleaning
+            icon: mdi:door-open
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.living_room_qrevo_2_breeze_room_cleaning
+          # Mop settings
+          - type: tile
+            entity: select.living_room_qrevo_2_breeze_mop_mode
+            name: Mop mode
+            features:
+              - type: select-options
+          - type: tile
+            entity: select.living_room_qrevo_2_breeze_mop_intensity
+            name: Mop intensity
+            features:
+              - type: select-options
+
+      # ── Living Room map (tablet: wide, phone: full width) ──
+      - type: grid
+        cards:
+          - type: picture-entity
+            entity: image.living_room_qrevo_2_breeze_ng_29
+            name: Map
+            show_name: false
+            show_state: false
+            tap_action:
+              action: more-info
+            grid_options:
+              columns: full
+
+      # ── Media ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Media
+            icon: mdi:television
+            heading_style: title
+          - type: media-control
+            entity: media_player.shield
+          - type: tile
+            entity: media_player.shield
+            name: SHIELD volume
+            visibility:
+              - condition: state
+                entity: media_player.shield
+                state_not: "off"
+            features:
+              - type: media-player-volume-slider
+
+      # ── Shopping list ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Shopping list
+            icon: mdi:cart
+            heading_style: title
+          - type: todo-list
+            entity: todo.shopping_list
+            hide_completed: true
+
+  # ───────────────────────────── SYSTEM ─────────────────────────────
+  - title: System
+    path: system
+    icon: mdi:server-network
+    type: sections
+    max_columns: 4
+    dense_section_placement: true
+    badges:
+      - type: entity
+        entity: binary_sensor.zigbee2mqtt_bridge_connection_state
+        name: Zigbee
+        show_name: true
+      - type: entity
+        entity: binary_sensor.office_slzb_06_ethernet
+        name: SLZB
+        show_name: true
+      - type: entity
+        entity: sensor.backup_backup_manager_state
+        name: Backup
+        show_name: true
+
+    sections:
+      # ── Zigbee2MQTT ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Zigbee2MQTT
+            icon: mdi:zigbee
+            heading_style: title
+          - type: tile
+            entity: binary_sensor.zigbee2mqtt_bridge_connection_state
+            name: Bridge
+          - type: tile
+            entity: sensor.zigbee2mqtt_bridge_version
+            name: Version
+          - type: tile
+            entity: switch.zigbee2mqtt_bridge_permit_join
+            name: Permit join
+            icon: mdi:plus-network
+            grid_options:
+              columns: full
+            features:
+              - type: toggle
+          - type: tile
+            entity: button.zigbee2mqtt_bridge_restart
+            name: Restart Z2M
+            icon: mdi:restart
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.zigbee2mqtt_bridge_restart
+              confirmation:
+                text: Restart Zigbee2MQTT?
+
+      # ── SLZB-06 coordinator ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: SLZB-06 coordinator
+            icon: mdi:router-wireless
+            heading_style: title
+            badges:
+              - type: entity
+                entity: sensor.office_slzb_06_zigbee_type
+              - type: entity
+                entity: sensor.office_slzb_06_connection_mode
+          - type: tile
+            entity: binary_sensor.office_slzb_06_ethernet
+            name: Ethernet
+          - type: tile
+            entity: binary_sensor.office_slzb_06_internet
+            name: Internet
+          - type: tile
+            entity: sensor.office_slzb_06_zigbee_chip_temp
+            name: Zigbee chip
+          - type: tile
+            entity: sensor.office_slzb_06_core_chip_temp
+            name: Core chip
+          - type: tile
+            entity: switch.office_slzb_06_led_night_mode
+            name: LED night mode
+          - type: tile
+            entity: switch.office_slzb_06_disable_leds
+            name: Disable LEDs
+          - type: tile
+            entity: button.office_slzb_06_zigbee_restart
+            name: Restart Zigbee
+            icon: mdi:restart
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.office_slzb_06_zigbee_restart
+              confirmation:
+                text: Restart the SLZB-06 Zigbee radio? Zigbee devices will drop briefly.
+          - type: tile
+            entity: button.office_slzb_06_core_restart
+            name: Restart core
+            icon: mdi:power-cycle
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target:
+                entity_id: button.office_slzb_06_core_restart
+              confirmation:
+                text: Reboot the SLZB-06?
+
+      # ── Roborock maintenance ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Roborock maintenance
+            icon: mdi:robot-vacuum
+            heading_style: title
+            badges:
+              - type: entity
+                entity: sensor.living_room_qrevo_2_breeze_total_cleaning_count
+                show_state: true
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_main_brush_time_left
+            name: Main brush
+            icon: mdi:brush
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_side_brush_time_left
+            name: Side brush
+            icon: mdi:brush-variant
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_filter_time_left
+            name: Filter
+            icon: mdi:air-filter
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_sensor_time_left
+            name: Sensors (clean)
+            icon: mdi:eye-outline
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_dock_strainer_time_left
+            name: Dock strainer
+            icon: mdi:filter-outline
+          - type: tile
+            entity: sensor.living_room_qrevo_2_breeze_total_cleaning_area
+            name: Total area
+          - type: tile
+            entity: switch.living_room_qrevo_2_breeze_do_not_disturb
+            name: Do not disturb (22:00–08:00)
+            grid_options:
+              columns: full
+          - type: tile
+            entity: switch.living_room_qrevo_2_breeze_dock_child_lock
+            name: Dock child lock
+          - type: tile
+            entity: select.living_room_qrevo_2_breeze_dock_empty_mode
+            name: Dust empty mode
+
+      # ── Device health ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Device health
+            icon: mdi:heart-pulse
+            heading_style: title
+          - type: tile
+            entity: sensor.aqara_e1_switch_battery
+            name: E1 battery
+          - type: tile
+            entity: sensor.aqara_e1_switch_voltage
+            name: E1 voltage
+          - type: tile
+            entity: sensor.aqara_sensor_battery
+            name: Office sensor battery
+          - type: tile
+            entity: sensor.aqara_sensor_voltage
+            name: Office sensor voltage
+          - type: tile
+            entity: sensor.aqara_ceiling_light_t1_device_temperature
+            name: T1 temperature
+          - type: tile
+            entity: sensor.aqara_e1_switch_device_temperature
+            name: E1 temperature
+
+      # ── Updates & backups ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Updates & backups
+            icon: mdi:update
+            heading_style: title
+          - type: markdown
+            grid_options:
+              columns: full
+            content: >-
+              {% set pending = states.update | selectattr('state', 'eq', 'on') | list %}
+              {% if pending %}
+              **{{ pending | count }} update(s) available**
+              {% for u in pending %}
+              - {{ u.name }}: {{ u.attributes.installed_version }} → **{{ u.attributes.latest_version }}**
+              {% endfor %}
+              {% else %}
+              ✅ Everything is up to date
+              {% endif %}
+          - type: tile
+            entity: sensor.backup_last_successful_automatic_backup
+            name: Last backup
+            grid_options:
+              columns: full
+          - type: tile
+            entity: sensor.backup_next_scheduled_automatic_backup
+            name: Next backup
+            grid_options:
+              columns: full
