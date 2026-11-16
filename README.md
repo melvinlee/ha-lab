@@ -13,6 +13,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
+| `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
@@ -38,6 +39,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Master Bedroom | **Bedroom Switch** (Z2M: Smart wall switch Z1 Pro) | ZNQBKG45LM, 4-rocker | Z2M `0x54ef4410011fd575` | `switch.smart_wall_switch_z1_pro_top` = **Main light**, `_center` = **LED Cove**, `_bottom` = **Night Curtain** (a curtain on the relay: **ON = open, OFF = closed**) |
 | Master Bedroom | Bedlamp | IKEA TRADFRI bulb E26/E27 white spectrum 806 lm (LED2004G8) | Z2M `0x04cd15fffe73e97e` | `light.bedlamp` (2200–4000 K) |
 | Master Bedroom | TRADFRI | IKEA E1812 shortcut button | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/TRADFRI` (`action: "on"`); `sensor.tradfri_battery` |
+| Bathroom | **Bathroom Switch D1** | Aqara D1 triple rocker, with neutral (QBKG26LM) | Z2M `0x54ef441000d3a1ee` | `switch.bathroom_switch_d1_left` = **LED Cove**, `_center` = **Main Light**, `_right` = **decoupled** (sends actions only) |
+| Bathroom | **Bathroom Motion Sensor P1** | RTCGQ14LM | Z2M `0x54ef4410013de0db` | `binary_sensor.bathroom_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
 | (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
 | (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
@@ -201,6 +204,15 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
 - Triggers: **09:00**, **18:00**, and the ceiling light turning **on**.
 - Condition: the ceiling light is **on**, so it never turns the light on by itself (e.g. holidays or an empty office).
 - Action: weekdays 09:00–18:00 → `scene.office_hour` (6000 K); otherwise → `scene.after_office` (4000 K). Both turn the ring off.
+
+### Bathroom: motion lighting
+
+| Automation | Trigger | Action |
+|---|---|---|
+| `automation.bathroom_motion_turns_on_lights` (`bathroom_motion_lights_on`) | P1 occupancy `off` → `on`, if either light is off | LED Cove + Main Light **on** |
+| `automation.bathroom_no_motion_15_min_turns_off_lights` (`bathroom_no_motion_lights_off`) | occupancy `off` 15 min **or** a light `on` 15 min; condition: occupancy off ≥ 15 min and a light on | LED Cove + Main Light **off** |
+
+Exported to `automations/bathroom_*.yaml`. No night mode (optional on #8).
 
 ## Scenes
 

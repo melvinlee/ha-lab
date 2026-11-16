@@ -15,7 +15,7 @@ export interface RoomControl {
 export interface Room {
   id: string;
   name: string;
-  icon: "bed" | "desk" | "sofa";
+  icon: "bed" | "desk" | "sofa" | "bath";
   controls: RoomControl[];
   /** Room climate sensors (temperature/humidity). Not the drybox. */
   climate: { temperature?: string; humidity?: string; thermostat?: string };
@@ -67,6 +67,18 @@ export const ROOMS: Room[] = [
     ],
   },
   {
+    id: "bathroom",
+    name: "Bathroom",
+    icon: "bath",
+    motion: "binary_sensor.bathroom_motion_sensor_p1_occupancy",
+    climate: {},
+    // Bathroom Switch D1 (QBKG26LM): left = LED Cove, center = Main Light, right = decoupled (no load control)
+    controls: [
+      { entity: "switch.bathroom_switch_d1_center", name: "Main Light", kind: "switch", icon: "ceiling" },
+      { entity: "switch.bathroom_switch_d1_left", name: "LED Cove", kind: "switch", icon: "strip" },
+    ],
+  },
+  {
     id: "living_room",
     name: "Living Room",
     icon: "sofa",
@@ -107,6 +119,9 @@ export const TIMELINE_ENTITIES = [
   "automation.master_bedroom_tradfri_button_toggles_led_cove",
   "automation.office_e1_switch_turns_on_ceiling_light",
   "automation.office_switch_lighting_scene_by_time",
+  "binary_sensor.bathroom_motion_sensor_p1_occupancy",
+  "automation.bathroom_motion_turns_on_lights",
+  "automation.bathroom_no_motion_15_min_turns_off_lights",
   "scene.office_hour",
   "scene.after_office",
 ];
