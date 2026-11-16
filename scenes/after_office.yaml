@@ -1,0 +1,8 @@
+# Exported from HA via GET /api/config/scene/config/after_office
+id: after_office
+name: After office
+entities:
+  light.aqara_ceiling_light_t1_white:
+    state: 'on'
+    color_temp_kelvin: 4000
+icon: mdi:home-lightbulb

@@ -205,6 +205,13 @@ Night Curtain = relay **ON = open, OFF = closed**.
 | `scene.away` | off | off | *unchanged* | off | off / off |
 | `scene.goodnight` | off | off | **closed** (off) | off | off / off |
 
+**Office-only scenes**: only the ceiling light's colour temperature. Brightness and the ambient ring are untouched.
+
+| Scene | Office ceiling light (`light.aqara_ceiling_light_t1_white`) |
+|---|---|
+| `scene.office_hour` | on, **6000 K** (the light reports 6024 K, its nearest step) |
+| `scene.after_office` | on, **4000 K** |
+
 ## Dashboard
 
 `dashboards/home.yaml` is one responsive **sections** dashboard with built-in cards only (no HACS).

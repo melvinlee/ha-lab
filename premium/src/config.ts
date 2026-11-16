@@ -21,7 +21,9 @@ export interface Room {
   climate: { temperature?: string; humidity?: string; thermostat?: string };
   motion?: string;
   /** One-tap routines (HA button entities, e.g. Roborock app scenes). */
-  routines?: { entity: string; name: string; icon: "sofa" | "door" | "utensils" | "mop" }[];
+  routines?: { entity: string; name: string; icon: "sofa" | "door" | "utensils" | "mop" | "briefcase" | "sunset" }[];
+  /** Heading for the routines block (default "Routines"). */
+  routinesTitle?: string;
   /** Drybox (enclosure) climate shown inside the room card. Not counted as room climate. */
   drybox?: { humidity: string; temperature?: string; battery?: string; goodMax: number; watchMax: number };
 }
@@ -46,6 +48,12 @@ export const ROOMS: Room[] = [
     name: "Office",
     icon: "desk",
     climate: {},
+    // Office-only scenes: ceiling light colour temperature (brightness and ring untouched)
+    routinesTitle: "Lighting",
+    routines: [
+      { entity: "scene.office_hour", name: "Office hour", icon: "briefcase" },
+      { entity: "scene.after_office", name: "After office", icon: "sunset" },
+    ],
     drybox: {
       humidity: "sensor.aqara_sensor_humidity",
       temperature: "sensor.aqara_sensor_temperature",

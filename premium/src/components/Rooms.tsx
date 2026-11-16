@@ -1,7 +1,7 @@
 import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow } from "lucide-react";
 import { fmt, relTime } from "../lib/format";
 import { useState } from "react";
-import { Sofa, DoorOpen, UtensilsCrossed, Brush, Check, Lightbulb, LightbulbOff } from "lucide-react";
+import { Sofa, DoorOpen, UtensilsCrossed, Brush, Check, Lightbulb, LightbulbOff, Briefcase, Sunset } from "lucide-react";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { useHass, isUnavailable } from "../ha/store";
 import { ROOMS, type Room, type RoomControl } from "../config";
@@ -159,15 +159,15 @@ function Drybox({ cfg }: { cfg: NonNullable<Room["drybox"]> }) {
   );
 }
 
-const routineIcon = { sofa: Sofa, door: DoorOpen, utensils: UtensilsCrossed, mop: Brush } as const;
+const routineIcon = { sofa: Sofa, door: DoorOpen, utensils: UtensilsCrossed, mop: Brush, briefcase: Briefcase, sunset: Sunset } as const;
 
 /** Button entities: state is the last-pressed timestamp; "unknown" just means never pressed. */
-function Routines({ items }: { items: NonNullable<Room["routines"]> }) {
+function Routines({ items, title = "Routines" }: { items: NonNullable<Room["routines"]>; title?: string }) {
   const { get, call } = useHass();
   const [fired, setFired] = useState<string | null>(null);
   return (
     <div className="row">
-      <div className="card-sub" style={{ fontWeight: 500 }}>Routines</div>
+      <div className="card-sub" style={{ fontWeight: 500 }}>{title}</div>
       <div className="routines">
         {items.map((r) => {
           const e = get(r.entity);
@@ -183,14 +183,16 @@ function Routines({ items }: { items: NonNullable<Room["routines"]> }) {
               onClick={() => {
                 setFired(r.entity);
                 setTimeout(() => setFired((f) => (f === r.entity ? null : f)), 1500);
-                call("button", "press", { entity_id: r.entity });
+                const d = r.entity.split(".")[0];
+                if (d === "scene") call("scene", "turn_on", { entity_id: r.entity });
+                else call("button", "press", { entity_id: r.entity });
               }}
             >
               <span className="scene-ic"><I size={16} aria-hidden /></span>
               <span style={{ minWidth: 0 }}>
                 <div className="scene-name">{r.name}</div>
                 <div className="scene-sub num">
-                  {missing ? "Not found" : unavailable ? "Unavailable" : fired === r.entity ? "Started" : Number.isNaN(last) ? "Never run" : `Last run ${relTime(last)}`}
+                  {missing ? "Not found" : unavailable ? "Unavailable" : fired === r.entity ? (r.entity.startsWith("scene.") ? "Activated" : "Started") : Number.isNaN(last) ? "Never run" : `Last run ${relTime(last)}`}
                 </div>
               </span>
             </button>
@@ -231,7 +233,7 @@ function RoomCard({ room }: { room: Room }) {
       ) : (
         <div className="rows">
           {room.controls.map((c) => <ControlRow key={c.entity} c={c} />)}
-          {room.routines && <Routines items={room.routines} />}
+          {room.routines && <Routines items={room.routines} title={room.routinesTitle} />}
           {room.drybox && <Drybox cfg={room.drybox} />}
           {!room.drybox && <div className="row">
             {thermostat && !isUnavailable(thermostat) ? (
