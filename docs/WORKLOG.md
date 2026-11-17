@@ -224,6 +224,17 @@ because MCP can't create automations.
 - Lovelace: new Dining Room section after Living Room (3 rocker tiles + group tile with brightness/colour temp), pushed. NG Premium: Dining Room card after Living Room (new `dining` room icon = Lucide UtensilsCrossed), Dining Switch power/energy in the KPIs; built and deployed.
 - **Verified:** HA states/attributes, Z2M group responses ok, operation modes, deployed bundle contains the new entities. **Not yet verified:** bulbs physically at 3500 K / 50%, which loads Walkway/Dining Table actually switch, dashboards on the tablet, behaviour after the center rocker is switched off and on.
 
+### 22. Fix: TV Spotlight 2 and Sofa Spotlight 2 were swapped (#29)
+
+- In #23 two bulbs were mislabelled: `0x54ef4410012aee86` (was "Sofa Spotlight 2") is physically a TV spotlight, `0x54ef4410012ae78b` (was "TV Spotlight 2") is a sofa spotlight.
+- Swapped names in Z2M (`homeassistant_rename`) via a temporary name: aee86 -> Swap Temp, ae78b -> Sofa Spotlight 2, aee86 -> TV Spotlight 2 (all responses ok).
+- Swapped group membership (all responses ok): **TV Spotlights** (id 1) = 163f74 + aee86, **Sofa Spotlights** (id 2) = aee3f + ae78b (confirmed in `zigbee2mqtt/bridge/groups`).
+- `light.tv_spotlight_2` -> aee86, `light.sofa_spotlight_2` -> ae78b; companions (`_power_outage_memory`, `_device_temperature`, `update.`) followed; no `swap_temp_*` or suffixed `_2_2` entities. Memory switches still **on**.
+- Both groups re-applied 3500 K / 50%: all four bulbs read back on, 3508 K, 50% (aee86 was off before).
+- Dashboards use the group entities only: no change, no redeploy.
+- Pre-existing, not changed: disabled-by-default `sensor.0x…_linkquality` / `_power_outage_count` registry entries for all Spotlight T2s keep their `0x…` IDs.
+- **Verified:** Z2M responses, group membership, HA device identifiers and states. **Not yet verified:** in the room, each group switches the correct pair.
+
 ## Open items
 
 **Dining Room (#25)**
@@ -232,6 +243,7 @@ because MCP can't create automations.
 - [ ] Decide on automations for Walkway / Dining Table (e.g. presence), if any.
 
 **Living Room spotlights (#23)**
+- [ ] (#29) In the room: TV Spotlights and Sofa Spotlights each switch the correct pair after the swap.
 - [ ] Check the 4 bulbs physically (3500 K, 50%, groups switch together) and the tiles on both dashboards.
 - [ ] Optional: power-cycle to confirm power_outage_memory.
 
