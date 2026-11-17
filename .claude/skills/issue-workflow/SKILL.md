@@ -22,6 +22,7 @@ description: >-
   progress comment (done / verified / not verified / next). If it's already current, say so instead of posting a duplicate.
 - **"Commit and open PR"**: check the tree is clean and what's ahead of `origin/main`, then `gh pr create` with "Closes #n", what changed,
   **Verified**, **Not yet verified**, and no attribution line.
+- **"Review / check PR #N"**: hand it to the `pr-reviewer` subagent (`.claude/agents/pr-reviewer.md`, Sonnet, read-only), then relay its verdict.
 - **"Merge PR #N"**: **rebase and merge**, not squash: `gh pr merge <n> --rebase --delete-branch`.
   - Check the PR state first. If it's already merged, say so.
   - If it can't rebase cleanly, rebase the branch onto `origin/main`. Force-push with `--force-with-lease` only after the user agrees.

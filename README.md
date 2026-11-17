@@ -8,6 +8,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Path | Contents |
 |---|---|
 | `.claude/skills/` | Project agent skills: ha-zigbee-device, ha-automation, ha-scene, ng-premium-deploy, sleepy-device-settings, issue-workflow |
+| `.claude/agents/pr-reviewer.md` | Project subagent (Sonnet, read-only): "review PR #N" checks the diff against the issue, live HA and repo conventions, then reports a verdict |
 | `CLAUDE.md` | Guidance for Claude Code: commands, architecture, gotchas, conventions |
 | `README.md` | Setup and reference (areas/devices, MCP, Zigbee/MQTT, automations, dashboard, scripts, workflow) |
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
