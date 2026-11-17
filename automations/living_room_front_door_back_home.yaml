@@ -2,10 +2,9 @@
 id: living_room_front_door_back_home
 alias: 'Living Room: front door opens → Back Home'
 description: 'Front door opens while the TV Spotlights are off (or their TV Light
-  rocker is off): switch on the TV Light and Dining center rockers (they power the
-  spotlights), wait 3 s for the bulbs to boot, then stage the lights: Dining Spotlights,
-  +3 s TV Spotlights, +2 s Ceiling Fan (all 3500K/50%). scene.back_home holds the
-  same end state for manual use.'
+  rocker is off). Staged: Dining center rocker on, 3 s, Dining Spotlights; 3 s, TV
+  Light rocker on (powers the TV Spotlights); 3 s boot, TV Spotlights; 2 s, Ceiling
+  Fan. Lights at 3500K/50%. scene.back_home holds the same end state for manual use.'
 triggers:
 - trigger: state
   entity_id: binary_sensor.front_door_sensor_contact
@@ -23,9 +22,7 @@ conditions:
 actions:
 - action: switch.turn_on
   target:
-    entity_id:
-    - switch.living_room_switch_bottom
-    - switch.dining_switch_center
+    entity_id: switch.dining_switch_center
 - delay:
     seconds: 3
 - action: light.turn_on
@@ -34,6 +31,11 @@ actions:
   data:
     brightness_pct: 50
     color_temp_kelvin: 3500
+- delay:
+    seconds: 3
+- action: switch.turn_on
+  target:
+    entity_id: switch.living_room_switch_bottom
 - delay:
     seconds: 3
 - action: light.turn_on
