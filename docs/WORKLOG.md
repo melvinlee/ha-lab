@@ -252,8 +252,8 @@ because MCP can't create automations.
   - **Verified** by the user with a real door open: all lights on.
 - **Staged lights (user request):** the automation now brings the lights on one after another instead of all at once through the scene:
   - Dining center rocker → 3 s → **Dining Spotlights** → 3 s → **TV Light rocker** → 3 s (bulb boot) → **TV Spotlights** → 2 s → **Ceiling Fan** (lights at 3500K/50%). The TV Light rocker is delayed 3 s (user request).
+  - **Verified** by the user with a real door open: all lights on, in order.
   - `scene.back_home` keeps the same end state for manual use.
-  - Not yet verified with a real door open.
 
 ## Open items
 
