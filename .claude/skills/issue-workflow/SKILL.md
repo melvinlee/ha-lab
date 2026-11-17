@@ -18,6 +18,20 @@ description: >-
   `--onto origin/main` to drop duplicated commits (back up the branch first, force-push with lease, confirm the tree is unchanged).
 - **During work**: after each meaningful step, export from HA, update `README.md` (reference) and add a numbered step to `docs/WORKLOG.md`
   (keep its Summary and Open items current), commit with a plain message (**no `Co-Authored-By` or Claude attribution**) and push.
+- **Editing files HA uses directly** (Samba `/Volumes/config`: `configuration.yaml`, `rest.yaml`, `zigbee2mqtt/configuration.yaml`,
+  `www/`, …): always keep them **tracked in git on the issue branch**.
+  1. **Before editing:**
+     - Make sure a repo copy exists: `ha-config/<file>` for `/config/*.yaml`, `zigbee2mqtt/<…>` for Z2M.
+     - Refresh it from live and **commit it first**, so the PR diff shows exactly what changed.
+     - Also back up on the share (`<file>.bak-<date>-<slug>`).
+  2. **Edit** the live file, or apply the change via an API. Then copy the result back into the repo copy in the **same branch** and commit
+     with the issue number. Changes made via an API (automations, scenes, Z2M device options) count too: export or record them.
+  3. **No secrets in the repo:**
+     - Never copy Z2M `advanced.network_key` / `pan_id` / `ext_pan_id`, `mqtt.password`, `secrets.yaml` or tokens.
+     - Track a **redacted** or **section-only** copy instead (e.g. `zigbee2mqtt/devices-availability.yaml`).
+     - When reading such files, print only the keys you need: parse them and select, rather than `cat`/`sed`.
+     - gitleaks is the backstop, not the filter.
+  4. **Check before the PR:** parse the live file and the repo copy, compare the tracked part, and report it under **Verified**.
 - **"Update the issue"**: tick checklist items in the body (`gh issue view --json body` → edit → `gh issue edit --body-file`) and add a short
   progress comment (done / verified / not verified / next). If it's already current, say so instead of posting a duplicate.
 - **"Commit and open PR"**: check the tree is clean and what's ahead of `origin/main`, then `gh pr create` with "Closes #n", what changed,
