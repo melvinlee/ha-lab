@@ -1,0 +1,19 @@
+# Exported from HA via GET /api/config/scene/config/back_home
+id: back_home
+name: Back Home
+entities:
+  switch.living_room_switch_top:
+    state: 'on'
+  switch.dining_switch_center:
+    state: 'on'
+  light.tv_spotlights:
+    state: 'on'
+    brightness: 128
+    color_temp_kelvin: 3500
+    color_mode: color_temp
+  light.dining_spotlights:
+    state: 'on'
+    brightness: 128
+    color_temp_kelvin: 3500
+    color_mode: color_temp
+icon: mdi:home-import-outline

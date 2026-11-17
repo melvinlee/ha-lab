@@ -21,8 +21,9 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
+| `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (rocker first, then scene), exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
-| `scenes/*.yaml` | Good morning / Movie / Away / Goodnight, exported from HA |
+| `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
 | `scripts/start-issue-branch.sh` | Start an issue branch `feature/<n>-<slug>` from the latest `main` (refuses a dirty tree) |
@@ -47,8 +48,9 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Living Room | TV Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee86` | `light.tv_spotlight_2`, `switch.tv_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee3f` | `light.sofa_spotlight_1`, `switch.sofa_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012ae78b` | `light.sofa_spotlight_2`, `switch.sofa_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
+| Living Room | Front Door Sensor | Aqara door and window sensor (battery, sleepy) | Z2M `0x00158d008bbf6e42` | `binary_sensor.front_door_sensor_contact` (door; on = open), `sensor.front_door_sensor_battery` / `_voltage` / `_device_temperature` |
 | Living Room | TV Spotlights / Sofa Spotlights | Z2M groups (id 1: TV Spotlight 1+2, id 2: Sofa Spotlight 1+2), one Zigbee broadcast each | Z2M group | `light.tv_spotlights`, `light.sofa_spotlights`; set once to 3500 K / 50% (no default scene/automation) |
-| Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (3 rockers, wired relays, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top`, Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs drop off Zigbee and the group is unavailable), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
+| Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (3 rockers, wired relays, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top`, Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power; HA does **not** mark them unavailable, they keep their last state (stale `on`)), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
 | Dining Room | Dining Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001261f11` | `light.dining_spotlight_1`, `switch.dining_spotlight_1_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012624ee` | `light.dining_spotlight_2`, `switch.dining_spotlight_2_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 3 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012b25e9` | `light.dining_spotlight_3`, `switch.dining_spotlight_3_power_outage_memory` (**on**) |
@@ -262,6 +264,15 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 - The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is never switched by an automation.
 - Verified on the devices 2026-11-17 (presence on/off, 10 s Cabinet LED delay, bottom press, rocker LED lights with the Main Light).
 
+### Living Room: front door opens → Back Home
+
+| Automation (id) | Trigger | Condition | Action |
+|---|---|---|---|
+| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | `light.tv_spotlights` is off (nobody home with the lights on) | `switch.dining_switch_center` on → 3 s delay → wait (max 10 s) for `light.dining_spotlights` not unavailable → `scene.back_home` |
+
+- The Dining Spotlights are powered by the center rocker, so the rocker goes on first and the bulbs get time to rejoin before the scene sets 3500 K / 50%.
+  HA keeps the bulbs at their stale last state while unpowered, so the wait usually passes at once and the **3 s delay** is what matters.
+
 ## Scenes
 
 Created with `POST /api/config/scene/config/<id>`, exported to `scenes/<id>.yaml`.
@@ -280,6 +291,8 @@ Night Curtain = relay **ON = open, OFF = closed**.
 |---|---|---|
 | `scene.office_hour` | on, **6000 K** (the light reports 6024 K, its nearest step) | **off** |
 | `scene.after_office` | on, **4000 K** | **off** |
+
+**Living/Dining scene**: `scene.back_home` (**Back Home**): Ceiling Fan `switch.living_room_switch_top` on, Dining center rocker `switch.dining_switch_center` on, `light.tv_spotlights` and `light.dining_spotlights` on at **50% (128) / 3500 K** (bulbs report 3508 K). Used by the front-door automation; not in NG Premium (user decision).
 
 ## Dashboard
 
