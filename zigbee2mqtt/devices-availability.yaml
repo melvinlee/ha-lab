@@ -1,0 +1,46 @@
+# Per-device Zigbee2MQTT availability (reference copy, #35).
+# Live: /config/zigbee2mqtt/configuration.yaml, under `devices:` (global `availability:` stays OFF).
+# Only the 7 Aqara Spotlight T2 bulbs: they sit behind relay rockers, so they lose power when the rocker is off.
+# With this set, Z2M pings each bulb after 5 min of silence and marks it (and its group) `unavailable` in HA,
+# instead of HA keeping a stale `on`.
+#
+# Apply (per device, no file edit needed):
+#   mqtt.publish  zigbee2mqtt/bridge/request/device/options
+#   {"id": "<friendly name>", "options": {"availability": {"timeout": 5}}}
+# Then restart the Zigbee2MQTT app (hassio.addon_restart 45df7312_zigbee2mqtt). The request returns
+# `restart_required: false`, but availability is only published after a restart.
+# Check: zigbee2mqtt/<friendly name>/availability is retained as {"state":"online"|"offline"}.
+#
+# Power: TV Spotlights <- switch.living_room_switch_bottom (TV Light rocker);
+#        Dining Spotlights <- switch.dining_switch_center (Spotlight rocker);
+#        Sofa Spotlights <- no HA rocker (wall circuit).
+
+devices:
+  '0x54ef441001163f74':
+    friendly_name: TV Spotlight 1
+    availability:
+      timeout: 5
+  '0x54ef4410012aee86':
+    friendly_name: TV Spotlight 2
+    availability:
+      timeout: 5
+  '0x54ef4410012aee3f':
+    friendly_name: Sofa Spotlight 1
+    availability:
+      timeout: 5
+  '0x54ef4410012ae78b':
+    friendly_name: Sofa Spotlight 2
+    availability:
+      timeout: 5
+  '0x54ef441001261f11':
+    friendly_name: Dining Spotlight 1
+    availability:
+      timeout: 5
+  '0x54ef4410012624ee':
+    friendly_name: Dining Spotlight 2
+    availability:
+      timeout: 5
+  '0x54ef4410012b25e9':
+    friendly_name: Dining Spotlight 3
+    availability:
+      timeout: 5
