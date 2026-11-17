@@ -89,6 +89,8 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
 - One GitHub issue per piece of work → branch `feature/<issue>-<slug>` from the **latest `main`** (fetch + `pull --ff-only` first) → PR to `main` with "Closes #n".
   Update the issue (checklist + comment) as work progresses. Merge PRs with **rebase and merge** (`gh pr merge <n> --rebase --delete-branch`),
   not squash. PRs up to #26 were squash-merged and stay that way. Full workflow: `.claude/skills/issue-workflow/SKILL.md`.
+- **Files HA reads directly** (Samba share): commit a repo copy *before* editing, sync it back after, and compare the two before the PR.
+  Keep secrets out (redacted or section-only copies). Details: issue-workflow skill, "Editing files HA uses directly".
 - After each change: export what was created in HA, update `README.md` (reference) and add a numbered step to `docs/WORKLOG.md`
   (dated log + summary + open items). Record what was **verified** vs **not yet verified** on real devices.
 - Confirm before hard-to-reverse or disruptive actions on the live house (HA restart, editing `configuration.yaml`, force-push).
