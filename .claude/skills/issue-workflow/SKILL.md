@@ -9,9 +9,11 @@ description: >-
 - **Create an issue** (`gh issue create --body-file`): goal, a table of what will change, task checklist, open questions to decide, and
   **current state checked against live HA** (verify claims; fix typos in names and say so). Only create the issue unless asked to start.
 - **Start work: always branch from the latest `main`.** Other PRs are often merged on GitHub in between, so never branch from a stale
-  local `main` or from another feature branch:
-  `git fetch origin && git switch main && git pull --ff-only origin main && git switch -c feature/<n>-<slug>`.
-  Check `git status` is clean first (stash or ask if not), and confirm `git log -1 main` matches `origin/main` before branching.
+  local `main` or from another feature branch. Use the script:
+  `scripts/start-issue-branch.sh <n> [slug]`. The slug defaults to the issue title.
+  - It refuses a dirty tree; stash or ask if so.
+  - It fetches, fast-forwards `main`, checks `main` == `origin/main`, then creates `feature/<n>-<slug>`.
+  - If the branch already exists, it switches to it instead.
   If `main` moves while the branch is open, merge `origin/main` into the branch (no force-push) before opening the PR. If an earlier PR was **squash-merged** (before #27; new PRs are rebase-merged), rebase
   `--onto origin/main` to drop duplicated commits (back up the branch first, force-push with lease, confirm the tree is unchanged).
 - **During work**: after each meaningful step, export from HA, update `README.md` (reference) and add a numbered step to `docs/WORKLOG.md`
