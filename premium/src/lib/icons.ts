@@ -1,12 +1,12 @@
 import {
-  Lamp, LampCeiling, Blinds, CircleDot, Bot, Thermometer, BedDouble, Monitor, Sofa, Sunrise, Film, Plane, Moon,
+  Lamp, LampCeiling, LampWallDown, Blinds, CircleDot, Bot, Thermometer, BedDouble, Monitor, Sofa, Sunrise, Film, Plane, Moon,
   Sun, Cloud, CloudFog, CloudRain, CloudDrizzle, CloudLightning, CloudSnow, CloudSun, Wind, MoonStar, CloudHail,
   Lightbulb, ToggleRight, Activity, Workflow, Zap, Bath, ShowerHead, Fan, Tv, WashingMachine, CookingPot, type LucideIcon,
 } from "lucide-react";
 import type { RoomControl, Room, SceneDef } from "../config";
 
 export const controlIcon: Record<RoomControl["icon"], LucideIcon> = {
-  ceiling: LampCeiling, strip: Lightbulb, curtain: Blinds, lamp: Lamp, ring: CircleDot, vacuum: Bot, climate: Thermometer, shower: ShowerHead, fan: Fan, tv: Tv, washer: WashingMachine,
+  ceiling: LampCeiling, strip: Lightbulb, curtain: Blinds, lamp: Lamp, ring: CircleDot, vacuum: Bot, climate: Thermometer, shower: ShowerHead, fan: Fan, tv: Tv, washer: WashingMachine, spot: LampWallDown,
 };
 export const roomIcon: Record<Room["icon"], LucideIcon> = { bed: BedDouble, desk: Monitor, sofa: Sofa, bath: Bath, kitchen: CookingPot };
 export const sceneIcon: Record<SceneDef["icon"], LucideIcon> = { sunrise: Sunrise, film: Film, plane: Plane, moon: Moon };

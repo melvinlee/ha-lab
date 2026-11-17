@@ -206,7 +206,20 @@ because MCP can't create automations.
 - `rest.yaml`: `scan_interval` 60 → **600 s** for both stops, `rest.reload`, backup `rest.yaml.bak-20261117-interval`. The card still recounts every 15 s.
 - Deployed. **Not yet verified** on the tablet/phone. The visual refresh itself (#21) is still to do.
 
+### 20. Living Room: TV and Sofa Spotlights (#23)
+
+- Renamed 4x Aqara Spotlight T2 in Z2M (`homeassistant_rename`): TV Spotlight 1/2, Sofa Spotlight 1/2; devices in **Living Room**. No `0x...` entity IDs left.
+- `switch.*_spotlight_*_power_outage_memory` = **on** for all four (read back on).
+- Z2M groups **TV Spotlights** (id 1) and **Sofa Spotlights** (id 2) -> `light.tv_spotlights`, `light.sofa_spotlights` (group devices in Living Room).
+- Both groups set once to 3500 K / 50%: read back on, brightness 128, 3508 K on groups and all four bulbs. No default scene/automation (decision).
+- Lovelace Living Room: two light tiles (brightness + colour temp), pushed. NG Premium: two light controls (new `spot` icon = Lucide LampWallDown), built and deployed.
+- **Verified:** HA states/attributes, Z2M group membership, deployed bundle contains the new entities. **Not yet verified:** physically in sync / correct white, dashboards on the tablet, behaviour after a real power cut.
+
 ## Open items
+
+**Living Room spotlights (#23)**
+- [ ] Check the 4 bulbs physically (3500 K, 50%, groups switch together) and the tiles on both dashboards.
+- [ ] Optional: power-cycle to confirm power_outage_memory.
 
 **Repo setup (issue #10)**
 - [ ] New Claude Code session: check each skill triggers on a natural request.
