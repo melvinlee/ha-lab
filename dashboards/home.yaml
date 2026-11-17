@@ -412,6 +412,34 @@ views:
             grid_options:
               columns: full
 
+      # ── Dining Room: Dining Switch (Z1 Pro) + Dining Spotlights ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Dining Room
+            icon: mdi:silverware-fork-knife
+            heading_style: title
+          - type: tile
+            entity: switch.dining_switch_top
+            name: Walkway
+            icon: mdi:lamp
+          - type: tile
+            entity: switch.dining_switch_center
+            name: Spotlight
+            icon: mdi:spotlight-beam
+          - type: tile
+            entity: switch.dining_switch_bottom
+            name: Dining Table
+            icon: mdi:table-furniture
+          - type: tile
+            entity: light.dining_spotlights
+            name: Dining Spotlights
+            icon: mdi:lamp-wall-down
+            features_position: bottom
+            features:
+              - type: light-brightness
+              - type: light-color-temp
+
       # ── Master Bedroom ──
       # Z1 Pro relays: top = Main light, center = LED Cove, bottom = Night Curtain
       - type: grid

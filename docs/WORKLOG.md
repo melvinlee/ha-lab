@@ -215,7 +215,21 @@ because MCP can't create automations.
 - Lovelace Living Room: two light tiles (brightness + colour temp), pushed. NG Premium: two light controls (new `spot` icon = Lucide LampWallDown), built and deployed.
 - **Verified:** HA states/attributes, Z2M group membership, deployed bundle contains the new entities. **Not yet verified:** physically in sync / correct white, dashboards on the tablet, behaviour after a real power cut.
 
+### 21. Dining Room: Dining Switch and Dining Spotlights (#25)
+
+- New area **Dining Room** (`dining_room`). Renamed in Z2M (`homeassistant_rename`): Dining Switch (Z1 Pro), Dining Spotlight 1/2/3 (Spotlight T2); all in Dining Room. No `0x...` entity IDs left.
+- Rocker names (IDs unchanged): top **Walkway**, center **Spotlight**, bottom **Dining Table**. All three stay `control_relay` (decision A: the center relay powers the bulbs, so `light.dining_spotlights` is unavailable while it is off; memory restores the last state when powered).
+- `switch.dining_spotlight_*_power_outage_memory` = **on** (read back on).
+- Z2M group **Dining Spotlights** (id 3) -> `light.dining_spotlights`, group device in Dining Room. Set once to 3500 K / 50%: read back on, brightness 128, 3508 K on the group and all three bulbs.
+- Lovelace: new Dining Room section after Living Room (3 rocker tiles + group tile with brightness/colour temp), pushed. NG Premium: Dining Room card after Living Room (new `dining` room icon = Lucide UtensilsCrossed), Dining Switch power/energy in the KPIs; built and deployed.
+- **Verified:** HA states/attributes, Z2M group responses ok, operation modes, deployed bundle contains the new entities. **Not yet verified:** bulbs physically at 3500 K / 50%, which loads Walkway/Dining Table actually switch, dashboards on the tablet, behaviour after the center rocker is switched off and on.
+
 ## Open items
+
+**Dining Room (#25)**
+- [ ] Check the 3 bulbs physically and the Dining tiles/card on both dashboards.
+- [ ] Toggle the center rocker off/on once and confirm the bulbs return at their last state.
+- [ ] Decide on automations for Walkway / Dining Table (e.g. presence), if any.
 
 **Living Room spotlights (#23)**
 - [ ] Check the 4 bulbs physically (3500 K, 50%, groups switch together) and the tiles on both dashboards.

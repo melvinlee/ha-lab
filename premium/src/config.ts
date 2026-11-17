@@ -17,7 +17,7 @@ export interface RoomControl {
 export interface Room {
   id: string;
   name: string;
-  icon: "bed" | "desk" | "sofa" | "bath" | "kitchen";
+  icon: "bed" | "desk" | "sofa" | "bath" | "kitchen" | "dining";
   controls: RoomControl[];
   /** Room climate sensors (temperature/humidity). Not the drybox. */
   climate: { temperature?: string; humidity?: string; thermostat?: string };
@@ -31,7 +31,7 @@ export interface Room {
 }
 
 export const ROOMS: Room[] = [
-  // Order on the dashboard: Living Room, (Dining: no area/devices yet), Office, Bathroom, Kitchen, Master Bedroom
+  // Order on the dashboard: Living Room, Dining Room, Office, Bathroom, Kitchen, Master Bedroom
   {
     id: "living_room",
     name: "Living Room",
@@ -51,6 +51,19 @@ export const ROOMS: Room[] = [
       { entity: "button.living_room_qrevo_2_breeze_room_cleaning", name: "Room cleaning", icon: "door" },
       { entity: "button.living_room_qrevo_2_breeze_after_meals", name: "After meals", icon: "utensils" },
       { entity: "button.living_room_qrevo_2_breeze_vac_followed_by_mop", name: "Vac then mop", icon: "mop" },
+    ],
+  },
+  {
+    id: "dining_room",
+    name: "Dining Room",
+    icon: "dining",
+    climate: {},
+    // Center rocker is the relay that powers the spotlights (decision A): the group is unavailable while it is off
+    controls: [
+      { entity: "light.dining_spotlights", name: "Dining Spotlights", kind: "light", icon: "spot" },
+      { entity: "switch.dining_switch_top", name: "Walkway", kind: "switch", icon: "lamp" },
+      { entity: "switch.dining_switch_center", name: "Spotlight", kind: "switch", icon: "spot" },
+      { entity: "switch.dining_switch_bottom", name: "Dining Table", kind: "switch", icon: "ceiling" },
     ],
   },
   {
@@ -122,9 +135,9 @@ export const ROOMS: Room[] = [
 ];
 
 /** Power sensors (W) summed for "Power draw now". Only per-device meters exist today. */
-export const POWER_SENSORS = ["sensor.smart_wall_switch_z1_pro_power", "sensor.living_room_switch_power", "sensor.kitchen_switch_1_power", "sensor.kitchen_switch_2_power"];
+export const POWER_SENSORS = ["sensor.smart_wall_switch_z1_pro_power", "sensor.living_room_switch_power", "sensor.kitchen_switch_1_power", "sensor.kitchen_switch_2_power", "sensor.dining_switch_power"];
 /** Energy sensors (kWh, total_increasing) summed for today/yesterday and the 24h chart. */
-export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy", "sensor.kitchen_switch_1_energy", "sensor.kitchen_switch_2_energy"];
+export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy", "sensor.kitchen_switch_1_energy", "sensor.kitchen_switch_2_energy", "sensor.dining_switch_energy"];
 /** Solar production energy sensors (kWh). None yet. */
 export const SOLAR_SENSORS: string[] = [];
 export const TARIFF_SGD_PER_KWH = 0.3;
