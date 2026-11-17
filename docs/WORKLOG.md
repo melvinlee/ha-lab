@@ -249,7 +249,7 @@ because MCP can't create automations.
   - The automation now switches on **both** relay rockers (TV Light + Dining center), waits 3 s, then runs the scene.
   - The condition is now "TV Light rocker off **or** TV Spotlights off", because the group state goes stale while the rocker is off.
   - The scene also includes the TV Light rocker.
-  - Not yet verified with a real door open.
+  - **Verified** by the user with a real door open: all lights on.
 
 ## Open items
 
