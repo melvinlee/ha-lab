@@ -31,18 +31,24 @@ export interface Room {
 }
 
 export const ROOMS: Room[] = [
+  // Order on the dashboard: Living Room, (Dining: no area/devices yet), Office, Bathroom, Kitchen, Master Bedroom
   {
-    id: "master_bedroom",
-    name: "Master Bedroom",
-    icon: "bed",
-    motion: "binary_sensor.aqara_motion_sensor_p1_occupancy",
+    id: "living_room",
+    name: "Living Room",
+    icon: "sofa",
     climate: {},
     controls: [
-      { entity: "switch.smart_wall_switch_z1_pro_top", name: "Main light", kind: "switch", icon: "ceiling" },
-      { entity: "switch.smart_wall_switch_z1_pro_center", name: "LED Cove", kind: "switch", icon: "strip" },
-      // Curtain on the Z1 Pro bottom relay: relay ON = curtain OPEN, OFF = closed.
-      { entity: "switch.smart_wall_switch_z1_pro_bottom", name: "Night Curtain", kind: "curtain", icon: "curtain", openState: "on" },
-      { entity: "light.bedlamp", name: "Bedlamp", kind: "light", icon: "lamp" },
+      { entity: "switch.living_room_switch_top", name: "Ceiling Fan", kind: "switch", icon: "fan" },
+      { entity: "switch.living_room_switch_center", name: "LED Cove", kind: "switch", icon: "strip" },
+      { entity: "switch.living_room_switch_bottom", name: "TV Light", kind: "switch", icon: "tv" },
+      { entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" },
+    ],
+    // Roborock app routines, exposed by the roborock integration as buttons
+    routines: [
+      { entity: "button.living_room_qrevo_2_breeze_living_room_cleaning", name: "Living room clean", icon: "sofa" },
+      { entity: "button.living_room_qrevo_2_breeze_room_cleaning", name: "Room cleaning", icon: "door" },
+      { entity: "button.living_room_qrevo_2_breeze_after_meals", name: "After meals", icon: "utensils" },
+      { entity: "button.living_room_qrevo_2_breeze_vac_followed_by_mop", name: "Vac then mop", icon: "mop" },
     ],
   },
   {
@@ -98,22 +104,17 @@ export const ROOMS: Room[] = [
     ],
   },
   {
-    id: "living_room",
-    name: "Living Room",
-    icon: "sofa",
+    id: "master_bedroom",
+    name: "Master Bedroom",
+    icon: "bed",
+    motion: "binary_sensor.aqara_motion_sensor_p1_occupancy",
     climate: {},
     controls: [
-      { entity: "switch.living_room_switch_top", name: "Ceiling Fan", kind: "switch", icon: "fan" },
-      { entity: "switch.living_room_switch_center", name: "LED Cove", kind: "switch", icon: "strip" },
-      { entity: "switch.living_room_switch_bottom", name: "TV Light", kind: "switch", icon: "tv" },
-      { entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" },
-    ],
-    // Roborock app routines, exposed by the roborock integration as buttons
-    routines: [
-      { entity: "button.living_room_qrevo_2_breeze_living_room_cleaning", name: "Living room clean", icon: "sofa" },
-      { entity: "button.living_room_qrevo_2_breeze_room_cleaning", name: "Room cleaning", icon: "door" },
-      { entity: "button.living_room_qrevo_2_breeze_after_meals", name: "After meals", icon: "utensils" },
-      { entity: "button.living_room_qrevo_2_breeze_vac_followed_by_mop", name: "Vac then mop", icon: "mop" },
+      { entity: "switch.smart_wall_switch_z1_pro_top", name: "Main light", kind: "switch", icon: "ceiling" },
+      { entity: "switch.smart_wall_switch_z1_pro_center", name: "LED Cove", kind: "switch", icon: "strip" },
+      // Curtain on the Z1 Pro bottom relay: relay ON = curtain OPEN, OFF = closed.
+      { entity: "switch.smart_wall_switch_z1_pro_bottom", name: "Night Curtain", kind: "curtain", icon: "curtain", openState: "on" },
+      { entity: "light.bedlamp", name: "Bedlamp", kind: "light", icon: "lamp" },
     ],
   },
 ];

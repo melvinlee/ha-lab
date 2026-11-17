@@ -49,13 +49,15 @@ function Dashboard() {
       <ConnectionBanner />
       <Scenes />
       <Kpis />
+      <div className="grid bus-row">
+        <BusStops />
+      </div>
       <div className="grid main">
         <div className="col">
           <Rooms />
           <Energy />
         </div>
         <div className="col">
-          <BusStops />
           <Security />
         </div>
       </div>

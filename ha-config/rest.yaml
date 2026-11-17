@@ -1,6 +1,6 @@
 # NG Shuttle bus arrivals (issue #3). The API has no CORS headers, so HA polls it and the dashboard reads the sensor.
 - resource: https://ngshuttle-cyas5qjv.manus.space/api/v1/bus-arrival?BusStopCode=NG
-  scan_interval: 60
+  scan_interval: 600
   timeout: 15
   sensor:
     - name: "NG Shuttle arrivals"
@@ -17,7 +17,7 @@
         - ServiceNotice
 
 - resource: https://ngshuttle-cyas5qjv.manus.space/api/v1/bus-arrival?BusStopCode=Yishun%20MRT
-  scan_interval: 60
+  scan_interval: 600
   timeout: 15
   sensor:
     - name: "Yishun MRT shuttle arrivals"

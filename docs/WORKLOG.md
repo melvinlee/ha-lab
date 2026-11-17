@@ -198,6 +198,14 @@ because MCP can't create automations.
   **Not yet verified**: Switch 2 Right pressed by hand → Switch 1 LED follows.
 - Dashboards: North Gaia Kitchen section; NG Premium Kitchen room (presence, 4 controls) + both switches in power/energy. Deployed.
 
+### 19. NG Premium: room order, bus row, 10-min bus polling (#21, part 1)
+
+- Room cards in the user's order: Living Room → Office → Bathroom → Kitchen → Master Bedroom (Dining requested, but no Dining area/devices yet).
+- Bus cards moved below the KPI row (2 side by side, stacked < 600 px) and made compact (one line per service, compact "No more buses today").
+- ETA tiles: all same-day buses in minutes (bus 3 no longer switches to clock time); "Tmr HH:MM" only for tomorrow.
+- `rest.yaml`: `scan_interval` 60 → **600 s** for both stops, `rest.reload`, backup `rest.yaml.bak-20261117-interval`. The card still recounts every 15 s.
+- Deployed. **Not yet verified** on the tablet/phone. The visual refresh itself (#21) is still to do.
+
 ## Open items
 
 **Repo setup (issue #10)**
