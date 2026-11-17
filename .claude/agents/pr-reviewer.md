@@ -32,7 +32,7 @@ Report back to the caller instead.
   on disk) and matches live. Any untracked or out-of-sync item is a **finding** (usually "Merge after fixes"). Sources:
   - **The issue, its comments, the PR body and the new WORKLOG step:** collect every file path, entity, automation/scene id,
     Z2M device/option, dashboard or `www/` path they mention as created or changed.
-  - **Backups on the share:** `ls -la /Volumes/config /Volumes/config/zigbee2mqtt | grep -i '\.bak'`. A `.bak-<date>-<slug>` from this
+  - **Backups on the share:** `ls -la /Volumes/config/*.bak* /Volumes/config/zigbee2mqtt/*.bak* 2>/dev/null` (full paths show which folder). A `.bak-<date>-<slug>` from this
     issue means that file was edited, so its repo copy (`ha-config/<file>`, `zigbee2mqtt/<…>`) must be in the diff.
   - **Local leftovers:** `git status --porcelain` and `git stash list` on the head branch. Uncommitted or stashed files that belong to
     this issue are not checked in.
