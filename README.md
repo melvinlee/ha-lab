@@ -273,7 +273,7 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 |---|---|---|
 | `kitchen_main_light_sync` | MQTT `zigbee2mqtt/Kitchen Switch 1`, `action == "single_bottom"` | `switch.toggle` Main Light (`switch.kitchen_switch_2_right`) |
 | `kitchen_main_light_indicator` | Main Light or Switch 1 bottom changes; HA start | Copies the state to the other side only when they differ (no loop). Switch 1 bottom stays `decoupled`; its relay just drives the rocker LED |
-| `kitchen_presence_lights` (mode `restart`) | `binary_sensor.kitchen_presence_sensor_presence` off→on / on→off | Present: Cabinet LED, Walkway, Main Light on (all hours). Clear: Walkway + Main Light off, Cabinet LED off after 10 s |
+| `kitchen_presence_lights` (mode `restart`) | `binary_sensor.kitchen_presence_sensor_presence` off→on / on→off **for 5 min** | Present: Cabinet LED, Walkway, Main Light on (all hours). Empty 5 min: Walkway + Main Light off straight away, Cabinet LED off after 10 s (#44) |
 
 - The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is never switched by an automation.
 - Verified on the devices 2026-11-17 (presence on/off, 10 s Cabinet LED delay, bottom press, rocker LED lights with the Main Light).

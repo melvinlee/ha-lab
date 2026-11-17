@@ -296,6 +296,15 @@ because MCP can't create automations.
   - turning a rocker on brings its bulbs back to available;
   - Back Home and Goodnight still behave with unavailable bulbs.
 
+
+### 27. Kitchen: lights off only after 5 min empty (#44)
+
+- `kitchen_presence_lights`: the `clear` trigger (presence on → off) now has `for: 5 min`.
+  - Once the kitchen has been empty for 5 min, Main Light + Walkway go off straight away and the Cabinet LED 10 s later.
+  - Presence returning within the 5 min resets the timer. The `present` trigger is unchanged.
+- Updated via the config API (same id). The export matches HA.
+- **Not yet verified:** leaving the kitchen for 5 min (lights stay on, then turn off in order).
+
 ## Open items
 
 **Front door / Back Home (#32)**
