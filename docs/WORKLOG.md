@@ -180,6 +180,13 @@ because MCP can't create automations.
   confirm `main` = `origin/main`, then branch. If `main` moves while a branch is open, merge `origin/main` in (no force-push) before the PR.
 - Why: PR #12 conflicted twice after #11 and #14 merged.
 
+### 17. Living Room Switch (#17)
+
+- Z1 Pro `0x54ef441001251769` renamed in Z2M to **Living Room Switch** (`homeassistant_rename: true`), area Living Room. 0 old entities left.
+- Rockers: Top **Ceiling Fan** (`mdi:ceiling-fan`), Center **LED Cove**, Bottom **TV Light**. All `control_relay`.
+- **Verified**: each rocker switched off/on (TV Light on/off) from HA and restored (logbook 13:50).
+- North Gaia: 3 tiles in Living Room. NG Premium: Living Room controls + power/energy sensors added (deployed).
+
 ## Open items
 
 **Repo setup (issue #10)**

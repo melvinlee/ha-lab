@@ -225,6 +225,17 @@ views:
                 show_state: true
                 show_icon: false
           - type: tile
+            entity: switch.living_room_switch_top
+            name: Ceiling Fan
+            icon: mdi:ceiling-fan
+          - type: tile
+            entity: switch.living_room_switch_center
+            name: LED Cove
+          - type: tile
+            entity: switch.living_room_switch_bottom
+            name: TV Light
+            icon: mdi:television-ambient-light
+          - type: tile
             entity: vacuum.living_room_qrevo_2_breeze
             name: Roborock
             grid_options:
