@@ -31,3 +31,26 @@
         - BusStopCode
         - Services
         - ServiceNotice
+
+# Nasdaq QQQ (Invesco QQQ ETF) quote for NG Premium (#46). Yahoo Finance public chart endpoint, no API key (unofficial: may change or rate-limit).
+- resource: https://query1.finance.yahoo.com/v8/finance/chart/QQQ?interval=1d&range=1d
+  scan_interval: 300
+  timeout: 15
+  headers:
+    User-Agent: Mozilla/5.0
+  sensor:
+    - name: "QQQ price"
+      unique_id: qqq_price
+      icon: mdi:chart-line
+      unit_of_measurement: USD
+      state_class: measurement
+      value_template: "{{ value_json.chart.result[0].meta.regularMarketPrice | float(0) | round(2) }}"
+      json_attributes_path: "$.chart.result[0].meta"
+      json_attributes:
+        - symbol
+        - currency
+        - exchangeName
+        - chartPreviousClose
+        - regularMarketTime
+        - regularMarketDayHigh
+        - regularMarketDayLow

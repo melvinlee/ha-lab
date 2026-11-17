@@ -185,3 +185,6 @@ export const DEVICE_ENTITIES = ROOMS.flatMap((r) => r.controls.filter((c) => c.k
 
 /** Bus arrivals: REST sensor in HA (ha-config/rest.yaml) holding the API response in attributes. */
 export const BUS_SENSORS = ["sensor.ng_shuttle_arrivals", "sensor.yishun_mrt_shuttle_arrivals"];
+
+/** Stock quotes: REST sensors in HA (ha-config/rest.yaml), state = price, attributes = Yahoo chart meta. Shown before the bus cards. */
+export const STOCK_SENSORS = [{ entity: "sensor.qqq_price", name: "Nasdaq QQQ" }];

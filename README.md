@@ -34,7 +34,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (rocker first, then scene), exported from HA |
-| `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
+| `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `zigbee2mqtt/devices-availability.yaml` | Reference copy of the per-device Z2M availability (5 min) on the 7 spotlights, with how to apply it (#35) |
@@ -80,6 +80,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Bathroom | **Bathroom Motion Sensor P1** | RTCGQ14LM | Z2M `0x54ef4410013de0db` | `binary_sensor.bathroom_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
 | (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
+| (none) | Nasdaq QQQ quote | REST API (Yahoo Finance public chart endpoint, no key, unofficial) | `rest` (`ha-config/rest.yaml`, every 5 min) | `sensor.qqq_price` (USD; attributes `chartPreviousClose`, `regularMarketTime`, day high/low, `exchangeName`). Shown as the **Nasdaq QQQ** card in NG Premium, before the bus stops (#46) |
 | (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
 
 Wireless buttons (E1, TRADFRI) have **no press entity** in Z2M 2.x. Their automations

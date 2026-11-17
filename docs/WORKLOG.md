@@ -305,6 +305,20 @@ because MCP can't create automations.
 - Updated via the config API (same id). The export matches HA.
 - **Not yet verified:** leaving the kitchen for 5 min (lights stay on, then turn off in order).
 
+### 28. NG Premium: Nasdaq QQQ card (#46)
+
+- **REST sensor** `sensor.qqq_price`: Yahoo Finance chart `meta` for QQQ (no API key), `scan_interval: 300`, `User-Agent` header. Previous close and market time are in the attributes.
+- **`rest.yaml` tracking (rule from #41):**
+  - The repo copy matched live before the edit.
+  - Backup on the share: `rest.yaml.bak-20261118-qqq`.
+  - Edited the repo copy, copied it to live (byte-identical), `check_config` valid, `rest.reload` (no restart).
+- **NG Premium:**
+  - New `Stock` card (`components/Stock.tsx`, `STOCK_SENSORS` in `config.ts`), first in the bus row: price, ▲/▼ change and % vs previous close (badge colour + icon + label), "As of HH:MM".
+  - Bus row: 3 columns on wide screens, 2 under 900 px, 1 under 600 px.
+  - Built, deployed, and HA serves the bundle containing `qqq_price`.
+- **Verified:** the sensor reads 654.94 USD (previous close 661.75), and HA serves the new bundle.
+- **Not yet verified:** the card on the tablet and phone. Market-closed and weekend display (it shows the last trade and its time).
+
 ## Open items
 
 **Front door / Back Home (#32)**
