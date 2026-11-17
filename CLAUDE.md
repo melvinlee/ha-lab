@@ -77,7 +77,8 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
 - **Light groups are Z2M groups** (`bridge/request/group/add`, then `group/members/add`). The bulbs change in sync, and the group shows up
   as `light.<group>`. HA won't put a group entity in an area directly, so assign the group's *device* instead. Group ids 1–3 are in use.
 - **Aqara Spotlight T2 has no `power_on_behavior`**, only `switch.*_power_outage_memory` (on = restore the last state). Bulbs behind a
-  relay rocker (Dining center) are `unavailable` while that rocker is off.
+  relay rocker (TV Light, Dining center) lose power when it's off. Z2M **availability** is on **per device for the 7 spotlights only**
+  (`availability: {timeout: 5}`; global off), so they show `unavailable` ~5 min later. A new availability setting needed a **Z2M restart**.
 - **Decoupled rocker pattern**: the rocker is in `decoupled` mode and sends `single_<rocker>`. An MQTT-triggered automation toggles the real load,
   and a two-way mirror automation (acts only when the states differ) keeps the decoupled relay, and so its LED, in step. See `automations/kitchen_*`.
 - A **HA restart** is only needed for new integration *types* in YAML; ask the user first.
