@@ -262,6 +262,7 @@ because MCP can't create automations.
   - **Repo status:** last commit, open issues, open PRs.
 - **Verified:** all 10 badge URLs return an SVG with the right label; the 7 stack badges include their logo.
 - No CI or license badge: the repo has no GitHub Actions and no LICENSE (open questions in #36).
+
 ### 25. Goodnight scene reworked (#38)
 
 - `scene.goodnight` was updated via the config API (same id). The scene was **not applied**: the user will try it.
@@ -278,12 +279,28 @@ because MCP can't create automations.
 - NG Premium hint: "All off, curtain closed" → "Living, Dining, Kitchen, Office off".
 - **Verified:** the config read-back has 13 entities, all `off`. **Not yet verified:** running it in the house.
 
+### 26. Z2M availability for the spotlights (#35)
+
+- User decisions: **5 min** timeout, **only the 7 Spotlight T2s**, Z2M restart OK now.
+- Backup: `/config/zigbee2mqtt/configuration.yaml.bak-20261117-availability`.
+- `zigbee2mqtt/bridge/request/device/options` with `{"availability":{"timeout":5}}` for TV Spotlight 1/2, Sofa Spotlight 1/2 and Dining Spotlight 1–3:
+  - all 7 returned `ok`, `restart_required: false`, and the config file now holds `availability: timeout: 5` under each bulb;
+  - but no `…/availability` topic was published until a **Z2M restart** (`hassio.addon_restart` `45df7312_zigbee2mqtt`, about 30 s without Zigbee, approved by the user). Global availability stays off.
+- **Verified (23:10):**
+  - `zigbee2mqtt/<bulb>/availability` is published (retained).
+  - With the TV Light and Dining center rockers **off**, all TV/Dining bulbs and `light.tv_spotlights` / `light.dining_spotlights` read **`unavailable`**; they used to read a stale `on`.
+  - Bridge `online`. Other devices are fine (Office light, Kitchen, front door sensor report normally).
+- **Unexpected:** the **Sofa Spotlights** (both bulbs + group) also read `unavailable`. Their power isn't on a known HA rocker, so check whether they are switched off at the wall.
+- **Not yet verified:**
+  - turning a rocker on brings its bulbs back to available;
+  - Back Home and Goodnight still behave with unavailable bulbs.
+
 ## Open items
 
 **Front door / Back Home (#32)**
 - [ ] Open and close the front door once so the sensor reports (entities read `unknown` until then).
 - [ ] Test the real flow: TV Spotlights off, open the door → fan, TV + Dining Spotlights on at 3500 K / 50%.
-- [ ] Optional: enable Z2M availability so unpowered dining bulbs show unavailable instead of stale `on`.
+- [x] Z2M availability for the 7 spotlights (#35)
 
 **Dining Room (#25)**
 - [ ] Check the 3 bulbs physically and the Dining tiles/card on both dashboards.
