@@ -1,29 +1,32 @@
 ---
 id: living_room_front_door_back_home
 alias: 'Living Room: front door opens → Back Home'
-description: 'Front door opens while TV Spotlights are off: Dining center rocker on
-  first (it powers the Dining Spotlights), wait until the dining bulbs are reachable
-  (max 10 s), then scene Back Home (fan, TV + Dining Spotlights 3500K/50%).'
+description: 'Front door opens while the TV Spotlights are off (or their TV Light
+  rocker is off): switch on the TV Light rocker and the Dining center rocker first
+  (they power the spotlights), wait for the bulbs to boot, then scene Back Home (fan,
+  TV + Dining Spotlights 3500K/50%).'
 triggers:
 - trigger: state
   entity_id: binary_sensor.front_door_sensor_contact
   from: 'off'
   to: 'on'
 conditions:
-- condition: state
-  entity_id: light.tv_spotlights
-  state: 'off'
+- condition: or
+  conditions:
+  - condition: state
+    entity_id: switch.living_room_switch_bottom
+    state: 'off'
+  - condition: state
+    entity_id: light.tv_spotlights
+    state: 'off'
 actions:
 - action: switch.turn_on
   target:
-    entity_id: switch.dining_switch_center
+    entity_id:
+    - switch.living_room_switch_bottom
+    - switch.dining_switch_center
 - delay:
     seconds: 3
-- wait_template: '{{ states("light.dining_spotlights") not in ["unavailable","unknown"]
-    }}'
-  timeout:
-    seconds: 10
-  continue_on_timeout: true
 - action: scene.turn_on
   target:
     entity_id: scene.back_home

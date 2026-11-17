@@ -43,7 +43,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Office | Aqara Sensor (**drybox**, not room climate) | WSDCGQ11LM | Z2M | `sensor.aqara_sensor_humidity`, `_temperature`, `_battery` |
 | Office | SLZB-06 Zigbee coordinator | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` |
 | Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
-| Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (3 rockers, wired relays) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom`; `sensor.living_room_switch_power` / `_energy` |
+| Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (3 rockers, wired relays) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom` (relay that **powers the TV Spotlights**; off = bulbs unpowered, HA keeps a stale state); `sensor.living_room_switch_power` / `_energy` |
 | Living Room | TV Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001163f74` | `light.tv_spotlight_1`, `switch.tv_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | TV Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee86` | `light.tv_spotlight_2`, `switch.tv_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee3f` | `light.sofa_spotlight_1`, `switch.sofa_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
@@ -270,7 +270,7 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 |---|---|---|---|
 | `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | `light.tv_spotlights` is off (nobody home with the lights on) | `switch.dining_switch_center` on → 3 s delay → wait (max 10 s) for `light.dining_spotlights` not unavailable → `scene.back_home` |
 
-- The Dining Spotlights are powered by the center rocker, so the rocker goes on first and the bulbs get time to rejoin before the scene sets 3500 K / 50%.
+- The TV Spotlights are powered by the Living Room **TV Light** rocker (`switch.living_room_switch_bottom`), and the Dining Spotlights by the Dining center rocker. Both rockers go on first and the bulbs get time to rejoin before the scene sets 3500 K / 50%.
   HA keeps the bulbs at their stale last state while unpowered, so the wait usually passes at once and the **3 s delay** is what matters.
 
 ## Scenes

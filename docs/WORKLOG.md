@@ -245,6 +245,12 @@ because MCP can't create automations.
 - Lovelace Living Room: Front Door badge + tile, Back Home scene tile (tap = `scene.turn_on`), automation tile; pushed. NG Premium: Front Door in `DOORS`, sensor + automation in the timeline (no scene button, user decision); built and deployed.
 - **Verified:** rename + entity IDs, area, scene applies (rocker first) and state restored, automation config read back, dashboards pushed/deployed. **Not yet verified:** sensor contact (unknown until the door is opened once), the automation on a real door open, bulbs physically at 3500 K / 50%.
 
+- **Fix after the first real door test (2026-11-17 21:35):** the automation ran to the end, but the TV Spotlights stayed dark. The **TV Light rocker** (`switch.living_room_switch_bottom`) had been switched off 2 s earlier, and it powers the TV Spotlights, so the group command reached unpowered bulbs (HA still showed them `on`).
+  - The automation now switches on **both** relay rockers (TV Light + Dining center), waits 3 s, then runs the scene.
+  - The condition is now "TV Light rocker off **or** TV Spotlights off", because the group state goes stale while the rocker is off.
+  - The scene also includes the TV Light rocker.
+  - Not yet verified with a real door open.
+
 ## Open items
 
 **Front door / Back Home (#32)**
