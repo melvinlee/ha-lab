@@ -208,6 +208,35 @@ views:
             grid_options:
               columns: full
 
+      # ── Kitchen: Switch 1 (Z1 Pro), Switch 2 (D1), presence sensor ──
+      - type: grid
+        cards:
+          - type: heading
+            heading: Kitchen
+            icon: mdi:countertop
+            heading_style: title
+            badges:
+              - type: entity
+                entity: binary_sensor.kitchen_presence_sensor_presence
+                show_state: true
+                show_icon: true
+          - type: tile
+            entity: switch.kitchen_switch_2_right
+            name: Main Light
+            icon: mdi:ceiling-light
+          - type: tile
+            entity: switch.kitchen_switch_1_center
+            name: Walkway
+          - type: tile
+            entity: switch.kitchen_switch_1_top
+            name: Cabinet LED
+          - type: tile
+            entity: switch.kitchen_switch_2_left
+            name: Washing Machine
+            icon: mdi:washing-machine
+          - type: tile
+            entity: automation.kitchen_presence_lights
+            name: Presence lights
       # ── Living Room: Roborock Qrevo 2 Breeze ──
       - type: grid
         cards:

@@ -7,7 +7,7 @@ export interface RoomControl {
   entity: string;
   name: string;
   kind: ControlKind;
-  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate" | "shower" | "fan" | "tv";
+  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate" | "shower" | "fan" | "tv" | "washer";
   /** mode: automation this switch pauses while on (shown as the status line). */
   pauses?: string;
   /** curtain on a relay: which relay state means "open". */
@@ -17,7 +17,7 @@ export interface RoomControl {
 export interface Room {
   id: string;
   name: string;
-  icon: "bed" | "desk" | "sofa" | "bath";
+  icon: "bed" | "desk" | "sofa" | "bath" | "kitchen";
   controls: RoomControl[];
   /** Room climate sensors (temperature/humidity). Not the drybox. */
   climate: { temperature?: string; humidity?: string; thermostat?: string };
@@ -83,6 +83,21 @@ export const ROOMS: Room[] = [
     ],
   },
   {
+    id: "kitchen",
+    name: "Kitchen",
+    icon: "kitchen",
+    motion: "binary_sensor.kitchen_presence_sensor_presence",
+    climate: {},
+    // Switch 1 (Z1 Pro): top = Cabinet LED, center = Walkway, bottom = decoupled (toggles Main Light; its relay mirrors it for the LED).
+    // Switch 2 (D1): left = Washing Machine, right = Main Light relay.
+    controls: [
+      { entity: "switch.kitchen_switch_2_right", name: "Main Light", kind: "switch", icon: "ceiling" },
+      { entity: "switch.kitchen_switch_1_center", name: "Walkway", kind: "switch", icon: "lamp" },
+      { entity: "switch.kitchen_switch_1_top", name: "Cabinet LED", kind: "switch", icon: "strip" },
+      { entity: "switch.kitchen_switch_2_left", name: "Washing Machine", kind: "switch", icon: "washer" },
+    ],
+  },
+  {
     id: "living_room",
     name: "Living Room",
     icon: "sofa",
@@ -104,9 +119,9 @@ export const ROOMS: Room[] = [
 ];
 
 /** Power sensors (W) summed for "Power draw now". Only per-device meters exist today. */
-export const POWER_SENSORS = ["sensor.smart_wall_switch_z1_pro_power", "sensor.living_room_switch_power"];
+export const POWER_SENSORS = ["sensor.smart_wall_switch_z1_pro_power", "sensor.living_room_switch_power", "sensor.kitchen_switch_1_power", "sensor.kitchen_switch_2_power"];
 /** Energy sensors (kWh, total_increasing) summed for today/yesterday and the 24h chart. */
-export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy"];
+export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy", "sensor.kitchen_switch_1_energy", "sensor.kitchen_switch_2_energy"];
 /** Solar production energy sensors (kWh). None yet. */
 export const SOLAR_SENSORS: string[] = [];
 export const TARIFF_SGD_PER_KWH = 0.3;

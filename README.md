@@ -15,6 +15,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `automations/master_bedroom_tradfri_double_click.yaml` | TRADFRI double-click → Bedlamp toggle, exported from HA |
+| `automations/kitchen_*.yaml` | Kitchen: Switch 1 bottom → Main Light, Main Light status mirror, presence lights, exported from HA |
 | `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
 | `automations/master_bedroom_slider_dims_bedlamp.yaml` | Z1 Pro slider → Bedlamp brightness, exported from HA |
 | `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
@@ -41,6 +42,9 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Office | SLZB-06 Zigbee coordinator | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` |
 | Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
 | Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (3 rockers, wired relays) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom`; `sensor.living_room_switch_power` / `_energy` |
+| Kitchen | Kitchen Switch 1 | Aqara Z1 Pro (3 rockers) | Z2M `0x54ef4410011f846e` | Top **Cabinet LED** `switch.kitchen_switch_1_top`, Center **Walkway** `switch.kitchen_switch_1_center`, Bottom **decoupled** `switch.kitchen_switch_1_bottom` (press → Main Light; relay mirrors Main Light for the LED) |
+| Kitchen | Kitchen Switch 2 | Aqara D1 with neutral, double rocker | Z2M `0x00158d008b849b39` | Left **Washing Machine** `switch.kitchen_switch_2_left`, Right **Main Light** `switch.kitchen_switch_2_right` (the Main Light relay) |
+| Kitchen | Kitchen Presence Sensor | Aqara presence sensor (mmWave) | Z2M `0x54ef4410011f6f8e` | `binary_sensor.kitchen_presence_sensor_presence` |
 | Master Bedroom | Aqara Motion sensor P1 | RTCGQ14LM | Z2M `0x54ef4410013ddb88` | `binary_sensor.aqara_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
 | Master Bedroom | **Bedroom Switch** (Z2M: Smart wall switch Z1 Pro) | ZNQBKG45LM, 4-rocker | Z2M `0x54ef4410011fd575` | `switch.smart_wall_switch_z1_pro_top` = **Main light**, `_center` = **LED Cove**, `_bottom` = **Night Curtain** (a curtain on the relay: **ON = open, OFF = closed**) |
 | Master Bedroom | Bedlamp | IKEA TRADFRI bulb E26/E27 white spectrum 806 lm (LED2004G8) | Z2M `0x04cd15fffe73e97e` | `light.bedlamp` (2200–4000 K) |
@@ -51,7 +55,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
 | (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
 
-Kitchen has no devices yet. Wireless buttons (E1, TRADFRI) have **no press entity** in Z2M 2.x. Their automations
+Wireless buttons (E1, TRADFRI) have **no press entity** in Z2M 2.x. Their automations
 use MQTT triggers on `value_json.action`.
 
 **Renaming:** rename in **Z2M** (with "update HA entity ID") to change entity IDs and the MQTT topic. Rename in **HA** (device
@@ -235,6 +239,17 @@ exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
 
 Exported to `automations/bathroom_*.yaml`. No night mode (optional on #8). The right rocker is **decoupled**, so its relay only switches
 through HA (if HA or Z2M is down, the right rocker does nothing).
+
+### Kitchen: Switch 1 bottom, Main Light status, presence lights
+
+| Automation (id) | Trigger | Action |
+|---|---|---|
+| `kitchen_main_light_sync` | MQTT `zigbee2mqtt/Kitchen Switch 1`, `action == "single_bottom"` | `switch.toggle` Main Light (`switch.kitchen_switch_2_right`) |
+| `kitchen_main_light_indicator` | Main Light or Switch 1 bottom changes; HA start | Copies the state to the other side only when they differ (no loop). Switch 1 bottom stays `decoupled`; its relay just drives the rocker LED |
+| `kitchen_presence_lights` (mode `restart`) | `binary_sensor.kitchen_presence_sensor_presence` off→on / on→off | Present: Cabinet LED, Walkway, Main Light on (all hours). Clear: Walkway + Main Light off, Cabinet LED off after 10 s |
+
+- The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is never switched by an automation.
+- Verified on the devices 2026-11-17 (presence on/off, 10 s Cabinet LED delay, bottom press, rocker LED lights with the Main Light).
 
 ## Scenes
 

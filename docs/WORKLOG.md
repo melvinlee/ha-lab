@@ -187,6 +187,17 @@ because MCP can't create automations.
 - **Verified**: each rocker switched off/on (TV Light on/off) from HA and restored (logbook 13:50).
 - North Gaia: 3 tiles in Living Room. NG Premium: Living Room controls + power/energy sensors added (deployed).
 
+### 18. Kitchen: switches, presence sensor, automations (#19)
+
+- Z2M renames: **Kitchen Switch 1** (Z1 Pro), **Kitchen Switch 2** (D1), **Kitchen Presence Sensor**; area Kitchen; 0 old IDs left.
+- Rockers: Switch 1 Cabinet LED / Walkway / bottom **decoupled**; Switch 2 **Left = Washing Machine, Right = Main Light** (user corrected an initial Left/Right swap).
+- Automations: `kitchen_main_light_sync` (`single_bottom` → toggle Main Light), `kitchen_main_light_indicator` (two-way status mirror so the
+  decoupled rocker's LED follows the Main Light), `kitchen_presence_lights` (on at all hours; off: Walkway + Main Light now, Cabinet LED +10 s).
+- ⚠️ Before the Left/Right correction, testing switched the Washing Machine socket on/off 6 times (14:26–14:28); it ended off as before, 0 W.
+- **Verified on the devices**: presence on/off, 10 s Cabinet LED delay, bottom press toggles Main Light, the rocker LED lights with the Main Light (user).
+  **Not yet verified**: Switch 2 Right pressed by hand → Switch 1 LED follows.
+- Dashboards: North Gaia Kitchen section; NG Premium Kitchen room (presence, 4 controls) + both switches in power/energy. Deployed.
+
 ## Open items
 
 **Repo setup (issue #10)**
