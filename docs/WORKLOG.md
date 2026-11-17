@@ -262,6 +262,21 @@ because MCP can't create automations.
   - **Repo status:** last commit, open issues, open PRs.
 - **Verified:** all 10 badge URLs return an SVG with the right label; the 7 stack badges include their logo.
 - No CI or license badge: the repo has no GitHub Actions and no LICENSE (open questions in #36).
+### 25. Goodnight scene reworked (#38)
+
+- `scene.goodnight` was updated via the config API (same id). The scene was **not applied**: the user will try it.
+- It no longer touches the Master Bedroom (main light, cove, curtain, bedlamp removed). It now turns off:
+  - Living Room: Ceiling Fan, LED Cove, TV Light rocker, TV/Sofa Spotlights.
+  - Dining Room: Spotlight rocker, Dining Spotlights, Dining Table (Walkway kept).
+  - Kitchen: Main Light, Walkway, Cabinet LED.
+  - Office: Ceiling light, Ambient ring.
+- User decisions:
+  - Spotlight bulbs **and** their power rockers off.
+  - Fan off.
+  - Bathroom left out.
+  - SLZB-06 LED switches untouched.
+- NG Premium hint: "All off, curtain closed" → "Living, Dining, Kitchen, Office off".
+- **Verified:** the config read-back has 13 entities, all `off`. **Not yet verified:** running it in the house.
 
 ## Open items
 
