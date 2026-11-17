@@ -1,0 +1,16 @@
+---
+id: kitchen_main_light_sync
+alias: 'Kitchen: Switch 1 bottom toggles Main Light'
+description: Kitchen Switch 1 bottom rocker is decoupled; its press (single_bottom)
+  toggles the Main Light on Kitchen Switch 2 right.
+triggers:
+- trigger: mqtt
+  topic: zigbee2mqtt/Kitchen Switch 1
+  value_template: "{{ value_json.action }}"
+  payload: single_bottom
+conditions: []
+actions:
+- action: switch.toggle
+  target:
+    entity_id: switch.kitchen_switch_2_right
+mode: queued

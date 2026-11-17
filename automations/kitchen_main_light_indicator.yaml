@@ -1,0 +1,45 @@
+---
+id: kitchen_main_light_indicator
+alias: 'Kitchen: Switch 1 bottom status follows Main Light'
+description: 'Switch 1 bottom stays decoupled (presses never switch its relay). The
+  Main Light relay is Kitchen Switch 2 right. Switch 1 bottom''s own relay mirrors
+  the Main Light so its LED shows the light''s state. Two-way: a change on either
+  side copies to the other only when they differ (no loop).'
+triggers:
+- trigger: state
+  entity_id: switch.kitchen_switch_2_right
+  to:
+  - 'on'
+  - 'off'
+  id: main
+- trigger: state
+  entity_id: switch.kitchen_switch_1_bottom
+  to:
+  - 'on'
+  - 'off'
+  id: indicator
+- trigger: homeassistant
+  event: start
+  id: main
+conditions:
+- condition: template
+  value_template: "{{ states('switch.kitchen_switch_2_right') in ['on','off'] and
+    states('switch.kitchen_switch_1_bottom') in ['on','off'] and states('switch.kitchen_switch_2_right')
+    != states('switch.kitchen_switch_1_bottom') }}"
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id: main
+    sequence:
+    - action: switch.turn_{{ states('switch.kitchen_switch_2_right') }}
+      target:
+        entity_id: switch.kitchen_switch_1_bottom
+  - conditions:
+    - condition: trigger
+      id: indicator
+    sequence:
+    - action: switch.turn_{{ states('switch.kitchen_switch_1_bottom') }}
+      target:
+        entity_id: switch.kitchen_switch_2_right
+mode: queued
