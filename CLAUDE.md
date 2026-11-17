@@ -30,6 +30,8 @@ npm run typecheck
 scripts/deploy-premium.sh     # build -> rsync to /Volumes/config/www/premium -> create/update /dashboard-premium (needs the Samba mount)
 scripts/push-dashboard.sh     # dashboards/home.yaml -> Lovelace dashboard "North Gaia" (/dashboard-north-gaia), via websocket
 
+scripts/start-issue-branch.sh <issue> [slug]   # new feature/<n>-<slug> branch from the latest main (refuses a dirty tree)
+
 node scripts/mqtt-listen.mjs 'zigbee2mqtt/<Z2M name>' 60     # watch device messages (button/slider payloads), read-only
 node scripts/ota-on-wake.mjs <Z2M name> update.<entity> 180  # OTA for a sleepy device: waits for its next message, calls update.install once
 
@@ -72,13 +74,20 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
 - The Bash tool's shell is **zsh**: `set -- $var` doesn't word-split. Run polling scripts with `bash`.
 - `scripts/ha-ws.mjs` must not `process.exit()` before stdout flushes (large outputs truncate).
 - HA caches `/local`. `deploy-premium.sh` cache-busts with `?v=<timestamp>`; users may still need a refresh.
+- **Light groups are Z2M groups** (`bridge/request/group/add`, then `group/members/add`). The bulbs change in sync, and the group shows up
+  as `light.<group>`. HA won't put a group entity in an area directly, so assign the group's *device* instead. Group ids 1–3 are in use.
+- **Aqara Spotlight T2 has no `power_on_behavior`**, only `switch.*_power_outage_memory` (on = restore the last state). Bulbs behind a
+  relay rocker (Dining center) are `unavailable` while that rocker is off.
+- **Decoupled rocker pattern**: the rocker is in `decoupled` mode and sends `single_<rocker>`. An MQTT-triggered automation toggles the real load,
+  and a two-way mirror automation (acts only when the states differ) keeps the decoupled relay, and so its LED, in step. See `automations/kitchen_*`.
 - A **HA restart** is only needed for new integration *types* in YAML; ask the user first.
 
 ## Conventions
 
 - **No `Co-Authored-By` or Claude attribution** in commits or PR descriptions.
 - One GitHub issue per piece of work → branch `feature/<issue>-<slug>` from the **latest `main`** (fetch + `pull --ff-only` first) → PR to `main` with "Closes #n".
-  Update the issue (checklist + comment) as work progresses.
+  Update the issue (checklist + comment) as work progresses. Merge PRs with **rebase and merge** (`gh pr merge <n> --rebase --delete-branch`),
+  not squash. PRs up to #26 were squash-merged and stay that way. Full workflow: `.claude/skills/issue-workflow/SKILL.md`.
 - After each change: export what was created in HA, update `README.md` (reference) and add a numbered step to `docs/WORKLOG.md`
   (dated log + summary + open items). Record what was **verified** vs **not yet verified** on real devices.
 - Confirm before hard-to-reverse or disruptive actions on the live house (HA restart, editing `configuration.yaml`, force-push).
