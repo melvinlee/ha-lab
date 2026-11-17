@@ -235,7 +235,22 @@ because MCP can't create automations.
 - Pre-existing, not changed: disabled-by-default `sensor.0x…_linkquality` / `_power_outage_count` registry entries for all Spotlight T2s keep their `0x…` IDs.
 - **Verified:** Z2M responses, group membership, HA device identifiers and states. **Not yet verified:** in the room, each group switches the correct pair.
 
+### 23. Front door sensor opens → Back Home scene (#32)
+
+- Renamed `0x00158d008bbf6e42` (Aqara door and window sensor, battery) in Z2M to **Front Door Sensor** (`homeassistant_rename`, sent once; applied immediately): `binary_sensor.front_door_sensor_contact`, `sensor.front_door_sensor_battery` / `_voltage` / `_device_temperature`, `button.front_door_sensor_identify`. Device assigned to **Living Room**. Disabled-by-default `sensor.0x00158d008bbf6e42_linkquality` / `_power_outage_count` / `_trigger_count` keep their `0x…` IDs (same as the Spotlight T2s).
+- Scene **Back Home** (`scene.back_home`): Ceiling Fan on, Dining center rocker on, TV + Dining Spotlights 128 / 3500 K (`color_mode: color_temp`).
+- Automation `living_room_front_door_back_home` (entity `automation.living_room_front_door_opens_back_home`, mode single): door off→on, only if TV Spotlights are off; actions rocker on → 3 s → wait for the dining group (max 10 s) → scene. Rocker first because the scene would otherwise send the bulb commands while the bulbs are still unpowered. `check_config` valid.
+- Scene test (once, same order as the automation): before = fan on, center off, TV on 153 / 3508 K, dining group "on" 120 / 3508 K. After: center on, TV and all three dining bulbs on 128 / 3508 K. Restored: TV 153, dining 120, center off; read back identical to before.
+- **Stale dining state:** with the center rocker off, `light.dining_spotlights` and all three bulbs still read `on`. Z2M availability isn't marking unpowered bulbs offline, so HA never shows them unavailable. The wait_template in the automation therefore rarely waits; the 3 s delay does the work.
+- Lovelace Living Room: Front Door badge + tile, Back Home scene tile (tap = `scene.turn_on`), automation tile; pushed. NG Premium: Front Door in `DOORS`, sensor + automation in the timeline (no scene button, user decision); built and deployed.
+- **Verified:** rename + entity IDs, area, scene applies (rocker first) and state restored, automation config read back, dashboards pushed/deployed. **Not yet verified:** sensor contact (unknown until the door is opened once), the automation on a real door open, bulbs physically at 3500 K / 50%.
+
 ## Open items
+
+**Front door / Back Home (#32)**
+- [ ] Open and close the front door once so the sensor reports (entities read `unknown` until then).
+- [ ] Test the real flow: TV Spotlights off, open the door → fan, TV + Dining Spotlights on at 3500 K / 50%.
+- [ ] Optional: enable Z2M availability so unpowered dining bulbs show unavailable instead of stale `on`.
 
 **Dining Room (#25)**
 - [ ] Check the 3 bulbs physically and the Dining tiles/card on both dashboards.

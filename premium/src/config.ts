@@ -147,13 +147,17 @@ export const WEATHER = "weather.home";
 
 export interface SecurityItem { entity: string; name: string }
 export const LOCKS: SecurityItem[] = [];
-export const DOORS: SecurityItem[] = [];
+export const DOORS: SecurityItem[] = [
+  { entity: "binary_sensor.front_door_sensor_contact", name: "Front Door" },
+];
 export const CAMERAS: SecurityItem[] = [];
 
 /** Entities shown in the "recent events" timeline. */
 export const TIMELINE_ENTITIES = [
   ...ROOMS.flatMap((r) => r.controls.map((c) => c.entity)),
   "binary_sensor.aqara_motion_sensor_p1_occupancy",
+  "binary_sensor.front_door_sensor_contact",
+  "automation.living_room_front_door_opens_back_home",
   "automation.master_bedroom_motion_turns_on_main_light",
   "automation.master_bedroom_no_motion_5_min_turns_off_lights",
   "automation.master_bedroom_tradfri_button_toggles_led_cove",
