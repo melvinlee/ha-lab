@@ -7,7 +7,7 @@ export interface RoomControl {
   entity: string;
   name: string;
   kind: ControlKind;
-  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate" | "shower" | "fan" | "tv" | "washer";
+  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate" | "shower" | "fan" | "tv" | "washer" | "spot";
   /** mode: automation this switch pauses while on (shown as the status line). */
   pauses?: string;
   /** curtain on a relay: which relay state means "open". */
@@ -41,6 +41,8 @@ export const ROOMS: Room[] = [
       { entity: "switch.living_room_switch_top", name: "Ceiling Fan", kind: "switch", icon: "fan" },
       { entity: "switch.living_room_switch_center", name: "LED Cove", kind: "switch", icon: "strip" },
       { entity: "switch.living_room_switch_bottom", name: "TV Light", kind: "switch", icon: "tv" },
+      { entity: "light.tv_spotlights", name: "TV Spotlights", kind: "light", icon: "spot" },
+      { entity: "light.sofa_spotlights", name: "Sofa Spotlights", kind: "light", icon: "spot" },
       { entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" },
     ],
     // Roborock app routines, exposed by the roborock integration as buttons

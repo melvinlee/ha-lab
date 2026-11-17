@@ -265,6 +265,22 @@ views:
             name: TV Light
             icon: mdi:television-ambient-light
           - type: tile
+            entity: light.tv_spotlights
+            name: TV Spotlights
+            icon: mdi:lamp-wall-down
+            features_position: bottom
+            features:
+              - type: light-brightness
+              - type: light-color-temp
+          - type: tile
+            entity: light.sofa_spotlights
+            name: Sofa Spotlights
+            icon: mdi:lamp-wall-down
+            features_position: bottom
+            features:
+              - type: light-brightness
+              - type: light-color-temp
+          - type: tile
             entity: vacuum.living_room_qrevo_2_breeze
             name: Roborock
             grid_options:
