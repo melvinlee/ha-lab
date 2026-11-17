@@ -255,6 +255,14 @@ because MCP can't create automations.
   - **Verified** by the user with a real door open: all lights on, in order.
   - `scene.back_home` keeps the same end state for manual use.
 
+### 24. README badges (#36)
+
+- Badge row under the README title, all shields.io (no new services):
+  - **Stack:** Home Assistant 2026.11, Zigbee2MQTT/SLZB-06, Claude Code (MCP), React 19, Vite 8, TypeScript 7, pre-commit/gitleaks.
+  - **Repo status:** last commit, open issues, open PRs.
+- **Verified:** all 10 badge URLs return an SVG with the right label; the 7 stack badges include their logo.
+- No CI or license badge: the repo has no GitHub Actions and no LICENSE (open questions in #36).
+
 ## Open items
 
 **Front door / Back Home (#32)**
