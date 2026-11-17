@@ -1,5 +1,16 @@
 # ha-lab
 
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.11-41BDF5?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
+[![Zigbee2MQTT](https://img.shields.io/badge/Zigbee2MQTT-SLZB--06-FFC135?logo=zigbee&logoColor=black)](https://www.zigbee2mqtt.io/)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-MCP-D97757?logo=claude&logoColor=white)](https://claude.com/claude-code)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](premium/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](premium/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7-3178C6?logo=typescript&logoColor=white)](premium/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-gitleaks-FAB040?logo=pre-commit&logoColor=white)](.pre-commit-config.yaml)
+[![Last commit](https://img.shields.io/github/last-commit/melvinlee/ha-lab)](https://github.com/melvinlee/ha-lab/commits/main)
+[![Open issues](https://img.shields.io/github/issues/melvinlee/ha-lab)](https://github.com/melvinlee/ha-lab/issues)
+[![Open PRs](https://img.shields.io/github/issues-pr/melvinlee/ha-lab)](https://github.com/melvinlee/ha-lab/pulls)
+
 Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 **Model Context Protocol Server** integration (streamable HTTP at `/api/mcp`).
 
