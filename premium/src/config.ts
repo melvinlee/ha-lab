@@ -7,7 +7,7 @@ export interface RoomControl {
   entity: string;
   name: string;
   kind: ControlKind;
-  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate" | "shower";
+  icon: "ceiling" | "strip" | "curtain" | "lamp" | "ring" | "vacuum" | "climate" | "shower" | "fan" | "tv";
   /** mode: automation this switch pauses while on (shown as the status line). */
   pauses?: string;
   /** curtain on a relay: which relay state means "open". */
@@ -87,7 +87,12 @@ export const ROOMS: Room[] = [
     name: "Living Room",
     icon: "sofa",
     climate: {},
-    controls: [{ entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" }],
+    controls: [
+      { entity: "switch.living_room_switch_top", name: "Ceiling Fan", kind: "switch", icon: "fan" },
+      { entity: "switch.living_room_switch_center", name: "LED Cove", kind: "switch", icon: "strip" },
+      { entity: "switch.living_room_switch_bottom", name: "TV Light", kind: "switch", icon: "tv" },
+      { entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" },
+    ],
     // Roborock app routines, exposed by the roborock integration as buttons
     routines: [
       { entity: "button.living_room_qrevo_2_breeze_living_room_cleaning", name: "Living room clean", icon: "sofa" },
@@ -99,9 +104,9 @@ export const ROOMS: Room[] = [
 ];
 
 /** Power sensors (W) summed for "Power draw now". Only per-device meters exist today. */
-export const POWER_SENSORS = ["sensor.smart_wall_switch_z1_pro_power"];
+export const POWER_SENSORS = ["sensor.smart_wall_switch_z1_pro_power", "sensor.living_room_switch_power"];
 /** Energy sensors (kWh, total_increasing) summed for today/yesterday and the 24h chart. */
-export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy"];
+export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy"];
 /** Solar production energy sensors (kWh). None yet. */
 export const SOLAR_SENSORS: string[] = [];
 export const TARIFF_SGD_PER_KWH = 0.3;
