@@ -37,6 +37,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
+| `zigbee2mqtt/devices-availability.yaml` | Reference copy of the per-device Z2M availability (5 min) on the 7 spotlights, with how to apply it (#35) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
 | `scripts/start-issue-branch.sh` | Start an issue branch `feature/<n>-<slug>` from the latest `main` (refuses a dirty tree) |
 | `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |

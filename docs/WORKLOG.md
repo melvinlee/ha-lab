@@ -283,6 +283,7 @@ because MCP can't create automations.
 
 - User decisions: **5 min** timeout, **only the 7 Spotlight T2s**, Z2M restart OK now.
 - Backup: `/config/zigbee2mqtt/configuration.yaml.bak-20261117-availability`.
+- Repo record: `zigbee2mqtt/devices-availability.yaml` (the 7 device entries, which match the live config).
 - `zigbee2mqtt/bridge/request/device/options` with `{"availability":{"timeout":5}}` for TV Spotlight 1/2, Sofa Spotlight 1/2 and Dining Spotlight 1–3:
   - all 7 returned `ok`, `restart_required: false`, and the config file now holds `availability: timeout: 5` under each bulb;
   - but no `…/availability` topic was published until a **Z2M restart** (`hassio.addon_restart` `45df7312_zigbee2mqtt`, about 30 s without Zigbee, approved by the user). Global availability stays off.
