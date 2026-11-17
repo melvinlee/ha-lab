@@ -177,7 +177,7 @@ export const SCENES: SceneDef[] = [
   { entity: "scene.good_morning", name: "Good morning", icon: "sunrise", hint: "Lights up, curtain open" },
   { entity: "scene.movie", name: "Movie", icon: "film", hint: "Cove + dim bedlamp, curtain closed" },
   { entity: "scene.away", name: "Away", icon: "plane", hint: "All lights off" },
-  { entity: "scene.goodnight", name: "Goodnight", icon: "moon", hint: "All off, curtain closed" },
+  { entity: "scene.goodnight", name: "Goodnight", icon: "moon", hint: "Living, Dining, Kitchen, Office off" },
 ];
 
 /** Lights and switches counted in the devices-on KPI (curtains and vacuums excluded). */

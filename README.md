@@ -296,7 +296,17 @@ Night Curtain = relay **ON = open, OFF = closed**.
 | `scene.good_morning` | on | on | **open** (on) | on, 100% @ 4000 K | white on |
 | `scene.movie` | off | on | **closed** (off) | on, 15% @ 2200 K | off / off |
 | `scene.away` | off | off | *unchanged* | off | off / off |
-| `scene.goodnight` | off | off | **closed** (off) | off | off / off |
+| `scene.goodnight` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | off / off (see below) |
+
+**Goodnight** (`scene.goodnight`, reworked in #38) leaves the **Master Bedroom untouched** (no main light/cove/bedlamp change, curtain not moved) and turns **off**:
+- **Living Room:** Ceiling Fan, LED Cove, TV Light rocker, TV Spotlights, Sofa Spotlights.
+- **Dining Room:** Spotlight rocker, Dining Spotlights, Dining Table. **Walkway is left as it is.**
+- **Kitchen:** Main Light (Switch 2 right), Walkway, Cabinet LED.
+- **Office:** Ceiling light, Ambient ring.
+
+Notes:
+- The spotlight rockers are cut too (user decision), so the bulbs lose power. The next "on" needs the rocker first; Back Home does this.
+- Never included: the Washing Machine socket, the decoupled Kitchen bottom rocker (it mirrors the Main Light), and the Bathroom (its motion auto-off handles it).
 
 **Office-only scenes**: ceiling light colour temperature (brightness untouched) and the **ambient ring off**.
 

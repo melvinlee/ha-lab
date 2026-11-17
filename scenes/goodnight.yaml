@@ -1,14 +1,29 @@
 # Exported from HA via GET /api/config/scene/config/goodnight
+---
 id: goodnight
 name: Goodnight
 entities:
-  switch.smart_wall_switch_z1_pro_top:
+  switch.living_room_switch_top:
     state: 'off'
-  switch.smart_wall_switch_z1_pro_center:
+  switch.living_room_switch_center:
     state: 'off'
-  switch.smart_wall_switch_z1_pro_bottom:
+  switch.living_room_switch_bottom:
     state: 'off'
-  light.bedlamp:
+  light.tv_spotlights:
+    state: 'off'
+  light.sofa_spotlights:
+    state: 'off'
+  switch.dining_switch_center:
+    state: 'off'
+  switch.dining_switch_bottom:
+    state: 'off'
+  light.dining_spotlights:
+    state: 'off'
+  switch.kitchen_switch_2_right:
+    state: 'off'
+  switch.kitchen_switch_1_center:
+    state: 'off'
+  switch.kitchen_switch_1_top:
     state: 'off'
   light.aqara_ceiling_light_t1_white:
     state: 'off'
