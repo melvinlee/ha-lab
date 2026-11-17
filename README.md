@@ -25,6 +25,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `scripts/push-dashboard.sh` | Push the dashboard YAML to HA (websocket API) |
+| `scripts/start-issue-branch.sh` | Start an issue branch `feature/<n>-<slug>` from the latest `main` (refuses a dirty tree) |
 | `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |
 | `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
 | `premium/` | Premium SaaS-style dashboard app (issue #3), see `premium/README.md` |
