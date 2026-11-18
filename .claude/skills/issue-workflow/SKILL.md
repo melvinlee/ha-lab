@@ -18,6 +18,9 @@ description: >-
   `--onto origin/main` to drop duplicated commits (back up the branch first, force-push with lease, confirm the tree is unchanged).
 - **During work**: after each meaningful step, export from HA, update `README.md` (reference) and add a numbered step to `docs/WORKLOG.md`
   (keep its Summary and Open items current), commit with a plain message (**no `Co-Authored-By` or Claude attribution**) and push.
+- **Areas & devices changed** (a device added, removed, renamed or moved to another area; an area created or deleted; a Z2M group or
+  helper added): update the README **Areas & devices** table in the **same branch**, with the area, name, model, IEEE/integration and
+  entity IDs. Remove rows for devices that are gone. Check the rows against live HA (`device_attr(device_id(e),'identifiers')`, `area_name`).
 - **Editing files HA uses directly** (Samba `/Volumes/config`: `configuration.yaml`, `rest.yaml`, `zigbee2mqtt/configuration.yaml`,
   `www/`, …): always keep them **tracked in git on the issue branch**.
   1. **Before editing:**
