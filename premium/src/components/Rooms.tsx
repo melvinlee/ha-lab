@@ -210,14 +210,14 @@ function ApplianceRow({ a }: { a: Appliance }) {
   const finish = done && !isUnavailable(done) ? Date.parse(done.state) : NaN;
   const active = running || paused;
   const badge = unavailable ? <Badge tone="muted" label={m ? "Unavailable" : "Not found"} /> :
-    running ? <Badge tone="accent" icon={Loader} label="Running" /> :
+    running ? <Badge tone="accent" icon={Loader} label="Running" spin /> :
     paused ? <Badge tone="warn" icon={Pause} label="Paused" /> :
     <Badge tone="muted" label={s === "stop" ? "Idle" : cap(s)} />;
   const finishText = !Number.isNaN(finish) ? new Date(finish).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : null;
   return (
     <div className="row">
       <div className="row-h">
-        <div className={`row-icon${running ? " on" : ""}`}><Icon size={16} aria-hidden /></div>
+        <div className={`row-icon${running ? " on drum" : ""}`}><Icon size={16} aria-hidden /></div>
         <div className="row-name">
           <div>{a.name}</div>
           <div className="num">

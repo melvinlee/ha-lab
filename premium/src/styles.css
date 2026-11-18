@@ -386,3 +386,10 @@ kbd {
 /* Stock quote card (in the bus row, before the bus stops) */
 .stock { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); flex-wrap: wrap; padding: 6px 0; }
 .stock-price { font-size: var(--t-xl); font-weight: 600; }
+
+/* Laundry: running appliances (#62) — badge spinner + gentle drum wobble, only while machine_state = run */
+@keyframes badge-spin { to { transform: rotate(360deg); } }
+@keyframes drum-wobble { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+.badge.spin svg { transform-origin: center; animation: badge-spin 1.2s linear infinite; }
+.row-icon.drum svg { transform-origin: center; animation: drum-wobble 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .badge.spin svg, .row-icon.drum svg { animation: none; } }

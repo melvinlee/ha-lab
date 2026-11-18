@@ -381,6 +381,14 @@ because MCP can't create automations.
 - **Real washer cycle 2026-11-19 07:34-07:49:** `laundry_room_washer_finished` fired at 07:49:51; the user got the notification; the Laundry Light came on at 07:49:52 and turned itself off ~07:59:52 (10 min).
 - **Washer energy not reported:** `sensor.laundry_room_washer_energy` stayed 83.8 kWh (unchanged since 22:18 the day before) and power 0 W during and after the cycle, so Energy today stays 0. Open item: check later whether SmartThings reports it late or not at all.
 
+### 35. NG Premium: washer and dryer animate while running (#62)
+
+- `ApplianceRow` (`premium/src/components/Rooms.tsx`): only while `machine_state = run`, the "Running" badge's `Loader` icon rotates (1.2 s/turn, linear) and the washer/dryer icon tile gets a gentle drum wobble (±8°, 2 s ease-in-out). Paused/idle: static. `Badge` (`ui.tsx`) gained a `spin` prop.
+- `styles.css`: keyframes `badge-spin`, `drum-wobble`; classes `.badge.spin`, `.row-icon.drum`; off under `prefers-reduced-motion: reduce`.
+- Deployed from a temporary local worktree with #61 merged in (before #61 merged), so the live Laundry Light stayed. Served bundle checked for both.
+- **Verified:** typecheck/build; served bundle contains the new classes and "Laundry Light".
+- **Not yet verified:** a real wash/dry cycle on the dashboard and on the tablet.
+
 ## Open items
 
 **Laundry Light / washer energy (#60)**
@@ -410,6 +418,7 @@ because MCP can't create automations.
 - [ ] Optional: gitleaks in GitHub Actions on push/PR.
 
 **Laundry Room (#47)**
+- [ ] #62: check the running animation during a real cycle (and on the tablet).
 - [ ] Check the card during a real washer/dryer cycle (energy today rises from 0).
 - [x] "Cycle finished" notification to iPhone + iPad, plus the Laundry Light (Kitchen Switch 2 left, renamed in #60) on for 10 min (overlap between machines accepted).
 
