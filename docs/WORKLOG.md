@@ -316,7 +316,7 @@ because MCP can't create automations.
   `sensor.laundry_room_{washer,dryer}_energy_today`. Reference: `helpers/utility_meter_laundry.yaml`.
   - The card shows an "Energy today" row: washer + dryer total, per machine underneath.
   - Both read `unknown` (status `collecting`) until the source next updates; the card shows that as 0 kWh. Reset at local midnight.
-- **Finished notifications**: `automations/laundry_room_{washer,dryer}_finished.yaml`. When `_machine_state` goes `run` → `stop`, `notify.send_message` goes to `notify.melvin_iphone_16_pro` + `notify.melvins_ipad_air` (HA app), then `switch.turn_on` the Kitchen **Washing Machine** rocker (`switch.kitchen_switch_2_left`). Not fired yet; `run` is assumed from SmartThings, not yet seen live.
+- **Finished notifications**: `automations/laundry_room_{washer,dryer}_finished.yaml`. When `_machine_state` goes `run` → `stop`, `notify.send_message` goes to `notify.melvin_iphone_16_pro` + `notify.melvins_ipad_air` (HA app), then `switch.turn_on` the Kitchen **Washing Machine** rocker (`switch.kitchen_switch_2_left`), and off again after 10 min. Not fired yet; `run` is assumed from SmartThings, not yet seen live.
 - **Not yet verified:** visual check on the tablet; a real wash/dry cycle (running state, progress, finish time).
 
 ## Open items
