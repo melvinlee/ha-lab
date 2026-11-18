@@ -40,10 +40,12 @@ export interface Appliance {
   progress?: string;
   completionTime?: string;
   power?: string;
+  /** Daily utility meter (kWh) on the machine's cumulative energy sensor. */
+  energyToday?: string;
 }
 
 const samsung = (name: string, icon: Appliance["icon"], p: string): Appliance => ({
-  name, icon, machineState: `${p}_machine_state`, jobState: `${p}_job_state`, progress: `${p}_progress`, completionTime: `${p}_completion_time`, power: `${p}_power`,
+  name, icon, machineState: `${p}_machine_state`, jobState: `${p}_job_state`, progress: `${p}_progress`, completionTime: `${p}_completion_time`, power: `${p}_power`, energyToday: `${p}_energy_today`,
 });
 
 export const ROOMS: Room[] = [

@@ -42,6 +42,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `scripts/start-issue-branch.sh` | Start an issue branch `feature/<n>-<slug>` from the latest `main` (refuses a dirty tree) |
 | `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |
 | `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
+| `helpers/` | Reference copies of helpers created via the config-flow API (not loaded by HA) |
 | `premium/` | Premium SaaS-style dashboard app (issue #3), see `premium/README.md` |
 | `scripts/deploy-premium.sh` | Build the premium app, copy to HA `/config/www/premium`, create the **NG Premium** dashboard |
 | `.pre-commit-config.yaml`, `.gitleaks.toml` | Pre-commit hooks: gitleaks secret scan + basic file checks |
@@ -79,6 +80,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Bathroom | **Bathroom Switch D1** | Aqara D1 triple rocker, with neutral (QBKG26LM) | Z2M `0x54ef441000d3a1ee` | `switch.bathroom_switch_d1_left` = **LED Cove**, `_center` = **Main Light**, `_right` = **Bath mode** (decoupled; toggled by its rocker via HA; ON pauses the auto-off) |
 | Bathroom | **Bathroom Motion Sensor P1** | RTCGQ14LM | Z2M `0x54ef4410013de0db` | `binary_sensor.bathroom_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
 | Laundry Room | Samsung washer / Samsung dryer | SmartThings (washer `DA_WM_TP1_21_COMMON`) | SmartThings cloud | `sensor.laundry_room_{washer,dryer}_{machine_state,job_state,progress,completion_time,power}`; shown read-only on NG Premium (#47) |
+| Laundry Room | Washer / Dryer **Energy today** | Utility Meter helpers (daily, config flow, no YAML) | HA helper | `sensor.laundry_room_washer_energy_today`, `sensor.laundry_room_dryer_energy_today` (sources `sensor.laundry_room_*_energy`, kWh `total_increasing`); options in `helpers/utility_meter_laundry.yaml`; summed on NG Premium |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
 | (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
 | (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
