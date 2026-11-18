@@ -63,7 +63,7 @@ export function Energy() {
         <div className="stat"><div className="l">This month · {monthName}</div><div className="v num">{month == null ? <Skeleton w={80} h={24} /> : `${fmtKwh(month).v} ${fmtKwh(month).u}`}</div><div className="l">{month == null ? null : fmtMoney(month * TARIFF_SGD_PER_KWH, CURRENCY)}</div></div>
       </div>
       <p className="card-sub" style={{ margin: "12px 0 0" }}>
-        Metered: Bedroom, Living Room, Kitchen 1, Kitchen 2 and Dining switches (not whole-home). Add a whole-home meter to <code>ENERGY_SENSORS</code> for full consumption.
+        Metered: Bedroom, Living Room, Kitchen 1, Kitchen 2 and Dining switches, plus the Laundry Room washer and dryer (not whole-home). Add a whole-home meter to <code>ENERGY_SENSORS</code> for full consumption.
       </p>
     </Card>
   );

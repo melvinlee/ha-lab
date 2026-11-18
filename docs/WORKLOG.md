@@ -336,8 +336,9 @@ because MCP can't create automations.
 
 - Removed Solar (legend, chart line, "Solar today" box, `SOLAR_SENSORS`). Boxes are now Today · Cost today · **This month** (kWh + cost at S$0.30).
 - `useDailyEnergy` also returns `month`: daily statistics `change` summed since the 1st (local).
-- Footnote names the 5 metered switches (was "Bedroom Switch only").
-- Verified: build passes; HA serves `index-CiFZfcM6.js` with "This month" and no "Solar today"; November so far from recorder month stats = 1.80 kWh.
+- Laundry Room washer and dryer energy (`sensor.laundry_room_{washer,dryer}_energy`) added to `ENERGY_SENSORS`; both have recorder statistics (no change yet this month). Kitchen Switch 2 only added 0.09 kWh this month, so there is no sign the washer is metered twice.
+- Footnote names the metered switches and the washer/dryer (was "Bedroom Switch only").
+- Verified: build passes; HA serves `index-49x8XCos.js` with "This month" and no "Solar today"; November so far from recorder month stats = 1.80 kWh.
 - Not yet verified: card on the tablet/phone.
 
 ## Open items
