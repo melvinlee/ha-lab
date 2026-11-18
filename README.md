@@ -303,7 +303,7 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 - Includes the **Ceiling Fan** (`switch.living_room_switch_top`) and the Kitchen **Washing Machine** rocker (`switch.kitchen_switch_2_left`). Leaves the Roborock alone. Single / long press do nothing.
 - Kitchen Main Light is switched off on its real relay (Switch 2 right); `kitchen_main_light_indicator` then mirrors the decoupled Switch 1 bottom LED.
 - If someone is in the kitchen, the presence automation turns the kitchen lights back on at its next detection.
-- `double` confirmed with a real press on this device (2026-11-18). The staged order (Dining > 2 s > Living > 2 s > Kitchen) is not yet tested.
+- `double` confirmed with a real press on this device (2026-11-18). The staged order (Dining > 2 s > Living > 2 s > Kitchen) was verified on the device the same day.
 
 ### Laundry Room: washer / dryer finished
 
