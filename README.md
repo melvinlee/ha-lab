@@ -188,6 +188,13 @@ Paired devices appear in HA under the MQTT integration.
 
 ## Automations
 
+### Laundry Room: washer / dryer finished
+
+| Automation | Trigger | Action |
+|---|---|---|
+| `laundry_room_washer_finished` | `sensor.laundry_room_washer_machine_state` run → stop | Notify iPhone + iPad: "Washer finished, ready to unload." |
+| `laundry_room_dryer_finished` | `sensor.laundry_room_dryer_machine_state` run → stop | Notify iPhone + iPad: "Dryer finished." |
+
 ### Office: E1 switch controls ceiling light
 
 `automation.office_e1_switch_turns_on_ceiling_light` (id `office_e1_switch_light_on`; entity id kept

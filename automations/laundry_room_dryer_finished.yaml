@@ -1,0 +1,20 @@
+---
+id: laundry_room_dryer_finished
+alias: 'Laundry Room: Dryer finished notification'
+description: Notify iPhone and iPad when the dryer cycle ends (#47)
+triggers:
+- trigger: state
+  entity_id: sensor.laundry_room_dryer_machine_state
+  from: run
+  to: stop
+conditions: []
+actions:
+- action: notify.send_message
+  target:
+    entity_id:
+    - notify.melvin_iphone_16_pro
+    - notify.melvins_ipad_air
+  data:
+    title: Laundry Room
+    message: Dryer finished.
+mode: single
