@@ -192,8 +192,8 @@ Paired devices appear in HA under the MQTT integration.
 
 | Automation | Trigger | Action |
 |---|---|---|
-| `laundry_room_washer_finished` | `sensor.laundry_room_washer_machine_state` run → stop | Notify iPhone + iPad: "Washer finished, ready to unload."; turn on Kitchen Washing Machine rocker |
-| `laundry_room_dryer_finished` | `sensor.laundry_room_dryer_machine_state` run → stop | Notify iPhone + iPad: "Dryer finished."; turn on Kitchen Washing Machine rocker |
+| `laundry_room_washer_finished` | `sensor.laundry_room_washer_machine_state` run → stop | Notify iPhone + iPad: "Washer finished, ready to unload."; turn on Kitchen Washing Machine rocker, off after 10 min |
+| `laundry_room_dryer_finished` | `sensor.laundry_room_dryer_machine_state` run → stop | Notify iPhone + iPad: "Dryer finished."; turn on Kitchen Washing Machine rocker, off after 10 min |
 
 ### Office: E1 switch controls ceiling light
 
@@ -285,7 +285,7 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 | `kitchen_main_light_indicator` | Main Light or Switch 1 bottom changes; HA start | Copies the state to the other side only when they differ (no loop). Switch 1 bottom stays `decoupled`; its relay just drives the rocker LED |
 | `kitchen_presence_lights` (mode `restart`) | `binary_sensor.kitchen_presence_sensor_presence` off→on / on→off **for 5 min** | Present: Cabinet LED, Walkway, Main Light on (all hours). Empty 5 min: Walkway + Main Light off straight away, Cabinet LED off after 10 s (#44) |
 
-- The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is not touched by the kitchen automations. It is turned **on** by the Laundry Room finished automations (#47).
+- The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is not touched by the kitchen automations. The Laundry Room finished automations turn it **on**, then **off** after 10 min (#47).
 - Verified on the devices 2026-11-17 (presence on/off, 10 s Cabinet LED delay, bottom press, rocker LED lights with the Main Light).
 
 ### Living Room: front door opens → Back Home

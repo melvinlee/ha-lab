@@ -2,7 +2,7 @@
 id: laundry_room_washer_finished
 alias: 'Laundry Room: Washer finished notification'
 description: Notify iPhone and iPad when the washer cycle ends (#47) and turn on the
-  Kitchen Washing Machine rocker
+  Kitchen Washing Machine rocker, off again after 10 min
 triggers:
 - trigger: state
   entity_id: sensor.laundry_room_washer_machine_state
@@ -19,6 +19,11 @@ actions:
     title: Laundry Room
     message: Washer finished, ready to unload.
 - action: switch.turn_on
+  target:
+    entity_id: switch.kitchen_switch_2_left
+- delay:
+    minutes: 10
+- action: switch.turn_off
   target:
     entity_id: switch.kitchen_switch_2_left
 mode: single
