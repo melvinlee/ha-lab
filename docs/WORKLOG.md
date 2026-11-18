@@ -319,6 +319,13 @@ because MCP can't create automations.
 - **Finished notifications**: `automations/laundry_room_{washer,dryer}_finished.yaml`. When `_machine_state` goes `run` → `stop`, `notify.send_message` goes to `notify.melvin_iphone_16_pro` + `notify.melvins_ipad_air` (HA app), then `switch.turn_on` the Kitchen **Washing Machine** rocker (`switch.kitchen_switch_2_left`), and off again after 10 min. Not fired yet; `run` is assumed from SmartThings, not yet seen live.
 - **Not yet verified:** visual check on the tablet; a real wash/dry cycle (running state, progress, finish time).
 
+### 29. README follow-up (#49)
+
+- Laundry Room automations section moved to the end of Automations (room order), with notes: shared Washing Machine rocker overlap accepted, test notification sent, real cycle not yet verified.
+- NG Premium Panels row lists the Laundry Room card.
+- Back Home row, notes, file map and `scene.back_home` text now match the live staged automation (OR condition; the automation no longer calls the scene).
+- Docs only; nothing changed in HA.
+
 ## Open items
 
 **Front door / Back Home (#32)**

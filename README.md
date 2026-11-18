@@ -33,7 +33,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
-| `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (rocker first, then scene), exported from HA |
+| `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
@@ -330,7 +330,7 @@ Notes:
 | `scene.office_hour` | on, **6000 K** (the light reports 6024 K, its nearest step) | **off** |
 | `scene.after_office` | on, **4000 K** | **off** |
 
-**Living/Dining scene**: `scene.back_home` (**Back Home**): Ceiling Fan `switch.living_room_switch_top` on, Dining center rocker `switch.dining_switch_center` on, `light.tv_spotlights` and `light.dining_spotlights` on at **50% (128) / 3500 K** (bulbs report 3508 K). Used by the front-door automation; not in NG Premium (user decision).
+**Living/Dining scene**: `scene.back_home` (**Back Home**): Ceiling Fan `switch.living_room_switch_top` on, Dining center rocker `switch.dining_switch_center` on, `light.tv_spotlights` and `light.dining_spotlights` on at **50% (128) / 3500 K** (bulbs report 3508 K). Same end state as the front-door automation, for manual use (the automation runs its own staged steps); not in NG Premium (user decision).
 
 ## Dashboard
 
