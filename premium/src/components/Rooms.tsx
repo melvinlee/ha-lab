@@ -1,4 +1,4 @@
-import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow, WashingMachine, Wind, Clock } from "lucide-react";
+import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow, WashingMachine, Wind, Clock, Zap } from "lucide-react";
 import { fmt, relTime } from "../lib/format";
 import { useState } from "react";
 import { Sofa, DoorOpen, UtensilsCrossed, Brush, Check, Lightbulb, LightbulbOff, Briefcase, Sunset } from "lucide-react";
@@ -239,6 +239,34 @@ function ApplianceRow({ a }: { a: Appliance }) {
   );
 }
 
+/** kWh today from a daily utility meter. "unknown" = no source update since the last reset, i.e. 0. */
+function kwhToday(e?: HassEntity): number | null {
+  if (!e || e.state === "unavailable") return null;
+  if (e.state === "unknown") return 0;
+  const v = Number(e.state);
+  return Number.isFinite(v) ? v : null;
+}
+
+function ApplianceEnergy({ items }: { items: Appliance[] }) {
+  const { get } = useHass();
+  const parts = items.filter((a) => a.energyToday).map((a) => ({ name: a.name, v: kwhToday(get(a.energyToday!)) }));
+  if (!parts.length) return null;
+  const known = parts.filter((p) => p.v != null);
+  const total = known.reduce((t, p) => t + p.v!, 0);
+  return (
+    <div className="row">
+      <div className="row-h">
+        <div className="row-icon"><Zap size={16} aria-hidden /></div>
+        <div className="row-name">
+          <div>Energy today</div>
+          <div className="num">{parts.map((p) => `${p.name} ${p.v == null ? "—" : `${fmt(p.v, 2)} kWh`}`).join(" · ")}</div>
+        </div>
+        {known.length ? <span className="num" style={{ fontSize: 14, fontWeight: 600 }}>{fmt(total, 2)} kWh</span> : <Badge tone="muted" label="Unavailable" />}
+      </div>
+    </div>
+  );
+}
+
 const routineIcon = { sofa: Sofa, door: DoorOpen, utensils: UtensilsCrossed, mop: Brush, briefcase: Briefcase, sunset: Sunset } as const;
 
 /** Button entities: state is the last-pressed timestamp; "unknown" just means never pressed. */
@@ -314,6 +342,7 @@ function RoomCard({ room }: { room: Room }) {
         <div className="rows">
           {room.controls.map((c) => <ControlRow key={c.entity} c={c} />)}
           {room.appliances?.map((a) => <ApplianceRow key={a.machineState} a={a} />)}
+          {room.appliances && <ApplianceEnergy items={room.appliances} />}
           {room.routines && <Routines items={room.routines} title={room.routinesTitle} />}
           {room.drybox && <Drybox cfg={room.drybox} />}
           {!room.drybox && !room.appliances && <div className="row">

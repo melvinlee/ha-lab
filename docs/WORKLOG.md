@@ -311,6 +311,11 @@ because MCP can't create automations.
   - Washer and dryer (SmartThings): badge Running / Paused / Idle, job state, power (W).
   - Progress meter and "Done HH:MM" (`_completion_time`) only while running or paused.
 - Entity IDs checked via `render_template` (all 10 exist; both machines `stop`, 0 W). Built and deployed; HA serves `index-BtRdkwlJ.js` containing the card.
+- **Energy today**: two daily Utility Meter helpers created via the config-flow API (no YAML, no restart) on
+  `sensor.laundry_room_{washer,dryer}_energy` (kWh, `total_increasing`; 83.8 / 145.6 kWh lifetime). Entity IDs renamed to
+  `sensor.laundry_room_{washer,dryer}_energy_today`. Reference: `helpers/utility_meter_laundry.yaml`.
+  - The card shows an "Energy today" row: washer + dryer total, per machine underneath.
+  - Both read `unknown` (status `collecting`) until the source next updates; the card shows that as 0 kWh. Reset at local midnight.
 - No notification automation yet (open question on the issue).
 - **Not yet verified:** visual check on the tablet; a real wash/dry cycle (running state, progress, finish time).
 
@@ -336,7 +341,7 @@ because MCP can't create automations.
 - [ ] Optional: gitleaks in GitHub Actions on push/PR.
 
 **Laundry Room (#47)**
-- [ ] Check the card during a real washer/dryer cycle.
+- [ ] Check the card during a real washer/dryer cycle (energy today rises from 0).
 - [ ] Decide on a "cycle finished" notification and target device.
 
 **NG Premium (issue #3)**
