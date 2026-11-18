@@ -285,7 +285,7 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 
 | Automation (id) | Trigger | Condition | Action |
 |---|---|---|---|
-| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | `light.tv_spotlights` is off (nobody home with the lights on) | `switch.dining_switch_center` on → 3 s delay → wait (max 10 s) for `light.dining_spotlights` not unavailable → `scene.back_home` |
+| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | TV Light rocker (`switch.living_room_switch_bottom`) is off **or** `light.tv_spotlights` is off | Dining center rocker on → 3 s → Dining Spotlights 3500 K / 50% → 3 s → TV Light rocker on → 3 s → TV Spotlights 3500 K / 50% → 2 s → Ceiling Fan (`switch.living_room_switch_top`) on |
 
 - The TV Spotlights are powered by the Living Room **TV Light** rocker (`switch.living_room_switch_bottom`), and the Dining Spotlights by the Dining center rocker. Both rockers go on first and the bulbs get time to rejoin before the scene sets 3500 K / 50%.
 - Order when the door opens: Dining center rocker; +3 s Dining Spotlights; +3 s TV Light rocker; +3 s (bulb boot) TV Spotlights; +2 s Ceiling Fan. The automation runs these steps itself; the scene is the same end state, for manual use.
