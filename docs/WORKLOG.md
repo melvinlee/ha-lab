@@ -350,6 +350,8 @@ because MCP can't create automations.
 - Not yet verified: `double` payload on this device (taken from the Office E1, same model); a real double press. Not triggered manually (would switch off real lights).
 - Step number may need renumbering if #57 merges first.
 
+- **Verified on the device 2026-11-18 23:13** (user): real double press → trace `finished`, no error; all Living/Dining/Kitchen lights, Ceiling Fan and Washing Machine rocker read `off`. (The Dining Walkway went back on 13 s later, after the run: not by this automation.)
+
 ## Open items
 
 **Living Room Mini Switch (#58)**
