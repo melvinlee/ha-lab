@@ -377,7 +377,15 @@ because MCP can't create automations.
 - **Verified:** registry update succeeded, state `friendly_name` "Kitchen Switch 2 Laundry Light", icon `mdi:ceiling-light`; automation configs equal apart from text; scene config contains the entity; HA serves the bundle containing "Laundry Light".
 - **Not yet verified:** the card on the tablet/phone; Goodnight run with the Laundry Light on; next washer/dryer finish turning it on.
 
+- **Display name:** HA 2026 prefixes the device name, so HA shows "Kitchen Switch 2 Laundry Light". User chose to keep it (option 1): NG Premium shows its own label "Laundry Light", and the North Gaia tile (`dashboards/home.yaml`) is now "Laundry Light" with `mdi:ceiling-light` (pushed).
+- **Real washer cycle 2026-11-19 07:34-07:49:** `laundry_room_washer_finished` fired at 07:49:51; the user got the notification; the Laundry Light came on at 07:49:52 (10-min off pending at PR time).
+- **Washer energy not reported:** `sensor.laundry_room_washer_energy` stayed 83.8 kWh (unchanged since 22:18 the day before) and power 0 W during and after the cycle, so Energy today stays 0. Open item: check later whether SmartThings reports it late or not at all.
+
 ## Open items
+
+**Laundry Light / washer energy (#60)**
+- [ ] Washer energy: did `sensor.laundry_room_washer_energy` move after the 07:49 cycle? If not, find another way to meter the washer.
+- [ ] Laundry Light turned itself off ~07:59 (10 min after the cycle).
 
 **Living Room Mini Switch (#58)**
 - [ ] Double-press the switch: Living, Dining, Kitchen lights go off; fan and washer stay on; Kitchen Switch 1 bottom LED goes off.

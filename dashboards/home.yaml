@@ -232,8 +232,8 @@ views:
             name: Cabinet LED
           - type: tile
             entity: switch.kitchen_switch_2_left
-            name: Washing Machine
-            icon: mdi:washing-machine
+            name: Laundry Light
+            icon: mdi:ceiling-light
           - type: tile
             entity: automation.kitchen_presence_lights
             name: Presence lights
