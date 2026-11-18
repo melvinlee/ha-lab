@@ -29,4 +29,6 @@ entities:
     state: 'off'
   light.aqara_ceiling_light_t1_rgb:
     state: 'off'
+  switch.kitchen_switch_2_left:
+    state: 'off'
 icon: mdi:weather-night
