@@ -188,13 +188,6 @@ Paired devices appear in HA under the MQTT integration.
 
 ## Automations
 
-### Laundry Room: washer / dryer finished
-
-| Automation | Trigger | Action |
-|---|---|---|
-| `laundry_room_washer_finished` | `sensor.laundry_room_washer_machine_state` run → stop | Notify iPhone + iPad: "Washer finished, ready to unload."; turn on Kitchen Washing Machine rocker, off after 10 min |
-| `laundry_room_dryer_finished` | `sensor.laundry_room_dryer_machine_state` run → stop | Notify iPhone + iPad: "Dryer finished."; turn on Kitchen Washing Machine rocker, off after 10 min |
-
 ### Office: E1 switch controls ceiling light
 
 `automation.office_e1_switch_turns_on_ceiling_light` (id `office_e1_switch_light_on`; entity id kept
@@ -298,6 +291,16 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 - Order when the door opens: Dining center rocker; +3 s Dining Spotlights; +3 s TV Light rocker; +3 s (bulb boot) TV Spotlights; +2 s Ceiling Fan. The automation runs these steps itself; the scene is the same end state, for manual use.
   Unpowered bulbs show `unavailable` within ~5 min (Z2M availability, #35); after the rocker turns on, the **3 s delay** gives them time to boot and rejoin.
 
+### Laundry Room: washer / dryer finished
+
+| Automation | Trigger | Action |
+|---|---|---|
+| `laundry_room_washer_finished` | `sensor.laundry_room_washer_machine_state` run → stop | Notify iPhone + iPad: "Washer finished, ready to unload."; turn on Kitchen Washing Machine rocker, off after 10 min |
+| `laundry_room_dryer_finished` | `sensor.laundry_room_dryer_machine_state` run → stop | Notify iPhone + iPad: "Dryer finished."; turn on Kitchen Washing Machine rocker, off after 10 min |
+
+- Mode `single`, one automation per machine. Both use the same rocker: if the second machine finishes within the first one's 10 min, the first turn-off ends it early (accepted, #47).
+- Test notification sent to both devices on 2026-11-18. **Not yet verified:** a real cycle (`run` → `stop`, notification, rocker on/off).
+
 ## Scenes
 
 Created with `POST /api/config/scene/config/<id>`, exported to `scenes/<id>.yaml`.
@@ -369,7 +372,7 @@ websocket connection (no token). Deploy with `scripts/deploy-premium.sh` (needs 
 | Area | Notes |
 |---|---|
 | Theme | Auto / Day / Night, saved per device. Day accent blue `#2563eb`, Night indigo `#7c7cf0` |
-| Panels | top bar · scenes · KPIs · rooms (lights, curtain, Roborock + routines, drybox) · bus stops · energy · security + timeline · Cmd/Ctrl+K |
+| Panels | top bar · scenes · KPIs · rooms (lights, curtain, Roborock + routines, drybox) · Laundry Room (washer/dryer status, progress, finish time, energy today) · bus stops · energy · security + timeline · Cmd/Ctrl+K |
 | Bus card | Row under the KPIs, compact; ETAs in minutes for every bus today (`Tmr HH:MM` next day), HA polls every 10 min; `ServiceNotice` `NO_MORE_BUSES_TODAY` shows "No more buses today" + first bus; header shows Live / Timetable |
 | Theme | Auto = by time (Day 07:00–18:59, Night otherwise); Day / Night lock it |
 | Data gaps | no whole-home meter, solar, room climate, locks/doors/cameras, or presence tracker → designed empty states |
