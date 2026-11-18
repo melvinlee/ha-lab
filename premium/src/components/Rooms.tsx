@@ -260,7 +260,7 @@ function ApplianceEnergy({ items }: { items: Appliance[] }) {
         <div className="row-name">
           <div>Energy today</div>
           {parts.map((p) => (
-            <div key={p.name} className="num">{p.name} {p.v == null ? "—" : `${fmt(p.v, 2)} kWh`}</div>
+            <div key={p.name} className="num" style={{ fontSize: "var(--t-xs)", color: "var(--text-2)", fontWeight: 400 }}>{p.name} {p.v == null ? "—" : `${fmt(p.v, 2)} kWh`}</div>
           ))}
         </div>
         {known.length ? <span className="num" style={{ fontSize: 14, fontWeight: 600 }}>{fmt(total, 2)} kWh</span> : <Badge tone="muted" label="Unavailable" />}
