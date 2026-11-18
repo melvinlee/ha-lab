@@ -35,7 +35,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
 | `automations/living_room_mini_switch_double_all_off.yaml` | Living Room Mini Switch double press → Living, Dining, Kitchen lights, Ceiling Fan and Washing Machine rocker off, exported from HA |
-| `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensor) |
+| `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
 | `zigbee2mqtt/devices-availability.yaml` | Reference copy of the per-device Z2M availability (5 min) on the 7 spotlights, with how to apply it (#35) |
@@ -85,6 +85,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Laundry Room | Washer / Dryer **Energy today** | Utility Meter helpers (daily, config flow, no YAML) | HA helper | `sensor.laundry_room_washer_energy_today`, `sensor.laundry_room_dryer_energy_today` (sources `sensor.laundry_room_*_energy`, kWh `total_increasing`); options in `helpers/utility_meter_laundry.yaml`; summed on NG Premium |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
 | (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
+| (none) | Nasdaq QQQ quote | REST API (Yahoo Finance public chart endpoint, no key, unofficial) | `rest` (`ha-config/rest.yaml`, every 5 min) | `sensor.qqq_price` (USD; attributes `chartPreviousClose`, `regularMarketTime`, day high/low, `exchangeName`). Shown as the **Nasdaq QQQ** card in NG Premium, before the bus stops (#46) |
 | Living Room | SHIELD | NVIDIA SHIELD Android TV | `cast` | `media_player.shield` |
 | Living Room | HASS Bridge:21064 | HomeKit Bridge (HomeBridge) | `homekit` (bridge, port 21064) | exposes HA entities to Apple Home; no entities of its own |
 

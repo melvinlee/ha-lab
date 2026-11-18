@@ -106,7 +106,7 @@ button { font: inherit; color: inherit; }
 .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .main { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
 .rooms { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.bus-row { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+.bus-row { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
 .col { display: flex; flex-direction: column; gap: var(--s-3); }
 
 @media (max-width: 1100px) {
@@ -115,6 +115,7 @@ button { font: inherit; color: inherit; }
 @media (max-width: 900px) {
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .main { grid-template-columns: minmax(0, 1fr); }
+  .bus-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
   .app { padding: var(--s-3); }
@@ -381,3 +382,7 @@ kbd {
 .bus-row .bus-eta .v { font-size: var(--t-xs); line-height: 18px; }
 .bus-row .empty { padding: 6px var(--s-2); gap: var(--s-2); font-size: var(--t-xs); align-items: center; }
 .bus-row .empty strong { display: inline; margin-right: 4px; }
+
+/* Stock quote card (in the bus row, before the bus stops) */
+.stock { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); flex-wrap: wrap; padding: 6px 0; }
+.stock-price { font-size: var(--t-xl); font-weight: 600; }

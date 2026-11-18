@@ -8,6 +8,7 @@ import { Energy } from "./components/Energy";
 import { Security } from "./components/Security";
 import { Scenes } from "./components/Scenes";
 import { BusStops } from "./components/Bus";
+import { StockCards } from "./components/Stock";
 import { CommandPalette } from "./components/CommandPalette";
 import { useTheme } from "./lib/theme";
 
@@ -50,6 +51,7 @@ function Dashboard() {
       <Scenes />
       <Kpis />
       <div className="grid bus-row">
+        <StockCards />
         <BusStops />
       </div>
       <div className="grid main">

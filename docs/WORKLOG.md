@@ -14,7 +14,7 @@ How-to and reference details live in the [README](../README.md).
 | Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button, Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
 | Scenes | 4: Good morning, Movie, Away, Goodnight (`scenes/`) |
-| REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT (`ha-config/rest.yaml`) |
+| REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT; Nasdaq QQQ quote `sensor.qqq_price` (`ha-config/rest.yaml`) |
 | Automations | 4: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
 | Dashboards | **North Gaia** `/dashboard-north-gaia` (Lovelace, `dashboards/home.yaml`) · **NG Premium** `/dashboard-premium` (app in `premium/`) |
 | Repo / tracking | github.com/melvinlee/ha-lab. Issue #1 → PR #2 `feature/1-master-bedroom` (open). Issue #3 → `feature/3-premium-dashboard` (stacked on #2, no PR yet) |
@@ -348,10 +348,23 @@ because MCP can't create automations.
 - Defaults used (open questions on #58 unanswered): name as above; fan not off; Dining Walkway off; kitchen presence re-on accepted; single/long unused.
 - Verified: rename, area, no `0x54ef4410013efd93` entity IDs left; automation created and exported.
 - Not yet verified: `double` payload on this device (taken from the Office E1, same model); a real double press. Not triggered manually (would switch off real lights).
-- Step number may need renumbering if #57 merges first.
 
 - **Verified on the device 2026-11-18 23:13** (user): real double press → trace `finished`, no error; all Living/Dining/Kitchen lights, Ceiling Fan and Washing Machine rocker read `off`. (The Dining Walkway went back on 13 s later, after the run: not by this automation.)
 - Per the user, now **staged**: Dining Room → 2 s → Living Room → 2 s → Kitchen (each room: bulb groups first, then rockers). **Verified 2026-11-18 23:17** (user): trace finished after 4.0 s through all 7 steps, no error; all lights off.
+
+### 33. NG Premium: Nasdaq QQQ card (#46)
+
+- **REST sensor** `sensor.qqq_price`: Yahoo Finance chart `meta` for QQQ (no API key), `scan_interval: 300`, `User-Agent` header. Previous close and market time are in the attributes.
+- **`rest.yaml` tracking (rule from #41):**
+  - The repo copy matched live before the edit.
+  - Backup on the share: `rest.yaml.bak-20261118-qqq`.
+  - Edited the repo copy, copied it to live (byte-identical), `check_config` valid, `rest.reload` (no restart).
+- **NG Premium:**
+  - New `Stock` card (`components/Stock.tsx`, `STOCK_SENSORS` in `config.ts`), first in the bus row: price, ▲/▼ change and % vs previous close (badge colour + icon + label), "As of HH:MM".
+  - Bus row: 3 columns on wide screens, 2 under 900 px, 1 under 600 px.
+  - Built, deployed, and HA serves the bundle containing `qqq_price`.
+- **Verified:** the sensor read 654.94 USD (previous close 661.75) on setup and 659.41 USD (previous close 656.95) later the same day, and HA serves the new bundle.
+- **Not yet verified:** the card on the tablet and phone. Market-closed and weekend display (it shows the last trade and its time).
 
 ## Open items
 
