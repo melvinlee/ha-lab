@@ -305,6 +305,15 @@ because MCP can't create automations.
 - Updated via the config API (same id). The export matches HA.
 - **Not yet verified:** leaving the kitchen for 5 min (lights stay on, then turn off in order).
 
+### 28. Laundry Room on NG Premium (#47)
+
+- New **Laundry Room** card in `premium/src/config.ts` (`appliances`) with a read-only `ApplianceRow` in `Rooms.tsx`.
+  - Washer and dryer (SmartThings): badge Running / Paused / Idle, job state, power (W).
+  - Progress meter and "Done HH:MM" (`_completion_time`) only while running or paused.
+- Entity IDs checked via `render_template` (all 10 exist; both machines `stop`, 0 W). Built and deployed; HA serves `index-BtRdkwlJ.js` containing the card.
+- No notification automation yet (open question on the issue).
+- **Not yet verified:** visual check on the tablet; a real wash/dry cycle (running state, progress, finish time).
+
 ## Open items
 
 **Front door / Back Home (#32)**
@@ -325,6 +334,10 @@ because MCP can't create automations.
 **Repo setup (issue #10)**
 - [ ] New Claude Code session: check each skill triggers on a natural request.
 - [ ] Optional: gitleaks in GitHub Actions on push/PR.
+
+**Laundry Room (#47)**
+- [ ] Check the card during a real washer/dryer cycle.
+- [ ] Decide on a "cycle finished" notification and target device.
 
 **NG Premium (issue #3)**
 - [ ] Visual QA on the 10" landscape tablet and a phone (Day and Night).

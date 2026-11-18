@@ -1,10 +1,10 @@
-import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow } from "lucide-react";
+import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow, WashingMachine, Wind, Clock } from "lucide-react";
 import { fmt, relTime } from "../lib/format";
 import { useState } from "react";
 import { Sofa, DoorOpen, UtensilsCrossed, Brush, Check, Lightbulb, LightbulbOff, Briefcase, Sunset } from "lucide-react";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { useHass, isUnavailable } from "../ha/store";
-import { ROOMS, type Room, type RoomControl } from "../config";
+import { ROOMS, type Room, type RoomControl, type Appliance } from "../config";
 import { controlIcon, roomIcon } from "../lib/icons";
 import { Card, Switch, Slider, Badge, Empty, Skeleton } from "./ui";
 
@@ -188,6 +188,57 @@ function Drybox({ cfg }: { cfg: NonNullable<Room["drybox"]> }) {
   );
 }
 
+const applianceIcon = { washer: WashingMachine, dryer: Wind } as const;
+const cap = (x: string) => x.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+
+/** SmartThings washer/dryer: read-only status, progress meter and finish time while running. */
+function ApplianceRow({ a }: { a: Appliance }) {
+  const { get } = useHass();
+  const m = get(a.machineState);
+  const job = a.jobState ? get(a.jobState) : undefined;
+  const prog = a.progress ? get(a.progress) : undefined;
+  const done = a.completionTime ? get(a.completionTime) : undefined;
+  const pw = a.power ? get(a.power) : undefined;
+  const Icon = applianceIcon[a.icon];
+  const unavailable = isUnavailable(m);
+  const s = m?.state ?? "";
+  const running = s === "run";
+  const paused = s === "pause";
+  const pct = prog && !isUnavailable(prog) ? Math.min(100, Math.max(0, Number(prog.state))) : null;
+  const jobLabel = job && !isUnavailable(job) && job.state !== "none" ? cap(job.state) : null;
+  const watts = pw && !isUnavailable(pw) ? Number(pw.state) : null;
+  const finish = done && !isUnavailable(done) ? Date.parse(done.state) : NaN;
+  const active = running || paused;
+  const badge = unavailable ? <Badge tone="muted" label={m ? "Unavailable" : "Not found"} /> :
+    running ? <Badge tone="accent" icon={Loader} label="Running" /> :
+    paused ? <Badge tone="warn" icon={Pause} label="Paused" /> :
+    <Badge tone="muted" label={s === "stop" ? "Idle" : cap(s)} />;
+  const finishText = !Number.isNaN(finish) ? new Date(finish).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : null;
+  return (
+    <div className="row">
+      <div className="row-h">
+        <div className={`row-icon${running ? " on" : ""}`}><Icon size={16} aria-hidden /></div>
+        <div className="row-name">
+          <div>{a.name}</div>
+          <div className="num">
+            {unavailable ? "—" : [jobLabel, watts != null ? `${fmt(watts, 0)} W` : null].filter(Boolean).join(" · ") || "Off"}
+            {active && finishText ? <> · <Clock size={11} aria-hidden style={{ verticalAlign: -1 }} /> Done {finishText}</> : null}
+          </div>
+        </div>
+        {badge}
+      </div>
+      {active && pct != null && (
+        <div className="slider-wrap" style={{ gap: 12 }}>
+          <div className="meter" role="meter" aria-label={`${a.name} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
+            <div className="meter-fill" style={{ width: `${pct}%`, background: "var(--accent)" }} />
+          </div>
+          <span className="num" style={{ width: 48, textAlign: "right", fontSize: 14, fontWeight: 600 }}>{fmt(pct, 0)}%</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const routineIcon = { sofa: Sofa, door: DoorOpen, utensils: UtensilsCrossed, mop: Brush, briefcase: Briefcase, sunset: Sunset } as const;
 
 /** Button entities: state is the last-pressed timestamp; "unknown" just means never pressed. */
@@ -258,13 +309,14 @@ function RoomCard({ room }: { room: Room }) {
       }
     >
       {!entities ? (
-        <div className="col" style={{ gap: 16 }}>{room.controls.map((c) => <Skeleton key={c.entity} h={32} />)}</div>
+        <div className="col" style={{ gap: 16 }}>{[...room.controls.map((c) => c.entity), ...(room.appliances ?? []).map((a) => a.machineState)].map((k) => <Skeleton key={k} h={32} />)}</div>
       ) : (
         <div className="rows">
           {room.controls.map((c) => <ControlRow key={c.entity} c={c} />)}
+          {room.appliances?.map((a) => <ApplianceRow key={a.machineState} a={a} />)}
           {room.routines && <Routines items={room.routines} title={room.routinesTitle} />}
           {room.drybox && <Drybox cfg={room.drybox} />}
-          {!room.drybox && <div className="row">
+          {!room.drybox && !room.appliances && <div className="row">
             {thermostat && !isUnavailable(thermostat) ? (
               <div className="row-h"><span className="num">{String(thermostat.attributes.current_temperature)}°</span></div>
             ) : (
