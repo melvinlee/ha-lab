@@ -326,6 +326,12 @@ because MCP can't create automations.
 - Back Home row, notes, file map and `scene.back_home` text now match the live staged automation (OR condition; the automation no longer calls the scene).
 - Docs only; nothing changed in HA.
 
+### 30. README Areas & devices matches live HA (#53)
+
+- Checked against live HA: Aqara Sensor IEEE added, SHIELD moved to Living Room (`cast`), HomeKit bridge row added, Z1 Pro model noted as Z2M "quadruple rocker" (3 relay rockers wired).
+- Also carries the step 29 fix for #49 (Back Home file map and scene text), which missed the PR #50 merge.
+- Docs only; nothing changed in HA.
+
 ## Open items
 
 **Front door / Back Home (#32)**
