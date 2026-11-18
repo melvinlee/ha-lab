@@ -1,0 +1,33 @@
+---
+id: living_room_mini_switch_double_all_off
+alias: 'Living Room: Mini Switch double press turns off Living, Dining, Kitchen lights'
+description: 'Aqara E1 mini switch (Living Room Mini Switch): double press turns off
+  all lights in the Living Room, Dining Room and Kitchen (bulb groups, then rockers).
+  Kitchen Main Light is turned off via switch.kitchen_switch_2_right; kitchen_main_light_indicator
+  mirrors it to the decoupled Switch 1 bottom LED. Leaves the Ceiling Fan, Washing
+  Machine and Roborock alone.'
+triggers:
+- trigger: mqtt
+  topic: zigbee2mqtt/Living Room Mini Switch
+  value_template: "{{ value_json.action }}"
+  payload: double
+conditions: []
+actions:
+- action: light.turn_off
+  target:
+    entity_id:
+    - light.tv_spotlights
+    - light.sofa_spotlights
+    - light.dining_spotlights
+- action: switch.turn_off
+  target:
+    entity_id:
+    - switch.living_room_switch_center
+    - switch.living_room_switch_bottom
+    - switch.dining_switch_center
+    - switch.dining_switch_bottom
+    - switch.dining_switch_top
+    - switch.kitchen_switch_1_top
+    - switch.kitchen_switch_1_center
+    - switch.kitchen_switch_2_right
+mode: single
