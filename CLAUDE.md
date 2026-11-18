@@ -92,5 +92,5 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
 - **Files HA reads directly** (Samba share): commit a repo copy *before* editing, sync it back after, and compare the two before the PR.
   Keep secrets out (redacted or section-only copies). Details: issue-workflow skill, "Editing files HA uses directly".
 - After each change: export what was created in HA, update `README.md` (reference) and add a numbered step to `docs/WORKLOG.md`
-  (dated log + summary + open items). Record what was **verified** vs **not yet verified** on real devices.
+  (dated log + summary + open items). Adding, removing, renaming or moving a device or area also means updating the README **Areas & devices** table. Record what was **verified** vs **not yet verified** on real devices.
 - Confirm before hard-to-reverse or disruptive actions on the live house (HA restart, editing `configuration.yaml`, force-push).

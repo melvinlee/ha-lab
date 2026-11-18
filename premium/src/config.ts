@@ -17,7 +17,7 @@ export interface RoomControl {
 export interface Room {
   id: string;
   name: string;
-  icon: "bed" | "desk" | "sofa" | "bath" | "kitchen" | "dining";
+  icon: "bed" | "desk" | "sofa" | "bath" | "kitchen" | "dining" | "laundry";
   controls: RoomControl[];
   /** Room climate sensors (temperature/humidity). Not the drybox. */
   climate: { temperature?: string; humidity?: string; thermostat?: string };
@@ -28,10 +28,28 @@ export interface Room {
   routinesTitle?: string;
   /** Drybox (enclosure) climate shown inside the room card. Not counted as room climate. */
   drybox?: { humidity: string; temperature?: string; battery?: string; goodMax: number; watchMax: number };
+  /** Read-only appliances (e.g. SmartThings washer/dryer): state, job, progress, finish time, power. */
+  appliances?: Appliance[];
 }
 
+export interface Appliance {
+  name: string;
+  icon: "washer" | "dryer";
+  machineState: string;
+  jobState?: string;
+  progress?: string;
+  completionTime?: string;
+  power?: string;
+  /** Daily utility meter (kWh) on the machine's cumulative energy sensor. */
+  energyToday?: string;
+}
+
+const samsung = (name: string, icon: Appliance["icon"], p: string): Appliance => ({
+  name, icon, machineState: `${p}_machine_state`, jobState: `${p}_job_state`, progress: `${p}_progress`, completionTime: `${p}_completion_time`, power: `${p}_power`, energyToday: `${p}_energy_today`,
+});
+
 export const ROOMS: Room[] = [
-  // Order on the dashboard: Living Room, Dining Room, Office, Bathroom, Kitchen, Master Bedroom
+  // Order on the dashboard: Living Room, Dining Room, Office, Bathroom, Kitchen, Master Bedroom, Laundry Room
   {
     id: "living_room",
     name: "Living Room",
@@ -132,14 +150,24 @@ export const ROOMS: Room[] = [
       { entity: "light.bedlamp", name: "Bedlamp", kind: "light", icon: "lamp" },
     ],
   },
+  {
+    id: "laundry_room",
+    name: "Laundry Room",
+    icon: "laundry",
+    climate: {},
+    controls: [],
+    // Samsung washer + dryer (SmartThings), read-only. Finish time shows only while running.
+    appliances: [
+      samsung("Washer", "washer", "sensor.laundry_room_washer"),
+      samsung("Dryer", "dryer", "sensor.laundry_room_dryer"),
+    ],
+  },
 ];
 
 /** Power sensors (W) summed for "Power draw now". Only per-device meters exist today. */
 export const POWER_SENSORS = ["sensor.smart_wall_switch_z1_pro_power", "sensor.living_room_switch_power", "sensor.kitchen_switch_1_power", "sensor.kitchen_switch_2_power", "sensor.dining_switch_power"];
 /** Energy sensors (kWh, total_increasing) summed for today/yesterday and the 24h chart. */
-export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy", "sensor.kitchen_switch_1_energy", "sensor.kitchen_switch_2_energy", "sensor.dining_switch_energy"];
-/** Solar production energy sensors (kWh). None yet. */
-export const SOLAR_SENSORS: string[] = [];
+export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy", "sensor.kitchen_switch_1_energy", "sensor.kitchen_switch_2_energy", "sensor.dining_switch_energy", "sensor.laundry_room_washer_energy", "sensor.laundry_room_dryer_energy"];
 export const TARIFF_SGD_PER_KWH = 0.3;
 export const CURRENCY = "SGD";
 

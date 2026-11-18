@@ -33,7 +33,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
-| `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (rocker first, then scene), exported from HA |
+| `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
@@ -42,6 +42,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `scripts/start-issue-branch.sh` | Start an issue branch `feature/<n>-<slug>` from the latest `main` (refuses a dirty tree) |
 | `scripts/mqtt-listen.mjs` | Watch an MQTT topic through HA (e.g. to check button payloads) |
 | `scripts/ha-ws.mjs` | Send raw HA websocket commands (areas, device registry, …) |
+| `helpers/` | Reference copies of helpers created via the config-flow API (not loaded by HA) |
 | `premium/` | Premium SaaS-style dashboard app (issue #3), see `premium/README.md` |
 | `scripts/deploy-premium.sh` | Build the premium app, copy to HA `/config/www/premium`, create the **NG Premium** dashboard |
 | `.pre-commit-config.yaml`, `.gitleaks.toml` | Pre-commit hooks: gitleaks secret scan + basic file checks |
@@ -53,23 +54,23 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 |---|---|---|---|---|
 | Office | Aqara Ceiling Light T1 | HCXDD12LM | Z2M `0x54ef44100130d787` | `light.aqara_ceiling_light_t1_white` (main), `..._rgb` (ring) |
 | Office | Aqara E1 Switch | WXKG20LM (wireless) | Z2M `0x54ef441001328ec0` | presses on MQTT `zigbee2mqtt/Aqara E1 Switch`; `sensor.aqara_e1_switch_battery` |
-| Office | Aqara Sensor (**drybox**, not room climate) | WSDCGQ11LM | Z2M | `sensor.aqara_sensor_humidity`, `_temperature`, `_battery` |
+| Office | Aqara Sensor (**drybox**, not room climate) | WSDCGQ11LM | Z2M `0x00158d008bbd8791` | `sensor.aqara_sensor_humidity`, `_temperature`, `_battery` |
 | Office | SLZB-06 Zigbee coordinator | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` |
 | Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
-| Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (3 rockers, wired relays) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom` (relay that **powers the TV Spotlights**; off = bulbs unpowered, shown `unavailable` within ~5 min, see Z2M availability); `sensor.living_room_switch_power` / `_energy` |
+| Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom` (relay that **powers the TV Spotlights**; off = bulbs unpowered, shown `unavailable` within ~5 min, see Z2M availability); `sensor.living_room_switch_power` / `_energy` |
 | Living Room | TV Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001163f74` | `light.tv_spotlight_1`, `switch.tv_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | TV Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee86` | `light.tv_spotlight_2`, `switch.tv_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee3f` | `light.sofa_spotlight_1`, `switch.sofa_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012ae78b` | `light.sofa_spotlight_2`, `switch.sofa_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Front Door Sensor | Aqara door and window sensor (battery, sleepy) | Z2M `0x00158d008bbf6e42` | `binary_sensor.front_door_sensor_contact` (door; on = open), `sensor.front_door_sensor_battery` / `_voltage` / `_device_temperature` |
 | Living Room | TV Spotlights / Sofa Spotlights | Z2M groups (id 1: TV Spotlight 1+2, id 2: Sofa Spotlight 1+2), one Zigbee broadcast each | Z2M group | `light.tv_spotlights`, `light.sofa_spotlights`; set once to 3500 K / 50% (no default scene/automation) |
-| Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (3 rockers, wired relays, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top`, Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
+| Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top`, Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
 | Dining Room | Dining Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001261f11` | `light.dining_spotlight_1`, `switch.dining_spotlight_1_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012624ee` | `light.dining_spotlight_2`, `switch.dining_spotlight_2_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 3 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012b25e9` | `light.dining_spotlight_3`, `switch.dining_spotlight_3_power_outage_memory` (**on**) |
 | All spotlights | Z2M availability | Per-device `availability: {timeout: 5}` on the 7 Spotlight T2s only (global availability stays off) | Z2M config | An unpowered bulb is pinged after 5 min of silence and goes `unavailable`, and so does its group. It comes back when it rejoins. Needed one Z2M restart. |
 | Dining Room | Dining Spotlights | Z2M group (id 3: Dining Spotlight 1-3), one Zigbee broadcast | Z2M group | `light.dining_spotlights`; set once to 3500 K / 50%; only works while the center rocker is on |
-| Kitchen | Kitchen Switch 1 | Aqara Z1 Pro (3 rockers) | Z2M `0x54ef4410011f846e` | Top **Cabinet LED** `switch.kitchen_switch_1_top`, Center **Walkway** `switch.kitchen_switch_1_center`, Bottom **decoupled** `switch.kitchen_switch_1_bottom` (press → Main Light; relay mirrors Main Light for the LED) |
+| Kitchen | Kitchen Switch 1 | Aqara Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired) | Z2M `0x54ef4410011f846e` | Top **Cabinet LED** `switch.kitchen_switch_1_top`, Center **Walkway** `switch.kitchen_switch_1_center`, Bottom **decoupled** `switch.kitchen_switch_1_bottom` (press → Main Light; relay mirrors Main Light for the LED) |
 | Kitchen | Kitchen Switch 2 | Aqara D1 with neutral, double rocker | Z2M `0x00158d008b849b39` | Left **Washing Machine** `switch.kitchen_switch_2_left`, Right **Main Light** `switch.kitchen_switch_2_right` (the Main Light relay) |
 | Kitchen | Kitchen Presence Sensor | Aqara presence sensor (mmWave) | Z2M `0x54ef4410011f6f8e` | `binary_sensor.kitchen_presence_sensor_presence` |
 | Master Bedroom | Aqara Motion sensor P1 | RTCGQ14LM | Z2M `0x54ef4410013ddb88` | `binary_sensor.aqara_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
@@ -78,10 +79,13 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Master Bedroom | TRADFRI | IKEA E1812 shortcut button | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/TRADFRI` (`action: "on"`); `sensor.tradfri_battery` |
 | Bathroom | **Bathroom Switch D1** | Aqara D1 triple rocker, with neutral (QBKG26LM) | Z2M `0x54ef441000d3a1ee` | `switch.bathroom_switch_d1_left` = **LED Cove**, `_center` = **Main Light**, `_right` = **Bath mode** (decoupled; toggled by its rocker via HA; ON pauses the auto-off) |
 | Bathroom | **Bathroom Motion Sensor P1** | RTCGQ14LM | Z2M `0x54ef4410013de0db` | `binary_sensor.bathroom_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
+| Laundry Room | Samsung washer / Samsung dryer | SmartThings (washer `DA_WM_TP1_21_COMMON`) | SmartThings cloud | `sensor.laundry_room_{washer,dryer}_{machine_state,job_state,progress,completion_time,power}`; shown read-only on NG Premium (#47) |
+| Laundry Room | Washer / Dryer **Energy today** | Utility Meter helpers (daily, config flow, no YAML) | HA helper | `sensor.laundry_room_washer_energy_today`, `sensor.laundry_room_dryer_energy_today` (sources `sensor.laundry_room_*_energy`, kWh `total_increasing`); options in `helpers/utility_meter_laundry.yaml`; summed on NG Premium |
 | Bedroom | Body Composition Scale | Xiaomi MJTZC01YM | `xiaomi_ble` | `binary_sensor.bedroom_body_composition_scale_6bd0_stabilized` |
 | (none) | NG Shuttle bus arrivals | REST API | `rest` (`ha-config/rest.yaml`) | `sensor.ng_shuttle_arrivals` (stop NG), `sensor.yishun_mrt_shuttle_arrivals` (stop Yishun MRT) |
 | (none) | Nasdaq QQQ quote | REST API (Yahoo Finance public chart endpoint, no key, unofficial) | `rest` (`ha-config/rest.yaml`, every 5 min) | `sensor.qqq_price` (USD; attributes `chartPreviousClose`, `regularMarketTime`, day high/low, `exchangeName`). Shown as the **Nasdaq QQQ** card in NG Premium, before the bus stops (#46) |
-| (none) | SHIELD | NVIDIA SHIELD | media player | `media_player.shield` |
+| Living Room | SHIELD | NVIDIA SHIELD Android TV | `cast` | `media_player.shield` |
+| Living Room | HASS Bridge:21064 | HomeKit Bridge (HomeBridge) | `homekit` (bridge, port 21064) | exposes HA entities to Apple Home; no entities of its own |
 
 Wireless buttons (E1, TRADFRI) have **no press entity** in Z2M 2.x. Their automations
 use MQTT triggers on `value_json.action`.
@@ -276,18 +280,28 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 | `kitchen_main_light_indicator` | Main Light or Switch 1 bottom changes; HA start | Copies the state to the other side only when they differ (no loop). Switch 1 bottom stays `decoupled`; its relay just drives the rocker LED |
 | `kitchen_presence_lights` (mode `restart`) | `binary_sensor.kitchen_presence_sensor_presence` off→on / on→off **for 5 min** | Present: Cabinet LED, Walkway, Main Light on (all hours). Empty 5 min: Walkway + Main Light off straight away, Cabinet LED off after 10 s (#44) |
 
-- The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is never switched by an automation.
+- The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is not touched by the kitchen automations. The Laundry Room finished automations turn it **on**, then **off** after 10 min (#47).
 - Verified on the devices 2026-11-17 (presence on/off, 10 s Cabinet LED delay, bottom press, rocker LED lights with the Main Light).
 
 ### Living Room: front door opens → Back Home
 
 | Automation (id) | Trigger | Condition | Action |
 |---|---|---|---|
-| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | `light.tv_spotlights` is off (nobody home with the lights on) | `switch.dining_switch_center` on → 3 s delay → wait (max 10 s) for `light.dining_spotlights` not unavailable → `scene.back_home` |
+| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | TV Light rocker (`switch.living_room_switch_bottom`) is off **or** `light.tv_spotlights` is off | Dining center rocker on → 3 s → Dining Spotlights 3500 K / 50% → 3 s → TV Light rocker on → 3 s → TV Spotlights 3500 K / 50% → 2 s → Ceiling Fan (`switch.living_room_switch_top`) on |
 
-- The TV Spotlights are powered by the Living Room **TV Light** rocker (`switch.living_room_switch_bottom`), and the Dining Spotlights by the Dining center rocker. Both rockers go on first and the bulbs get time to rejoin before the scene sets 3500 K / 50%.
+- The TV Spotlights are powered by the Living Room **TV Light** rocker (`switch.living_room_switch_bottom`), and the Dining Spotlights by the Dining center rocker. Each rocker goes on 3 s before its bulbs, so they can boot and rejoin before being set to 3500 K / 50%. The condition includes the rocker because unpowered bulbs show `unavailable`, not `off`.
 - Order when the door opens: Dining center rocker; +3 s Dining Spotlights; +3 s TV Light rocker; +3 s (bulb boot) TV Spotlights; +2 s Ceiling Fan. The automation runs these steps itself; the scene is the same end state, for manual use.
   Unpowered bulbs show `unavailable` within ~5 min (Z2M availability, #35); after the rocker turns on, the **3 s delay** gives them time to boot and rejoin.
+
+### Laundry Room: washer / dryer finished
+
+| Automation | Trigger | Action |
+|---|---|---|
+| `laundry_room_washer_finished` | `sensor.laundry_room_washer_machine_state` run → stop | Notify iPhone + iPad: "Washer finished, ready to unload."; turn on Kitchen Washing Machine rocker, off after 10 min |
+| `laundry_room_dryer_finished` | `sensor.laundry_room_dryer_machine_state` run → stop | Notify iPhone + iPad: "Dryer finished."; turn on Kitchen Washing Machine rocker, off after 10 min |
+
+- Mode `single`, one automation per machine. Both use the same rocker: if the second machine finishes within the first one's 10 min, the first turn-off ends it early (accepted, #47).
+- Test notification sent to both devices on 2026-11-18. **Not yet verified:** a real cycle (`run` → `stop`, notification, rocker on/off).
 
 ## Scenes
 
@@ -318,7 +332,7 @@ Notes:
 | `scene.office_hour` | on, **6000 K** (the light reports 6024 K, its nearest step) | **off** |
 | `scene.after_office` | on, **4000 K** | **off** |
 
-**Living/Dining scene**: `scene.back_home` (**Back Home**): Ceiling Fan `switch.living_room_switch_top` on, Dining center rocker `switch.dining_switch_center` on, `light.tv_spotlights` and `light.dining_spotlights` on at **50% (128) / 3500 K** (bulbs report 3508 K). Used by the front-door automation; not in NG Premium (user decision).
+**Living/Dining scene**: `scene.back_home` (**Back Home**): Ceiling Fan `switch.living_room_switch_top` on, Dining center rocker `switch.dining_switch_center` on, `light.tv_spotlights` and `light.dining_spotlights` on at **50% (128) / 3500 K** (bulbs report 3508 K). Same end state as the front-door automation, for manual use (the automation runs its own staged steps); not in NG Premium (user decision).
 
 ## Dashboard
 
@@ -360,7 +374,7 @@ websocket connection (no token). Deploy with `scripts/deploy-premium.sh` (needs 
 | Area | Notes |
 |---|---|
 | Theme | Auto / Day / Night, saved per device. Day accent blue `#2563eb`, Night indigo `#7c7cf0` |
-| Panels | top bar · scenes · KPIs · rooms (lights, curtain, Roborock + routines, drybox) · bus stops · energy · security + timeline · Cmd/Ctrl+K |
+| Panels | top bar · scenes · KPIs · rooms (lights, curtain, Roborock + routines, drybox) · Laundry Room (washer/dryer status, progress, finish time, energy today) · bus stops · energy · security + timeline · Cmd/Ctrl+K |
 | Bus card | Row under the KPIs, compact; ETAs in minutes for every bus today (`Tmr HH:MM` next day), HA polls every 10 min; `ServiceNotice` `NO_MORE_BUSES_TODAY` shows "No more buses today" + first bus; header shows Live / Timetable |
 | Theme | Auto = by time (Day 07:00–18:59, Night otherwise); Day / Night lock it |
 | Data gaps | no whole-home meter, solar, room climate, locks/doors/cameras, or presence tracker → designed empty states |

@@ -14,7 +14,7 @@ How-to and reference details live in the [README](../README.md).
 | Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button, Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
 | Scenes | 4: Good morning, Movie, Away, Goodnight (`scenes/`) |
-| REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT (`ha-config/rest.yaml`) |
+| REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT; Nasdaq QQQ quote `sensor.qqq_price` (`ha-config/rest.yaml`) |
 | Automations | 4: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
 | Dashboards | **North Gaia** `/dashboard-north-gaia` (Lovelace, `dashboards/home.yaml`) · **NG Premium** `/dashboard-premium` (app in `premium/`) |
 | Repo / tracking | github.com/melvinlee/ha-lab. Issue #1 → PR #2 `feature/1-master-bedroom` (open). Issue #3 → `feature/3-premium-dashboard` (stacked on #2, no PR yet) |
@@ -305,7 +305,43 @@ because MCP can't create automations.
 - Updated via the config API (same id). The export matches HA.
 - **Not yet verified:** leaving the kitchen for 5 min (lights stay on, then turn off in order).
 
-### 28. NG Premium: Nasdaq QQQ card (#46)
+### 28. Laundry Room on NG Premium (#47)
+
+- New **Laundry Room** card in `premium/src/config.ts` (`appliances`) with a read-only `ApplianceRow` in `Rooms.tsx`.
+  - Washer and dryer (SmartThings): badge Running / Paused / Idle, job state, power (W).
+  - Progress meter and "Done HH:MM" (`_completion_time`) only while running or paused.
+- Entity IDs checked via `render_template` (all 10 exist; both machines `stop`, 0 W). Built and deployed; HA serves `index-BtRdkwlJ.js` containing the card.
+- **Energy today**: two daily Utility Meter helpers created via the config-flow API (no YAML, no restart) on
+  `sensor.laundry_room_{washer,dryer}_energy` (kWh, `total_increasing`; 83.8 / 145.6 kWh lifetime). Entity IDs renamed to
+  `sensor.laundry_room_{washer,dryer}_energy_today`. Reference: `helpers/utility_meter_laundry.yaml`.
+  - The card shows an "Energy today" row: washer + dryer total, per machine underneath.
+  - Both read `unknown` (status `collecting`) until the source next updates; the card shows that as 0 kWh. Reset at local midnight.
+- **Finished notifications**: `automations/laundry_room_{washer,dryer}_finished.yaml`. When `_machine_state` goes `run` → `stop`, `notify.send_message` goes to `notify.melvin_iphone_16_pro` + `notify.melvins_ipad_air` (HA app), then `switch.turn_on` the Kitchen **Washing Machine** rocker (`switch.kitchen_switch_2_left`), and off again after 10 min. Not fired yet; `run` is assumed from SmartThings, not yet seen live.
+- **Not yet verified:** visual check on the tablet; a real wash/dry cycle (running state, progress, finish time).
+
+### 29. README follow-up (#49)
+
+- Laundry Room automations section moved to the end of Automations (room order), with notes: shared Washing Machine rocker overlap accepted, test notification sent, real cycle not yet verified.
+- NG Premium Panels row lists the Laundry Room card.
+- Back Home row, notes, file map and `scene.back_home` text now match the live staged automation (OR condition; the automation no longer calls the scene).
+- Docs only; nothing changed in HA.
+
+### 30. README Areas & devices matches live HA (#53)
+
+- Checked against live HA: Aqara Sensor IEEE added, SHIELD moved to Living Room (`cast`), HomeKit bridge row added, Z1 Pro model noted as Z2M "quadruple rocker" (3 relay rockers wired).
+- Also carries the step 29 fix for #49 (Back Home file map and scene text), which missed the PR #50 merge.
+- Docs only; nothing changed in HA.
+
+### 31. NG Premium Energy card: no Solar, This month (#55)
+
+- Removed Solar (legend, chart line, "Solar today" box, `SOLAR_SENSORS`). Boxes are now Today · Cost today · **This month** (kWh + cost at S$0.30).
+- `useDailyEnergy` also returns `month`: daily statistics `change` summed since the 1st (local).
+- Laundry Room washer and dryer energy (`sensor.laundry_room_{washer,dryer}_energy`) added to `ENERGY_SENSORS`; both have recorder statistics (no change yet this month). Kitchen Switch 2 only added 0.09 kWh this month, so there is no sign the washer is metered twice.
+- Footnote names the metered switches and the washer/dryer (was "Bedroom Switch only").
+- Verified: build passes; HA serves `index-49x8XCos.js` with "This month" and no "Solar today"; November so far from recorder month stats = 1.80 kWh.
+- Not yet verified: card on the tablet/phone.
+
+### 32. NG Premium: Nasdaq QQQ card (#46)
 
 - **REST sensor** `sensor.qqq_price`: Yahoo Finance chart `meta` for QQQ (no API key), `scan_interval: 300`, `User-Agent` header. Previous close and market time are in the attributes.
 - **`rest.yaml` tracking (rule from #41):**
@@ -339,6 +375,10 @@ because MCP can't create automations.
 **Repo setup (issue #10)**
 - [ ] New Claude Code session: check each skill triggers on a natural request.
 - [ ] Optional: gitleaks in GitHub Actions on push/PR.
+
+**Laundry Room (#47)**
+- [ ] Check the card during a real washer/dryer cycle (energy today rises from 0).
+- [x] "Cycle finished" notification to iPhone + iPad, plus Kitchen Washing Machine rocker on for 10 min (overlap between machines accepted).
 
 **NG Premium (issue #3)**
 - [ ] Visual QA on the 10" landscape tablet and a phone (Day and Night).
