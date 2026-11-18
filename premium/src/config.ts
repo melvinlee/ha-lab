@@ -128,12 +128,11 @@ export const ROOMS: Room[] = [
     motion: "binary_sensor.kitchen_presence_sensor_presence",
     climate: {},
     // Switch 1 (Z1 Pro): top = Cabinet LED, center = Walkway, bottom = decoupled (toggles Main Light; its relay mirrors it for the LED).
-    // Switch 2 (D1): left = Washing Machine, right = Main Light relay.
+    // Switch 2 (D1): left = Laundry Light (shown in the Laundry Room), right = Main Light relay.
     controls: [
       { entity: "switch.kitchen_switch_2_right", name: "Main Light", kind: "switch", icon: "ceiling" },
       { entity: "switch.kitchen_switch_1_center", name: "Walkway", kind: "switch", icon: "lamp" },
       { entity: "switch.kitchen_switch_1_top", name: "Cabinet LED", kind: "switch", icon: "strip" },
-      { entity: "switch.kitchen_switch_2_left", name: "Washing Machine", kind: "switch", icon: "washer" },
     ],
   },
   {
@@ -155,7 +154,10 @@ export const ROOMS: Room[] = [
     name: "Laundry Room",
     icon: "laundry",
     climate: {},
-    controls: [],
+    // Laundry Light: wired to the Kitchen Switch 2 left rocker (#60).
+    controls: [
+      { entity: "switch.kitchen_switch_2_left", name: "Laundry Light", kind: "switch", icon: "ceiling" },
+    ],
     // Samsung washer + dryer (SmartThings), read-only. Finish time shows only while running.
     appliances: [
       samsung("Washer", "washer", "sensor.laundry_room_washer"),
@@ -205,7 +207,7 @@ export const SCENES: SceneDef[] = [
   { entity: "scene.good_morning", name: "Good morning", icon: "sunrise", hint: "Lights up, curtain open" },
   { entity: "scene.movie", name: "Movie", icon: "film", hint: "Cove + dim bedlamp, curtain closed" },
   { entity: "scene.away", name: "Away", icon: "plane", hint: "All lights off" },
-  { entity: "scene.goodnight", name: "Goodnight", icon: "moon", hint: "Living, Dining, Kitchen, Office off" },
+  { entity: "scene.goodnight", name: "Goodnight", icon: "moon", hint: "Living, Dining, Kitchen, Laundry, Office off" },
 ];
 
 /** Lights and switches counted in the devices-on KPI (curtains and vacuums excluded). */

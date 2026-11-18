@@ -4,7 +4,7 @@ alias: 'Kitchen: presence lights'
 description: 'Presence on: Cabinet LED, Walkway and Main Light on. Kitchen empty for
   5 min: Main Light and Walkway off straight away, Cabinet LED off 10 s later. Presence
   returning within the 5 min resets the timer; mode restart: presence during the 10
-  s cancels the Cabinet LED off. Never touches the Washing Machine.'
+  s cancels the Cabinet LED off. Never touches the Laundry Light (switch.kitchen_switch_2_left).'
 triggers:
 - trigger: state
   entity_id: binary_sensor.kitchen_presence_sensor_presence

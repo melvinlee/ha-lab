@@ -366,6 +366,17 @@ because MCP can't create automations.
 - **Verified:** the sensor read 654.94 USD (previous close 661.75) on setup and 659.41 USD (previous close 656.95) later the same day, and HA serves the new bundle.
 - **Not yet verified:** the card on the tablet and phone. Market-closed and weekend display (it shows the last trade and its time).
 
+### 34. Laundry Light: Kitchen Switch 2 left rocker renamed, in the Laundry Room card and Goodnight (#60)
+
+- The Kitchen Switch 2 **left** rocker lights the **Laundry Room**; it isn't a washing machine power switch (per the user; the washer ran at 0 W on this rocker).
+- **Entity:** registry `name` **Laundry Light**, icon `mdi:ceiling-light`. Entity ID stays `switch.kitchen_switch_2_left`; the Z2M device stays "Kitchen Switch 2" (no Z2M rename), so HA shows "Kitchen Switch 2 Laundry Light".
+- **Automations (text only, actions unchanged):** descriptions of `laundry_room_washer_finished`, `laundry_room_dryer_finished`, `kitchen_presence_lights`, and description + alias of `living_room_mini_switch_double_all_off`; re-exported.
+- **NG Premium:** the toggle moved from Kitchen to the **Laundry Room** card ("Laundry Light", ceiling icon), above the washer/dryer rows; it counts in the room's lights badge. Goodnight hint now lists Laundry. Built, deployed.
+- **Goodnight:** `switch.kitchen_switch_2_left: off` added via the scene config API; exported. Not activated.
+- README: Kitchen Switch 2 row, Kitchen note, Mini Switch section, Laundry automations, Goodnight list, file map.
+- **Verified:** registry update succeeded, state `friendly_name` "Kitchen Switch 2 Laundry Light", icon `mdi:ceiling-light`; automation configs equal apart from text; scene config contains the entity; HA serves the bundle containing "Laundry Light".
+- **Not yet verified:** the card on the tablet/phone; Goodnight run with the Laundry Light on; next washer/dryer finish turning it on.
+
 ## Open items
 
 **Living Room Mini Switch (#58)**
@@ -392,7 +403,7 @@ because MCP can't create automations.
 
 **Laundry Room (#47)**
 - [ ] Check the card during a real washer/dryer cycle (energy today rises from 0).
-- [x] "Cycle finished" notification to iPhone + iPad, plus Kitchen Washing Machine rocker on for 10 min (overlap between machines accepted).
+- [x] "Cycle finished" notification to iPhone + iPad, plus the Laundry Light (Kitchen Switch 2 left, renamed in #60) on for 10 min (overlap between machines accepted).
 
 **NG Premium (issue #3)**
 - [ ] Visual QA on the 10" landscape tablet and a phone (Day and Night).

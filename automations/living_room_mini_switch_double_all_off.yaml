@@ -1,12 +1,13 @@
 ---
 id: living_room_mini_switch_double_all_off
 alias: 'Living Room: Mini Switch double press turns off Living, Dining, Kitchen lights,
-  fan and Washing Machine rocker'
+  fan and Laundry Light'
 description: 'Aqara E1 mini switch (Living Room Mini Switch): double press turns off,
   in sequence, Dining Room (Spotlights, then rockers incl. Walkway) > 2 s > Living
   Room (TV/Sofa Spotlights, LED Cove, TV Light, Ceiling Fan) > 2 s > Kitchen (Cabinet
   LED, Walkway, Main Light via switch.kitchen_switch_2_right with the mirror keeping
-  the Switch 1 bottom LED in step, Washing Machine rocker). Leaves the Roborock alone.'
+  the Switch 1 bottom LED in step, Laundry Light via switch.kitchen_switch_2_left).
+  Leaves the Roborock alone.'
 triggers:
 - trigger: mqtt
   topic: zigbee2mqtt/Living Room Mini Switch
