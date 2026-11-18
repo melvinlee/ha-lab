@@ -17,7 +17,7 @@ export interface RoomControl {
 export interface Room {
   id: string;
   name: string;
-  icon: "bed" | "desk" | "sofa" | "bath" | "kitchen" | "dining";
+  icon: "bed" | "desk" | "sofa" | "bath" | "kitchen" | "dining" | "laundry";
   controls: RoomControl[];
   /** Room climate sensors (temperature/humidity). Not the drybox. */
   climate: { temperature?: string; humidity?: string; thermostat?: string };
@@ -28,10 +28,26 @@ export interface Room {
   routinesTitle?: string;
   /** Drybox (enclosure) climate shown inside the room card. Not counted as room climate. */
   drybox?: { humidity: string; temperature?: string; battery?: string; goodMax: number; watchMax: number };
+  /** Read-only appliances (e.g. SmartThings washer/dryer): state, job, progress, finish time, power. */
+  appliances?: Appliance[];
 }
 
+export interface Appliance {
+  name: string;
+  icon: "washer" | "dryer";
+  machineState: string;
+  jobState?: string;
+  progress?: string;
+  completionTime?: string;
+  power?: string;
+}
+
+const samsung = (name: string, icon: Appliance["icon"], p: string): Appliance => ({
+  name, icon, machineState: `${p}_machine_state`, jobState: `${p}_job_state`, progress: `${p}_progress`, completionTime: `${p}_completion_time`, power: `${p}_power`,
+});
+
 export const ROOMS: Room[] = [
-  // Order on the dashboard: Living Room, Dining Room, Office, Bathroom, Kitchen, Master Bedroom
+  // Order on the dashboard: Living Room, Dining Room, Office, Bathroom, Kitchen, Master Bedroom, Laundry Room
   {
     id: "living_room",
     name: "Living Room",
@@ -130,6 +146,18 @@ export const ROOMS: Room[] = [
       // Curtain on the Z1 Pro bottom relay: relay ON = curtain OPEN, OFF = closed.
       { entity: "switch.smart_wall_switch_z1_pro_bottom", name: "Night Curtain", kind: "curtain", icon: "curtain", openState: "on" },
       { entity: "light.bedlamp", name: "Bedlamp", kind: "light", icon: "lamp" },
+    ],
+  },
+  {
+    id: "laundry_room",
+    name: "Laundry Room",
+    icon: "laundry",
+    climate: {},
+    controls: [],
+    // Samsung washer + dryer (SmartThings), read-only. Finish time shows only while running.
+    appliances: [
+      samsung("Washer", "washer", "sensor.laundry_room_washer"),
+      samsung("Dryer", "dryer", "sensor.laundry_room_dryer"),
     ],
   },
 ];
