@@ -167,7 +167,7 @@ export const ROOMS: Room[] = [
 /** Power sensors (W) summed for "Power draw now". Only per-device meters exist today. */
 export const POWER_SENSORS = ["sensor.smart_wall_switch_z1_pro_power", "sensor.living_room_switch_power", "sensor.kitchen_switch_1_power", "sensor.kitchen_switch_2_power", "sensor.dining_switch_power"];
 /** Energy sensors (kWh, total_increasing) summed for today/yesterday and the 24h chart. */
-export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy", "sensor.kitchen_switch_1_energy", "sensor.kitchen_switch_2_energy", "sensor.dining_switch_energy"];
+export const ENERGY_SENSORS = ["sensor.smart_wall_switch_z1_pro_energy", "sensor.living_room_switch_energy", "sensor.kitchen_switch_1_energy", "sensor.kitchen_switch_2_energy", "sensor.dining_switch_energy", "sensor.laundry_room_washer_energy", "sensor.laundry_room_dryer_energy"];
 export const TARIFF_SGD_PER_KWH = 0.3;
 export const CURRENCY = "SGD";
 
