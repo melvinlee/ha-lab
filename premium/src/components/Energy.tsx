@@ -1,39 +1,29 @@
-import { BarChart3, Sun, Info } from "lucide-react";
+import { BarChart3, Info } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { ENERGY_SENSORS, SOLAR_SENSORS, TARIFF_SGD_PER_KWH, CURRENCY } from "../config";
+import { ENERGY_SENSORS, TARIFF_SGD_PER_KWH, CURRENCY } from "../config";
 import { useHourlyEnergy, useDailyEnergy } from "../lib/data";
 import { fmt, fmtKwh, fmtMoney } from "../lib/format";
-import { Card, Skeleton, Empty, Badge } from "./ui";
+import { Card, Skeleton, Empty } from "./ui";
 
 const hh = (t: number) => new Date(t).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
 
 export function Energy() {
   const cons = useHourlyEnergy(ENERGY_SENSORS);
-  const solar = useHourlyEnergy(SOLAR_SENSORS);
   const daily = useDailyEnergy(ENERGY_SENSORS);
-  const hasSolar = SOLAR_SENSORS.length > 0;
 
   const data =
     cons.status === "ready"
-      ? cons.data.map((p) => ({
-          t: p.t,
-          consumption: p.v,
-          solar: hasSolar && solar.status === "ready" ? solar.data.find((s) => s.t === p.t)?.v ?? 0 : undefined,
-        }))
+      ? cons.data.map((p) => ({ t: p.t, consumption: p.v }))
       : [];
   const total24 = data.reduce((a, p) => a + p.consumption, 0);
   const today = daily.status === "ready" ? daily.data.today : null;
+  const month = daily.status === "ready" ? daily.data.month : null;
+  const monthName = new Date().toLocaleDateString(undefined, { month: "long" });
 
   return (
     <Card
       title="Energy"
       icon={BarChart3}
-      right={
-        <div className="legend" aria-label="Chart legend">
-          <span><i style={{ background: "var(--accent)" }} />Consumption</span>
-          <span><i style={{ background: "var(--text-3)" }} />Solar{!hasSolar && " (none)"}</span>
-        </div>
-      }
     >
       {!ENERGY_SENSORS.length ? (
         <Empty icon={Info} title="No energy sensors">Add a power meter to see consumption.</Empty>
@@ -59,10 +49,9 @@ export function Energy() {
               <Tooltip
                 contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, boxShadow: "var(--shadow-pop)", fontSize: 12 }}
                 labelFormatter={(t) => hh(Number(t))}
-                formatter={(v, name) => [`${fmt(Number(v) * 1000, 0)} Wh`, name === "consumption" ? "Consumption" : "Solar"]}
+                formatter={(v) => [`${fmt(Number(v) * 1000, 0)} Wh`, "Consumption"]}
               />
               <Area type="monotone" dataKey="consumption" stroke="var(--accent)" strokeWidth={1.75} fill="url(#gCons)" animationDuration={200} />
-              {hasSolar && <Area type="monotone" dataKey="solar" stroke="var(--text-3)" strokeWidth={1.5} fill="transparent" animationDuration={200} />}
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -71,13 +60,10 @@ export function Energy() {
       <div className="stats3">
         <div className="stat"><div className="l">Today</div><div className="v num">{today == null ? <Skeleton w={80} h={24} /> : `${fmtKwh(today).v} ${fmtKwh(today).u}`}</div></div>
         <div className="stat"><div className="l">Cost today · {CURRENCY} {fmt(TARIFF_SGD_PER_KWH, 2)}/kWh</div><div className="v num">{today == null ? <Skeleton w={80} h={24} /> : fmtMoney(today * TARIFF_SGD_PER_KWH, CURRENCY)}</div></div>
-        <div className="stat">
-          <div className="l">Solar today</div>
-          <div className="v">{hasSolar ? "—" : <Badge tone="muted" icon={Sun} label="No solar configured" />}</div>
-        </div>
+        <div className="stat"><div className="l">This month · {monthName}</div><div className="v num">{month == null ? <Skeleton w={80} h={24} /> : `${fmtKwh(month).v} ${fmtKwh(month).u}`}</div><div className="l">{month == null ? null : fmtMoney(month * TARIFF_SGD_PER_KWH, CURRENCY)}</div></div>
       </div>
       <p className="card-sub" style={{ margin: "12px 0 0" }}>
-        Metered: Bedroom Switch only. Add a whole-home meter to <code>ENERGY_SENSORS</code> for full consumption.
+        Metered: Bedroom, Living Room, Kitchen 1, Kitchen 2 and Dining switches (not whole-home). Add a whole-home meter to <code>ENERGY_SENSORS</code> for full consumption.
       </p>
     </Card>
   );

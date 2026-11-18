@@ -81,7 +81,11 @@ export function useDailyEnergy(ids: string[]) {
           // Same time yesterday, for a fair comparison
           const hourly = await stats(conn, ids, yesterday, "hour", ["change"], new Date(Date.now() - 24 * 3600e3));
           const ySoFar = mergeBy(hourly, (row) => Math.max(0, row.change ?? 0)).reduce((a, p) => a + p.v, 0);
-          return { today: pick(today), yesterday: pick(yesterday), yesterdaySoFar: ySoFar };
+          // Since the 1st of this month (local), summed from daily statistics
+          const first = new Date(today.getFullYear(), today.getMonth(), 1);
+          const m = await stats(conn, ids, first, "day", ["change"]);
+          const month = mergeBy(m, (row) => Math.max(0, row.change ?? 0)).reduce((a, p) => a + p.v, 0);
+          return { today: pick(today), yesterday: pick(yesterday), yesterdaySoFar: ySoFar, month };
         }
       : null,
     [ids.join()],

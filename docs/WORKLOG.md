@@ -332,6 +332,14 @@ because MCP can't create automations.
 - Also carries the step 29 fix for #49 (Back Home file map and scene text), which missed the PR #50 merge.
 - Docs only; nothing changed in HA.
 
+### 31. NG Premium Energy card: no Solar, This month (#55)
+
+- Removed Solar (legend, chart line, "Solar today" box, `SOLAR_SENSORS`). Boxes are now Today · Cost today · **This month** (kWh + cost at S$0.30).
+- `useDailyEnergy` also returns `month`: daily statistics `change` summed since the 1st (local).
+- Footnote names the 5 metered switches (was "Bedroom Switch only").
+- Verified: build passes; HA serves `index-CiFZfcM6.js` with "This month" and no "Solar today"; November so far from recorder month stats = 1.80 kWh.
+- Not yet verified: card on the tablet/phone.
+
 ## Open items
 
 **Front door / Back Home (#32)**
