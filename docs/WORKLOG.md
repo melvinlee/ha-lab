@@ -351,6 +351,7 @@ because MCP can't create automations.
 - Step number may need renumbering if #57 merges first.
 
 - **Verified on the device 2026-11-18 23:13** (user): real double press → trace `finished`, no error; all Living/Dining/Kitchen lights, Ceiling Fan and Washing Machine rocker read `off`. (The Dining Walkway went back on 13 s later, after the run: not by this automation.)
+- Per the user, now **staged**: Dining Room → 2 s → Living Room → 2 s → Kitchen (each room: bulb groups first, then rockers). Not yet tested.
 
 ## Open items
 
