@@ -342,7 +342,7 @@ because MCP can't create automations.
 
 **Laundry Room (#47)**
 - [ ] Check the card during a real washer/dryer cycle (energy today rises from 0).
-- [ ] Decide on a "cycle finished" notification and target device.
+- [x] "Cycle finished" notification to iPhone + iPad, plus Kitchen Washing Machine rocker on for 10 min (overlap between machines accepted).
 
 **NG Premium (issue #3)**
 - [ ] Visual QA on the 10" landscape tablet and a phone (Day and Night).
