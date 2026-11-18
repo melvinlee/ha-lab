@@ -1,7 +1,8 @@
 ---
 id: laundry_room_dryer_finished
 alias: 'Laundry Room: Dryer finished notification'
-description: Notify iPhone and iPad when the dryer cycle ends (#47)
+description: Notify iPhone and iPad when the dryer cycle ends (#47) and turn on the
+  Kitchen Washing Machine rocker
 triggers:
 - trigger: state
   entity_id: sensor.laundry_room_dryer_machine_state
@@ -17,4 +18,7 @@ actions:
   data:
     title: Laundry Room
     message: Dryer finished.
+- action: switch.turn_on
+  target:
+    entity_id: switch.kitchen_switch_2_left
 mode: single
