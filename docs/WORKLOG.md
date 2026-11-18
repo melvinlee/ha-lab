@@ -341,7 +341,18 @@ because MCP can't create automations.
 - Verified: build passes; HA serves `index-49x8XCos.js` with "This month" and no "Solar today"; November so far from recorder month stats = 1.80 kWh.
 - Not yet verified: card on the tablet/phone.
 
-### 32. NG Premium: Nasdaq QQQ card (#46)
+### 32. Living Room Mini Switch: double press turns off Living, Dining, Kitchen lights (#58)
+
+- Renamed `0x54ef4410013efd93` (Aqara Wireless mini switch E1) in Z2M to **Living Room Mini Switch** (`homeassistant_rename`), area Living Room. Entities: `sensor.living_room_mini_switch_battery` / `_voltage` / `_device_temperature`.
+- Automation `living_room_mini_switch_double_all_off` (MQTT `action: double`): spotlight groups off, then LED Cove, TV Light, Dining center/bottom/top, Kitchen Cabinet LED, Walkway, Main Light (Switch 2 right; mirror keeps Switch 1 bottom LED in step). Per the user, also the **Ceiling Fan** and the Kitchen **Washing Machine** rocker; Roborock untouched.
+- Defaults used (open questions on #58 unanswered): name as above; fan not off; Dining Walkway off; kitchen presence re-on accepted; single/long unused.
+- Verified: rename, area, no `0x54ef4410013efd93` entity IDs left; automation created and exported.
+- Not yet verified: `double` payload on this device (taken from the Office E1, same model); a real double press. Not triggered manually (would switch off real lights).
+
+- **Verified on the device 2026-11-18 23:13** (user): real double press → trace `finished`, no error; all Living/Dining/Kitchen lights, Ceiling Fan and Washing Machine rocker read `off`. (The Dining Walkway went back on 13 s later, after the run: not by this automation.)
+- Per the user, now **staged**: Dining Room → 2 s → Living Room → 2 s → Kitchen (each room: bulb groups first, then rockers). **Verified 2026-11-18 23:17** (user): trace finished after 4.0 s through all 7 steps, no error; all lights off.
+
+### 33. NG Premium: Nasdaq QQQ card (#46)
 
 - **REST sensor** `sensor.qqq_price`: Yahoo Finance chart `meta` for QQQ (no API key), `scan_interval: 300`, `User-Agent` header. Previous close and market time are in the attributes.
 - **`rest.yaml` tracking (rule from #41):**
@@ -352,10 +363,13 @@ because MCP can't create automations.
   - New `Stock` card (`components/Stock.tsx`, `STOCK_SENSORS` in `config.ts`), first in the bus row: price, ▲/▼ change and % vs previous close (badge colour + icon + label), "As of HH:MM".
   - Bus row: 3 columns on wide screens, 2 under 900 px, 1 under 600 px.
   - Built, deployed, and HA serves the bundle containing `qqq_price`.
-- **Verified:** the sensor reads 654.94 USD (previous close 661.75), and HA serves the new bundle.
+- **Verified:** the sensor read 654.94 USD (previous close 661.75) on setup and 659.41 USD (previous close 656.95) later the same day, and HA serves the new bundle.
 - **Not yet verified:** the card on the tablet and phone. Market-closed and weekend display (it shows the last trade and its time).
 
 ## Open items
+
+**Living Room Mini Switch (#58)**
+- [ ] Double-press the switch: Living, Dining, Kitchen lights go off; fan and washer stay on; Kitchen Switch 1 bottom LED goes off.
 
 **Front door / Back Home (#32)**
 - [ ] Open and close the front door once so the sensor reports (entities read `unknown` until then).

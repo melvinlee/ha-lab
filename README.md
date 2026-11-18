@@ -34,6 +34,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
+| `automations/living_room_mini_switch_double_all_off.yaml` | Living Room Mini Switch double press → Living, Dining, Kitchen lights, Ceiling Fan and Washing Machine rocker off, exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
@@ -63,6 +64,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Living Room | Sofa Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee3f` | `light.sofa_spotlight_1`, `switch.sofa_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012ae78b` | `light.sofa_spotlight_2`, `switch.sofa_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Front Door Sensor | Aqara door and window sensor (battery, sleepy) | Z2M `0x00158d008bbf6e42` | `binary_sensor.front_door_sensor_contact` (door; on = open), `sensor.front_door_sensor_battery` / `_voltage` / `_device_temperature` |
+| Living Room | Living Room Mini Switch | Aqara Wireless mini switch E1 (battery, sleepy; no press entity, MQTT trigger on `zigbee2mqtt/Living Room Mini Switch`) | Z2M `0x54ef4410013efd93` | `sensor.living_room_mini_switch_battery` / `_voltage` / `_device_temperature`; double press → all Living/Dining/Kitchen lights, Ceiling Fan and Washing Machine rocker off |
 | Living Room | TV Spotlights / Sofa Spotlights | Z2M groups (id 1: TV Spotlight 1+2, id 2: Sofa Spotlight 1+2), one Zigbee broadcast each | Z2M group | `light.tv_spotlights`, `light.sofa_spotlights`; set once to 3500 K / 50% (no default scene/automation) |
 | Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top`, Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
 | Dining Room | Dining Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001261f11` | `light.dining_spotlight_1`, `switch.dining_spotlight_1_power_outage_memory` (**on**) |
@@ -280,7 +282,7 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 | `kitchen_main_light_indicator` | Main Light or Switch 1 bottom changes; HA start | Copies the state to the other side only when they differ (no loop). Switch 1 bottom stays `decoupled`; its relay just drives the rocker LED |
 | `kitchen_presence_lights` (mode `restart`) | `binary_sensor.kitchen_presence_sensor_presence` off→on / on→off **for 5 min** | Present: Cabinet LED, Walkway, Main Light on (all hours). Empty 5 min: Walkway + Main Light off straight away, Cabinet LED off after 10 s (#44) |
 
-- The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is not touched by the kitchen automations. The Laundry Room finished automations turn it **on**, then **off** after 10 min (#47).
+- The **Washing Machine** rocker (`switch.kitchen_switch_2_left`) is not touched by the kitchen automations. The Laundry Room finished automations turn it **on**, then **off** after 10 min (#47); the Living Room Mini Switch double press turns it **off** (#58).
 - Verified on the devices 2026-11-17 (presence on/off, 10 s Cabinet LED delay, bottom press, rocker LED lights with the Main Light).
 
 ### Living Room: front door opens → Back Home
@@ -292,6 +294,17 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 - The TV Spotlights are powered by the Living Room **TV Light** rocker (`switch.living_room_switch_bottom`), and the Dining Spotlights by the Dining center rocker. Each rocker goes on 3 s before its bulbs, so they can boot and rejoin before being set to 3500 K / 50%. The condition includes the rocker because unpowered bulbs show `unavailable`, not `off`.
 - Order when the door opens: Dining center rocker; +3 s Dining Spotlights; +3 s TV Light rocker; +3 s (bulb boot) TV Spotlights; +2 s Ceiling Fan. The automation runs these steps itself; the scene is the same end state, for manual use.
   Unpowered bulbs show `unavailable` within ~5 min (Z2M availability, #35); after the rocker turns on, the **3 s delay** gives them time to boot and rejoin.
+
+### Living Room: Mini Switch double press turns off Living, Dining, Kitchen lights
+
+| Automation (id) | Trigger | Action |
+|---|---|---|
+| `living_room_mini_switch_double_all_off` (mode `single`) | MQTT `zigbee2mqtt/Living Room Mini Switch`, `action: double` | In sequence: **Dining** (Dining Spotlights, then center / bottom (Table) / top (Walkway) rockers) → 2 s → **Living** (TV + Sofa Spotlights, then LED Cove, TV Light, Ceiling Fan) → 2 s → **Kitchen** (Cabinet LED, Walkway, Main Light `switch.kitchen_switch_2_right`, Washing Machine `switch.kitchen_switch_2_left`) |
+
+- Includes the **Ceiling Fan** (`switch.living_room_switch_top`) and the Kitchen **Washing Machine** rocker (`switch.kitchen_switch_2_left`). Leaves the Roborock alone. Single / long press do nothing.
+- Kitchen Main Light is switched off on its real relay (Switch 2 right); `kitchen_main_light_indicator` then mirrors the decoupled Switch 1 bottom LED.
+- If someone is in the kitchen, the presence automation turns the kitchen lights back on at its next detection.
+- `double` confirmed with a real press on this device (2026-11-18). The staged order (Dining > 2 s > Living > 2 s > Kitchen) was verified on the device the same day.
 
 ### Laundry Room: washer / dryer finished
 
