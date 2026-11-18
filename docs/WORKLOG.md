@@ -344,7 +344,7 @@ because MCP can't create automations.
 ### 32. Living Room Mini Switch: double press turns off Living, Dining, Kitchen lights (#58)
 
 - Renamed `0x54ef4410013efd93` (Aqara Wireless mini switch E1) in Z2M to **Living Room Mini Switch** (`homeassistant_rename`), area Living Room. Entities: `sensor.living_room_mini_switch_battery` / `_voltage` / `_device_temperature`.
-- Automation `living_room_mini_switch_double_all_off` (MQTT `action: double`): spotlight groups off, then LED Cove, TV Light, Dining center/bottom/top, Kitchen Cabinet LED, Walkway, Main Light (Switch 2 right; mirror keeps Switch 1 bottom LED in step). Ceiling Fan, Washing Machine, Roborock untouched.
+- Automation `living_room_mini_switch_double_all_off` (MQTT `action: double`): spotlight groups off, then LED Cove, TV Light, Dining center/bottom/top, Kitchen Cabinet LED, Walkway, Main Light (Switch 2 right; mirror keeps Switch 1 bottom LED in step). Per the user, also the **Ceiling Fan** and the Kitchen **Washing Machine** rocker; Roborock untouched.
 - Defaults used (open questions on #58 unanswered): name as above; fan not off; Dining Walkway off; kitchen presence re-on accepted; single/long unused.
 - Verified: rename, area, no `0x54ef4410013efd93` entity IDs left; automation created and exported.
 - Not yet verified: `double` payload on this device (taken from the Office E1, same model); a real double press. Not triggered manually (would switch off real lights).
