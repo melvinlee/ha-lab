@@ -66,6 +66,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Living Room | Front Door Sensor | Aqara door and window sensor (battery, sleepy) | Z2M `0x00158d008bbf6e42` | `binary_sensor.front_door_sensor_contact` (door; on = open), `sensor.front_door_sensor_battery` / `_voltage` / `_device_temperature` |
 | Living Room | Living Room Mini Switch | Aqara Wireless mini switch E1 (battery, sleepy; no press entity, MQTT trigger on `zigbee2mqtt/Living Room Mini Switch`) | Z2M `0x54ef4410013efd93` | `sensor.living_room_mini_switch_battery` / `_voltage` / `_device_temperature`; double press → all Living/Dining/Kitchen lights, Ceiling Fan and Laundry Light off |
 | Living Room | TV Spotlights / Sofa Spotlights | Z2M groups (id 1: TV Spotlight 1+2, id 2: Sofa Spotlight 1+2), one Zigbee broadcast each | Z2M group | `light.tv_spotlights`, `light.sofa_spotlights`; set once to 3500 K / 50% (no default scene/automation) |
+| Living Room | Sofalamp | IKEA TRADFRI bulb E26/E27, white spectrum, globe, clear, 806 lm (2202-4000 K) | Z2M `0x04cd15fffe6bf316` | `light.sofalamp`, `select.sofalamp_power_on_behavior` (**previous**), `sensor.sofalamp_color_options`, `button.sofalamp_identify`, `update.sofalamp`. Not the Sofa Spotlights |
 | Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top`, Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
 | Dining Room | Dining Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001261f11` | `light.dining_spotlight_1`, `switch.dining_spotlight_1_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012624ee` | `light.dining_spotlight_2`, `switch.dining_spotlight_2_power_outage_memory` (**on**) |
@@ -329,7 +330,7 @@ Night Curtain = relay **ON = open, OFF = closed**.
 | `scene.goodnight` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | off / off (see below) |
 
 **Goodnight** (`scene.goodnight`, reworked in #38) leaves the **Master Bedroom untouched** (no main light/cove/bedlamp change, curtain not moved) and turns **off**:
-- **Living Room:** Ceiling Fan, LED Cove, TV Light rocker, TV Spotlights, Sofa Spotlights.
+- **Living Room:** Ceiling Fan, LED Cove, TV Light rocker, TV Spotlights, Sofa Spotlights, Sofalamp.
 - **Dining Room:** Spotlight rocker, Dining Spotlights, Dining Table. **Walkway is left as it is.**
 - **Kitchen:** Main Light (Switch 2 right), Walkway, Cabinet LED.
 - **Laundry Room:** Laundry Light (Kitchen Switch 2 left, #60).

@@ -61,6 +61,7 @@ export const ROOMS: Room[] = [
       { entity: "switch.living_room_switch_bottom", name: "TV Light", kind: "switch", icon: "tv" },
       { entity: "light.tv_spotlights", name: "TV Spotlights", kind: "light", icon: "spot" },
       { entity: "light.sofa_spotlights", name: "Sofa Spotlights", kind: "light", icon: "spot" },
+      { entity: "light.sofalamp", name: "Sofalamp", kind: "light", icon: "lamp" },
       { entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" },
     ],
     // Roborock app routines, exposed by the roborock integration as buttons

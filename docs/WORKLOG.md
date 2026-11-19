@@ -389,6 +389,15 @@ because MCP can't create automations.
 - **Verified:** typecheck/build; served bundle contains the new classes and "Laundry Light".
 - **Not yet verified:** a real wash/dry cycle on the dashboard and on the tablet.
 
+### 36. Living Room: Sofalamp (IKEA TRADFRI bulb) set up (#64)
+
+- Z2M `0x04cd15fffe6bf316` (IKEA TRADFRI E26/E27 white spectrum globe, 806 lm, 2202-4000 K) renamed to **Sofalamp** with `homeassistant_rename: true`: entities `light.sofalamp`, `select.sofalamp_power_on_behavior`, `sensor.sofalamp_color_options`, `button.sofalamp_identify`, `update.sofalamp`; no `0x04cd15…` IDs left.
+- Device in the **Living Room** area. `power_on_behavior` set to `previous`.
+- Firmware: `update.sofalamp` off, installed = latest (65554).
+- NG Premium: Sofalamp light control in the Living Room card (deployed). North Gaia: Sofalamp tile with brightness + colour temperature in the Living Room section (pushed).
+- **Verified:** `/get` refresh answered (on, 255, 2702 K); rename, area, power_on_behavior = previous read back from HA; build passes; served bundle contains `light.sofalamp`; North Gaia saved.
+- **Not yet verified:** on/off, brightness and colour temperature on the real bulb (user test); power-cut restore with `previous`; dashboards visually.
+
 ## Open items
 
 **Laundry Light / washer energy (#60)**
