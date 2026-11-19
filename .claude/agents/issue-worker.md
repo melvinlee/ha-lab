@@ -36,6 +36,7 @@ Several can apply to one issue; load each one when you reach that part.
    git worktree add -b feature/<n>-<slug> "$wt" origin/main   # if the branch exists: git worktree add "$wt" feature/<n>-<slug>
    cd "$wt"
    ```
+   - If `git worktree add` fails because the branch is already checked out (e.g. in the main checkout), stop and report back. If an existing local branch is behind `origin/main`, merge `origin/main` into it (no force-push).
    - Do **all** edits, builds and git commands inside `$wt` (use absolute paths under `$wt`). Never edit files in the main checkout.
    - `.env.local` and `node_modules` are not in a fresh worktree. For `premium/` run `npm ci` in `$wt/premium` before building,
      and copy `premium/.env.local` from the main checkout only if `npm run dev` needs it (never commit it).
