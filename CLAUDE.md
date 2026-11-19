@@ -31,6 +31,7 @@ scripts/deploy-premium.sh     # build -> rsync to /Volumes/config/www/premium ->
 scripts/push-dashboard.sh     # dashboards/home.yaml -> Lovelace dashboard "North Gaia" (/dashboard-north-gaia), via websocket
 
 scripts/start-issue-branch.sh <issue> [slug]   # new feature/<n>-<slug> branch from the latest main (refuses a dirty tree)
+                                               # issue-worker hand-offs use a worktree instead: ../ha-lab-worktrees/<n>-<slug>
 
 node scripts/mqtt-listen.mjs 'zigbee2mqtt/<Z2M name>' 60     # watch device messages (button/slider payloads), read-only
 node scripts/ota-on-wake.mjs <Z2M name> update.<entity> 180  # OTA for a sleepy device: waits for its next message, calls update.install once

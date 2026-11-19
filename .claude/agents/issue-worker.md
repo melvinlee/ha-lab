@@ -2,7 +2,7 @@
 name: issue-worker
 description: >-
   Work on one GitHub issue in this ha-lab repo end to end, e.g. "work on issue #64", "hand off issue #64 to the issue agent".
-  Starts a feature branch from the latest main, does the work on live Home Assistant and in the repo using the project skills
+  Starts a feature branch from the latest main in its own git worktree, does the work on live Home Assistant and in the repo using the project skills
   (issue-workflow, ha-automation, ha-scene, ha-zigbee-device, sleepy-device-settings, ng-premium-deploy), updates README, WORKLOG
   and the issue, and reports what was verified. It does not commit, open PRs or merge unless the caller asks.
 tools: "*"
@@ -27,7 +27,20 @@ Several can apply to one issue; load each one when you reach that part.
 
 ## Flow
 1. `gh issue view <n>`; understand the checklist.
-2. `scripts/start-issue-branch.sh <n> [slug]` (refuses a dirty tree; report back if it does).
+2. **Start in a new git worktree** (not `scripts/start-issue-branch.sh`, which switches the main checkout), so the main
+   checkout and other sessions are never disturbed:
+   ```bash
+   cd /Volumes/SSD/melvinlee/Developer/ha-lab
+   git fetch origin --prune
+   wt=/Volumes/SSD/melvinlee/Developer/ha-lab-worktrees/<n>-<slug>
+   git worktree add -b feature/<n>-<slug> "$wt" origin/main   # if the branch exists: git worktree add "$wt" feature/<n>-<slug>
+   cd "$wt"
+   ```
+   - Do **all** edits, builds and git commands inside `$wt` (use absolute paths under `$wt`). Never edit files in the main checkout.
+   - `.env.local` and `node_modules` are not in a fresh worktree. For `premium/` run `npm ci` in `$wt/premium` before building,
+     and copy `premium/.env.local` from the main checkout only if `npm run dev` needs it (never commit it).
+   - Run repo scripts from `$wt` (`scripts/deploy-premium.sh`, `scripts/push-dashboard.sh`, `node scripts/ha-ws.mjs`) so they use the branch's files.
+   - Don't remove the worktree; the caller removes it after the PR is merged (`git worktree remove "$wt"`).
 3. Do the work with the skills above. Live HA first, then export into the repo.
 4. Docs: README (and the **Areas & devices** table if a device/area was added, removed, renamed or moved), a numbered
    `docs/WORKLOG.md` step with **verified vs not yet verified**, tick the issue checklist and post a short progress comment.
@@ -47,5 +60,5 @@ Several can apply to one issue; load each one when you reach that part.
 - Don't send the user's email or personal details to external services.
 
 ## Report back
-Branch name, what changed live in HA, files changed, what was verified and how (trace ids, states), what still needs a
+Worktree path and branch name, what changed live in HA, files changed, what was verified and how (trace ids, states), what still needs a
 real-device test from the user, and anything you stopped on.

@@ -12,6 +12,7 @@ description: >-
   local `main` or from another feature branch. Use the script:
   `scripts/start-issue-branch.sh <n> [slug]`. The slug defaults to the issue title.
   - It refuses a dirty tree; stash or ask if so.
+  - **Hand-offs to `issue-worker`** don't use the script: the agent creates its own worktree at `../ha-lab-worktrees/<n>-<slug>` (branch `feature/<n>-<slug>` from `origin/main`), so the main checkout is left alone.
   - It fetches, fast-forwards `main`, checks `main` == `origin/main`, then creates `feature/<n>-<slug>`.
   - If the branch already exists, it switches to it instead.
   If `main` moves while the branch is open, merge `origin/main` into the branch (no force-push) before opening the PR. If an earlier PR was **squash-merged** (before #27; new PRs are rebase-merged), rebase
@@ -42,6 +43,7 @@ description: >-
 - **"Review / check PR #N"**: hand it to the `pr-reviewer` subagent (`.claude/agents/pr-reviewer.md`, Sonnet, read-only), then relay its verdict.
 - **"Merge PR #N"**: **rebase and merge**, not squash: `gh pr merge <n> --rebase --delete-branch`.
   - Check the PR state first. If it's already merged, say so.
+  - If the branch is checked out in a worktree (`git worktree list`), run `git worktree remove <path>` **first**: `--delete-branch` can't delete a branch a worktree still has checked out.
   - If it can't rebase cleanly, rebase the branch onto `origin/main`. Force-push with `--force-with-lease` only after the user agrees.
   - Then `git switch main && git pull --ff-only origin main`, and confirm the issue closed.
   - Older squash-merged PRs (up to #26) stay as they are.

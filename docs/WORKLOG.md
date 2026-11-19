@@ -406,6 +406,12 @@ because MCP can't create automations.
 - **Not yet verified:** the Automations page grouped by area in the HA UI (user check).
 - Follow-up (not done): optional HA **categories** (Button, Motion, Notification) as a second grouping.
 
+### 38. issue-worker agent works in its own git worktree (#68)
+
+- `.claude/agents/issue-worker.md`: step 2 now does `git fetch`, then `git worktree add -b feature/<n>-<slug> ../ha-lab-worktrees/<n>-<slug> origin/main`, and does all work there (`npm ci` for `premium/`; `.env.local` copied only if needed, never committed). The report includes the worktree path.
+- issue-workflow skill: hand-offs skip `start-issue-branch.sh`; before `gh pr merge --delete-branch`, run `git worktree remove <path>`. CLAUDE.md notes the worktree location (outside the repo, so `.gitignore` is unchanged).
+- **Not yet verified:** a real hand-off in a worktree, including a `premium/` build and deploy from the worktree, and the remove-then-merge step.
+
 ## Open items
 
 **Laundry Light / washer energy (#60)**
