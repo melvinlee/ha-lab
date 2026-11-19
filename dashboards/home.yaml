@@ -286,6 +286,14 @@ views:
               - type: light-brightness
               - type: light-color-temp
           - type: tile
+            entity: light.sofalamp
+            name: Sofalamp
+            icon: mdi:floor-lamp
+            features_position: bottom
+            features:
+              - type: light-brightness
+              - type: light-color-temp
+          - type: tile
             entity: binary_sensor.front_door_sensor_contact
             name: Front Door
           - type: tile
