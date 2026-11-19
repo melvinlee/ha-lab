@@ -16,6 +16,9 @@ description: >-
    - Several presses in one automation: trigger `id`s + `choose` on `condition: trigger`.
    - Auto-off patterns: trigger on sensor `off` *for* N min **and** on light `on` *for* N min, with conditions (sensor off ≥ N, a light on),
      so lights switched on in an empty room are covered.
+   - **Give it an area** right after creating it (area = room prefix of the name; check ids with `config/area_registry/list`):
+     `node scripts/ha-ws.mjs '{"type":"config/entity_registry/update","entity_id":"automation.<name>","area_id":"<area_id>"}'`,
+     verify with `{{ area_name("automation.<name>") }}` and add it to the README Automations area table.
    - Re-enabling an automation doesn't re-arm `for:` triggers. Follow `automation.turn_on` with `automation.trigger` (`skip_condition: false`).
 4. **Test**: real device test with the user where possible; otherwise `automation.trigger` with `skip_condition: false` and read
    traces: `node scripts/ha-ws.mjs '{"type":"trace/list","domain":"automation","item_id":"<id>"}'` (`last_step`, `script_execution`).
