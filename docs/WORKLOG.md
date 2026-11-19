@@ -412,6 +412,14 @@ because MCP can't create automations.
 - issue-workflow skill: hand-offs skip `start-issue-branch.sh`; before `gh pr merge --delete-branch`, run `git worktree remove <path>`. CLAUDE.md notes the worktree location (outside the repo, so `.gitignore` is unchanged).
 - **Not yet verified:** a real hand-off in a worktree, including a `premium/` build and deploy from the worktree, and the remove-then-merge step.
 
+### 39. Master Bedroom: motion automations removed (#70)
+
+- Deleted from HA via `DELETE /api/config/automation/config/<id>`: `master_bedroom_motion_main_light_on` (motion turns on Main light) and `master_bedroom_no_motion_lights_off` (no motion 5 min turns off Main light + LED Cove). Before deleting, the repo exports matched the live configs exactly, so both stay recoverable from git history.
+- Removed `automations/` exports, the NG Premium timeline entries (`premium/src/config.ts`, rebuilt and deployed), the two North Gaia tiles (`dashboards/home.yaml`, pushed) and the README sections; Master Bedroom now has 3 automations. The P1 motion sensor stays.
+- The Main light no longer follows motion. TRADFRI, double-click and slider automations are unchanged.
+- **Verified:** both DELETEs returned `ok`; `/api/states/<entity>` returns 404 for both and neither is in the entity registry; deployed premium assets and the live North Gaia config contain no reference.
+- **Not yet verified:** visual check of both dashboards (user).
+
 ## Open items
 
 **Laundry Light / washer energy (#60)**
@@ -454,7 +462,7 @@ because MCP can't create automations.
 
 **Master Bedroom (issue #1 / PR #2)**
 - [x] ~~Test motion → Main light on~~: fired 12:56:17. Still to check: auto-off after leaving (~5–6 min).
-- [ ] Consider a darkness/night condition for motion → Main light (e.g. illuminance below X lx, or not while sleeping).
+- [x] ~~Consider a darkness/night condition for motion → Main light~~: motion automations removed (#70).
 - [ ] Merge PR #2 (closes issue #1).
 - [x] TRADFRI firmware update (v587290161 → v604241926, adds double-click). Done 2026-11-16.
 
