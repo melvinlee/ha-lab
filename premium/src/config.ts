@@ -189,8 +189,6 @@ export const TIMELINE_ENTITIES = [
   "binary_sensor.aqara_motion_sensor_p1_occupancy",
   "binary_sensor.front_door_sensor_contact",
   "automation.living_room_front_door_opens_back_home",
-  "automation.master_bedroom_motion_turns_on_main_light",
-  "automation.master_bedroom_no_motion_5_min_turns_off_lights",
   "automation.master_bedroom_tradfri_button_toggles_led_cove",
   "automation.office_e1_switch_turns_on_ceiling_light",
   "automation.office_switch_lighting_scene_by_time",

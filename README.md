@@ -28,11 +28,9 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `automations/master_bedroom_tradfri_double_click.yaml` | TRADFRI double-click → Bedlamp toggle, exported from HA |
 | `automations/kitchen_*.yaml` | Kitchen: Switch 1 bottom → Main Light, Main Light status mirror, presence lights, exported from HA |
-| `automations/master_bedroom_motion_main_light_on.yaml` | Motion → Main light on, exported from HA |
 | `automations/master_bedroom_slider_dims_bedlamp.yaml` | Z1 Pro slider → Bedlamp brightness, exported from HA |
 | `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
-| `automations/master_bedroom_no_motion_lights_off.yaml` | No motion 5 min → Main light + LED Cove off, exported from HA |
 | `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
 | `automations/living_room_mini_switch_double_all_off.yaml` | Living Room Mini Switch double press → Living, Dining, Kitchen lights, Ceiling Fan and Laundry Light off, exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
@@ -198,7 +196,7 @@ groups and filters them by room. This table is the record of that mapping (#66).
 
 | Area | Automations |
 |---|---|
-| Master Bedroom | `master_bedroom_tradfri_button_toggles_led_cove`, `master_bedroom_tradfri_double_click_toggles_bedlamp`, `master_bedroom_motion_turns_on_main_light`, `master_bedroom_no_motion_5_min_turns_off_lights`, `master_bedroom_bedroom_switch_slider_dims_bedlamp` |
+| Master Bedroom | `master_bedroom_tradfri_button_toggles_led_cove`, `master_bedroom_tradfri_double_click_toggles_bedlamp`, `master_bedroom_bedroom_switch_slider_dims_bedlamp` |
 | Office | `office_e1_switch_turns_on_ceiling_light`, `office_switch_lighting_scene_by_time` |
 | Bathroom | `bathroom_motion_turns_on_lights`, `bathroom_no_motion_15_min_turns_off_lights`, `bathroom_right_rocker_toggles_its_light`, `bathroom_right_rocker_pauses_auto_off` |
 | Kitchen | `kitchen_switch_1_bottom_toggles_main_light`, `kitchen_switch_1_bottom_status_follows_main_light`, `kitchen_presence_lights` |
@@ -237,15 +235,6 @@ exported to `automations/master_bedroom_tradfri_button.yaml`.
   Payload confirmed with `node scripts/mqtt-listen.mjs zigbee2mqtt/TRADFRI 60`.
 - Long press (`brightness_move_up` / `brightness_stop`) isn't used.
 
-### Master Bedroom: motion turns on Main light
-
-`automation.master_bedroom_motion_turns_on_main_light` (id `master_bedroom_motion_main_light_on`),
-exported to `automations/master_bedroom_motion_main_light_on.yaml`.
-
-- Trigger: `binary_sensor.aqara_motion_sensor_p1_occupancy` `off` → `on`.
-- Condition: Main light is off. Action: `switch.turn_on` → `switch.smart_wall_switch_z1_pro_top` (Main light).
-- No time or light-level condition, so it fires day and night. Pairs with the auto-off below (no motion 5 min → off).
-
 ### Master Bedroom: Bedroom Switch slider dims Bedlamp
 
 `automation.master_bedroom_bedroom_switch_slider_dims_bedlamp` (id `master_bedroom_slider_dims_bedlamp`),
@@ -255,17 +244,6 @@ exported to `automations/master_bedroom_slider_dims_bedlamp.yaml`.
 - `action_slide_speed` = displacement **delta** since the last message (signed; a full slider ≈ 0–100). Each message runs
   `light.turn_on` `light.bedlamp` with `brightness_step_pct` = that delta (0.2 s transition), mode `queued` (max 30).
 - Up from off turns it on; down to 0 turns it off. The relays are not affected by sliding.
-
-### Master Bedroom: no motion 5 min turns off lights
-
-`automation.master_bedroom_no_motion_5_min_turns_off_lights` (id `master_bedroom_no_motion_lights_off`),
-exported to `automations/master_bedroom_no_motion_lights_off.yaml`.
-
-- Turns off **Main light** + **LED Cove** (`switch.smart_wall_switch_z1_pro_top` / `_center`). **Night Curtain is left alone.**
-- Triggers: `binary_sensor.aqara_motion_sensor_p1_occupancy` → `off` for 5 min, **or** either light → `on` for 5 min
-  (covers lights turned on while the room is already empty, e.g. via the TRADFRI button).
-- Conditions: occupancy has been `off` for ≥ 5 min, and at least one of the two lights is on.
-- Real delay ≈ 5 min + the P1's clear time. The P1 reports `off` once its detection interval (now **5 s**) has passed.
 
 ### Office: switch lighting scene by time
 
