@@ -398,6 +398,14 @@ because MCP can't create automations.
 - **Verified:** `/get` refresh answered (on, 255, 2702 K); rename, area, power_on_behavior = previous read back from HA; build passes; served bundle contains `light.sofalamp`; North Gaia saved.
 - **Not yet verified:** on/off, brightness and colour temperature on the real bulb (user test); power-cut restore with `previous`; dashboards visually.
 
+### 37. Automations grouped by area (#66)
+
+- Set `area_id` on all 18 `automation.*` entities with `config/entity_registry/update` (registry only; automation configs and entity IDs unchanged). Area = name prefix: Master Bedroom 5, Office 2, Bathroom 4, Kitchen 3, Living Room 2 (Mini Switch all-off filed under Living Room, where the switch is), Laundry room 2. Mapping in the README Automations section.
+- `ha-automation` skill: new automations get an area right after creation.
+- **Verified:** 18/18 updates returned `success: true`; `area_name()` in `render_template` returns the expected area for every automation.
+- **Not yet verified:** the Automations page grouped by area in the HA UI (user check).
+- Follow-up (not done): optional HA **categories** (Button, Motion, Notification) as a second grouping.
+
 ## Open items
 
 **Laundry Light / washer energy (#60)**

@@ -193,6 +193,20 @@ Paired devices appear in HA under the MQTT integration.
 
 ## Automations
 
+Each automation entity has an **area** (entity registry, not stored in `automations/*.yaml`), so the HA Automations page
+groups and filters them by room. This table is the record of that mapping (#66).
+
+| Area | Automations |
+|---|---|
+| Master Bedroom | `master_bedroom_tradfri_button_toggles_led_cove`, `master_bedroom_tradfri_double_click_toggles_bedlamp`, `master_bedroom_motion_turns_on_main_light`, `master_bedroom_no_motion_5_min_turns_off_lights`, `master_bedroom_bedroom_switch_slider_dims_bedlamp` |
+| Office | `office_e1_switch_turns_on_ceiling_light`, `office_switch_lighting_scene_by_time` |
+| Bathroom | `bathroom_motion_turns_on_lights`, `bathroom_no_motion_15_min_turns_off_lights`, `bathroom_right_rocker_toggles_its_light`, `bathroom_right_rocker_pauses_auto_off` |
+| Kitchen | `kitchen_switch_1_bottom_toggles_main_light`, `kitchen_switch_1_bottom_status_follows_main_light`, `kitchen_presence_lights` |
+| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_double_press_turns_off_living_dining_kitchen_lights` (also turns off Dining and Kitchen; filed where the switch is) |
+| Laundry room | `laundry_room_washer_finished_notification`, `laundry_room_dryer_finished_notification` |
+
+(Entity IDs, i.e. `automation.<name>`.) Set with `config/entity_registry/update` (`area_id`) via `scripts/ha-ws.mjs`.
+
 ### Office: E1 switch controls ceiling light
 
 `automation.office_e1_switch_turns_on_ceiling_light` (id `office_e1_switch_light_on`; entity id kept
