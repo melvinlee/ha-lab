@@ -330,7 +330,7 @@ Night Curtain = relay **ON = open, OFF = closed**.
 | `scene.goodnight` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | off / off (see below) |
 
 **Goodnight** (`scene.goodnight`, reworked in #38) leaves the **Master Bedroom untouched** (no main light/cove/bedlamp change, curtain not moved) and turns **off**:
-- **Living Room:** Ceiling Fan, LED Cove, TV Light rocker, TV Spotlights, Sofa Spotlights, Sofalamp.
+- **Living Room:** Ceiling Fan, LED Cove, TV Light rocker, TV Spotlights, Sofa Spotlights. (Sofalamp is not in Goodnight yet.)
 - **Dining Room:** Spotlight rocker, Dining Spotlights, Dining Table. **Walkway is left as it is.**
 - **Kitchen:** Main Light (Switch 2 right), Walkway, Cabinet LED.
 - **Laundry Room:** Laundry Light (Kitchen Switch 2 left, #60).
