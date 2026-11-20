@@ -82,6 +82,9 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
   (`availability: {timeout: 5}`; global off), so they show `unavailable` ~5 min later. A new availability setting needed a **Z2M restart**.
 - **Decoupled rocker pattern**: the rocker is in `decoupled` mode and sends `single_<rocker>`. An MQTT-triggered automation toggles the real load,
   and a two-way mirror automation (acts only when the states differ) keeps the decoupled relay, and so its LED, in step. See `automations/kitchen_*`.
+- **Set a sensor's unit before HA records statistics.** A new utility meter / template sensor that first appears without a unit gets statistics
+  metadata `unit_class: unitless`; once it reports `kWh` HA raises a non-fixable "units changed" repair. Fix with `recorder/update_statistics_metadata`
+  (`statistic_id`, `unit_class: energy`, `unit_of_measurement: kWh`) via `ha-ws.mjs`; the repair only clears on the recorder's next issue check, about a day later, not right away (#72).
 - A **HA restart** is only needed for new integration *types* in YAML; ask the user first.
 
 ## Conventions
