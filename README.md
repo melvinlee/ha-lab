@@ -342,7 +342,7 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 Created with `POST /api/config/scene/config/<id>`, exported to `scenes/<id>.yaml`.
 Night Curtain = relay **ON = open, OFF = closed**.
 
-| Scene | Main light | LED Cove | Night Curtain | Bedlamp | Office (T1 white / ring) | Living Room (Sofa Spotlights / Sofalamp) |
+| Scene | Main light | LED Cove | Night Curtain | Bedlamp | Office (T1 white / ring) | Living Room |
 |---|---|---|---|---|---|---|
 | `scene.good_morning` | on | on | **open** (on) | on, 100% @ 4000 K | white on | *unchanged* |
 | `scene.movie` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | *unchanged* / *unchanged* | off / on, 50%; TV Light rocker on + TV Spotlights 50% (#78) |
