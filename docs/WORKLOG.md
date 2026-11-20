@@ -13,7 +13,7 @@ How-to and reference details live in the [README](../README.md).
 | Areas | Office, Living Room, Master Bedroom, **Bathroom** (new), Bedroom, Kitchen (empty) |
 | Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button, Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
-| Scenes | 4: Good morning, Movie, Away, Goodnight (`scenes/`) |
+| Scenes | 7: Good morning, Movie, Away (whole house off), Goodnight, Office hour, After office, Back Home (`scenes/`) |
 | REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT; Nasdaq QQQ quote `sensor.qqq_price` (`ha-config/rest.yaml`) |
 | Automations | 4: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
 | Dashboards | **North Gaia** `/dashboard-north-gaia` (Lovelace, `dashboards/home.yaml`) · **NG Premium** `/dashboard-premium` (app in `premium/`) |
@@ -419,6 +419,13 @@ because MCP can't create automations.
 - The Main light no longer follows motion. TRADFRI, double-click and slider automations are unchanged.
 - **Verified:** both DELETEs returned `ok`; `/api/states/<entity>` returns 404 for both and neither is in the entity registry; deployed premium assets and the live North Gaia config contain no reference.
 - **Not yet verified:** visual check of both dashboards (user).
+
+### 40. Away scene turns off the whole house (#74)
+
+- `scene.away` went from 5 to **21** entities (`POST /api/config/scene/config/away`, exported to `scenes/away.yaml`). It now covers every room: Living Room (incl. Ceiling Fan and Sofalamp), Dining Room (incl. Walkway), Kitchen, Laundry Room and **Bathroom**, plus the existing Master Bedroom and Office entities. Spotlight rockers are cut too, as in Goodnight.
+- User decisions: include the Bathroom and the Ceiling Fan; Night Curtain stays unchanged.
+- Left out: the decoupled Kitchen Switch 1 bottom (mirrored by `kitchen_main_light_indicator`), Bath mode, the unnamed Spotlight T3 `light.0x54ef4410011b5686`, SHIELD, config switches.
+- **Verified:** the POST returned `ok`; the live config read back has 21 entities, all `off`, and matches the export.
 
 ## Open items
 

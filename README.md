@@ -318,7 +318,7 @@ Night Curtain = relay **ON = open, OFF = closed**.
 |---|---|---|---|---|---|
 | `scene.good_morning` | on | on | **open** (on) | on, 100% @ 4000 K | white on |
 | `scene.movie` | off | on | **closed** (off) | on, 15% @ 2200 K | off / off |
-| `scene.away` | off | off | *unchanged* | off | off / off |
+| `scene.away` | off | off | *unchanged* | off | off / off (whole house off, see below) |
 | `scene.goodnight` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | off / off (see below) |
 
 **Goodnight** (`scene.goodnight`, reworked in #38) leaves the **Master Bedroom untouched** (no main light/cove/bedlamp change, curtain not moved) and turns **off**:
@@ -331,6 +331,18 @@ Night Curtain = relay **ON = open, OFF = closed**.
 Notes:
 - The spotlight rockers are cut too (user decision), so the bulbs lose power. The next "on" needs the rocker first; Back Home does this.
 - Never included: the decoupled Kitchen bottom rocker (it mirrors the Main Light), and the Bathroom (its motion auto-off handles it).
+
+**Away** (`scene.away`, whole house in #74) turns **off** every light, fan and load. Only the **Night Curtain is left unchanged**:
+- **Master Bedroom:** Main light, LED Cove, Bedlamp.
+- **Living Room:** Ceiling Fan, LED Cove, TV Light rocker, TV Spotlights, Sofa Spotlights, Sofalamp.
+- **Dining Room:** Walkway, Spotlight rocker, Dining Spotlights, Dining Table.
+- **Kitchen:** Main Light (Switch 2 right), Walkway, Cabinet LED.
+- **Laundry Room:** Laundry Light (Kitchen Switch 2 left).
+- **Bathroom:** LED Cove, Main Light (D1 left/center).
+- **Office:** Ceiling light, Ambient ring.
+
+Not included: the decoupled Kitchen bottom rocker (it mirrors the Main Light), Bath mode (`switch.bathroom_switch_d1_right`, a mode flag, not a load),
+the unnamed Spotlight T3 `light.0x54ef4410011b5686` (not set up yet), the SHIELD, and config switches (lock relays, night LED, power-outage memory).
 
 **Office-only scenes**: ceiling light colour temperature (brightness untouched) and the **ambient ring off**.
 
