@@ -3,7 +3,8 @@ id: living_room_mini_switch_hold_away
 alias: 'Living Room: Mini Switch hold runs the Away scene'
 description: 'Aqara E1 mini switch (Living Room Mini Switch): hold (long press, action
   "hold", captured 2026-11-20) runs scene.away, which turns off the whole house except
-  the Night Curtain (#74). Double press keeps its own all-off automation.'
+  the Night Curtain (#74). Single and double press do nothing (the double-press all-off
+  was removed in #76).'
 triggers:
 - trigger: mqtt
   topic: zigbee2mqtt/Living Room Mini Switch
