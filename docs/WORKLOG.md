@@ -457,6 +457,15 @@ because MCP can't create automations.
   - **Verified:** a real 4th-rocker press at 13:49:33 (one `single_wireless` message), trace `73dea8f9…` `finished`. Logbook: Sofalamp on (128), Sofa Spotlights off, Office ceiling light off, all from the automation, and every entity read back at its Movie state. This run used an earlier, 8-entity version (the original 6 entities plus the two sofa lights; the press came before the bedroom and office entities were removed). Someone switched the Office light back on with the E1 switch at 13:49:48. The other entities were restored from a temporary pre-test snapshot (`scene.before_movie_78`, made with `scene.create`; no longer in HA) with `scene.apply`, applied twice and leaving the Office light alone. All 8 states then matched the snapshot (Sofa Spotlights on 138 @ 3508 K, Sofalamp off, Bedroom main/cove/curtain off, Bedlamp off, Office white on 255 @ 6024 K, ring off).
   - **Not yet verified:** an activation of the final 4-entity Movie, including the rocker-off path (rocker on, 3 s, TV Spotlights at 50%); its config was read back and matches the export. The NG Premium hint has not been checked visually.
 
+### 43. Laundry energy-today statistics set to kWh (#72)
+
+- Repairs showed **units changed** for `sensor.laundry_room_washer_energy_today` and `sensor.laundry_room_dryer_energy_today`. These are the daily utility meters from #47. HA started recording statistics before they had a unit, so the metadata was `unit_class: unitless` with no unit.
+- Ran `recorder/update_statistics_metadata` (`unit_class: energy`, `unit_of_measurement: kWh`) for both via `scripts/ha-ws.mjs`. The stored data is kept (two days, all `state 0` / `sum 0`).
+- CLAUDE.md gotcha: give a new utility meter or template sensor its unit before HA records statistics.
+- **Verified:** both updates returned `success`. `recorder/get_statistics_metadata` shows `statistics_unit_of_measurement: kWh` and `unit_class: energy` for both. `recorder/statistics_during_period` (the call the NG Premium Energy card makes in `premium/src/lib/data.ts`) still returns rows for both ids.
+- **Verified:** both repairs cleared by themselves: 0 active at 2026-11-20 09:59 SGT, about 24 h after they were raised (none cleared during the first 10 minutes of polling, so HA re-checks roughly daily).
+- **Not yet verified:** the Energy card on the dashboard (user).
+
 ## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**
