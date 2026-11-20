@@ -425,7 +425,8 @@ because MCP can't create automations.
 - `scene.away` went from 5 to **21** entities (`POST /api/config/scene/config/away`, exported to `scenes/away.yaml`). It now covers every room: Living Room (incl. Ceiling Fan and Sofalamp), Dining Room (incl. Walkway), Kitchen, Laundry Room and **Bathroom**, plus the existing Master Bedroom and Office entities. Spotlight rockers are cut too, as in Goodnight.
 - User decisions: include the Bathroom and the Ceiling Fan; Night Curtain stays unchanged.
 - Left out: the decoupled Kitchen Switch 1 bottom (mirrored by `kitchen_main_light_indicator`), Bath mode, the unnamed Spotlight T3 `light.0x54ef4410011b5686`, SHIELD, config switches.
-- **Verified:** the POST returned `ok`; the live config read back has 21 entities, all `off`, and matches the export.
+- **Verified:** the POST returned `ok`; the live config read back has 21 entities, all `off`, and matches the export. Activated on 2026-11-20 at ~11:40: all 21 entities read `off` after 8 s, and `kitchen_main_light_indicator` turned the decoupled Switch 1 bottom off. The house was then put back from a `scene.create` snapshot, applied twice so the bulbs behind rockers came back after the rocker. Afterwards all 22 states matched the snapshot.
+- **Not yet verified:** the bulbs physically, and the NG Premium Away button (it calls the same `scene.away`; no dashboard change).
 
 ## Open items
 
