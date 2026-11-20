@@ -1,0 +1,35 @@
+# Exported from HA via GET /api/config/automation/config/living_room_switch_slider_toggles_sofalamp
+id: living_room_switch_slider_toggles_sofalamp
+alias: 'Living Room: Living Room Switch slider toggles Sofalamp'
+description: Z1 Pro touch slider on the Living Room Switch controls the Sofalamp.
+  A tap (slider_single) toggles it at its last level. Each slider_up/slider_down message
+  steps brightness by its displacement delta (action_slide_speed, about 0-100 = full
+  slider). Up from off turns it on; down to 0 turns it off. The relay rockers are
+  not touched.
+triggers:
+- trigger: mqtt
+  topic: zigbee2mqtt/Living Room Switch
+conditions:
+- condition: template
+  value_template: "{% set a = trigger.payload_json.action | default('') %}{{ a ==
+    'slider_single' or (a in ['slider_up', 'slider_down'] and (trigger.payload_json.action_slide_speed
+    | float(0)) | round(0) != 0) }}"
+actions:
+- choose:
+  - conditions:
+    - condition: template
+      value_template: "{{ trigger.payload_json.action == 'slider_single' }}"
+    sequence:
+    - action: light.toggle
+      target:
+        entity_id: light.sofalamp
+  default:
+  - action: light.turn_on
+    target:
+      entity_id: light.sofalamp
+    data:
+      brightness_step_pct: "{{ (trigger.payload_json.action_slide_speed | float(0))
+        | round(0) | int }}"
+      transition: 0.2
+mode: queued
+max: 30

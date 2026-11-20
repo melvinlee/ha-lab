@@ -33,6 +33,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
 | `automations/living_room_mini_switch_hold_away.yaml` | Living Room Mini Switch hold → `scene.away` (whole house off), exported from HA |
+| `automations/living_room_switch_slider_toggles_sofalamp.yaml` | Living Room Switch slider → Sofalamp (tap toggles, slide dims), exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
@@ -56,7 +57,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Office | Aqara Sensor (**drybox**, not room climate) | WSDCGQ11LM | Z2M `0x00158d008bbd8791` | `sensor.aqara_sensor_humidity`, `_temperature`, `_battery` |
 | Office | SLZB-06 Zigbee coordinator | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` |
 | Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
-| Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom` (relay that **powers the TV Spotlights**; off = bulbs unpowered, shown `unavailable` within ~5 min, see Z2M availability); `sensor.living_room_switch_power` / `_energy` |
+| Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom` (relay that **powers the TV Spotlights**; off = bulbs unpowered, shown `unavailable` within ~5 min, see Z2M availability); touch **slider** → Sofalamp (tap `slider_single` toggles, `slider_up`/`slider_down` dim, #78); `sensor.living_room_switch_power` / `_energy` |
 | Living Room | TV Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001163f74` | `light.tv_spotlight_1`, `switch.tv_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | TV Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee86` | `light.tv_spotlight_2`, `switch.tv_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee3f` | `light.sofa_spotlight_1`, `switch.sofa_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
@@ -200,7 +201,7 @@ groups and filters them by room. This table is the record of that mapping (#66).
 | Office | `office_e1_switch_turns_on_ceiling_light`, `office_switch_lighting_scene_by_time` |
 | Bathroom | `bathroom_motion_turns_on_lights`, `bathroom_no_motion_15_min_turns_off_lights`, `bathroom_right_rocker_toggles_its_light`, `bathroom_right_rocker_pauses_auto_off` |
 | Kitchen | `kitchen_switch_1_bottom_toggles_main_light`, `kitchen_switch_1_bottom_status_follows_main_light`, `kitchen_presence_lights` |
-| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_hold_runs_the_away_scene` (whole house) |
+| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_hold_runs_the_away_scene` (whole house), `living_room_switch_slider_toggles_sofalamp` |
 | Laundry room | `laundry_room_washer_finished_notification`, `laundry_room_dryer_finished_notification` |
 
 (Entity IDs, i.e. `automation.<name>`.) Set with `config/entity_registry/update` (`area_id`) via `scripts/ha-ws.mjs`.
@@ -244,6 +245,23 @@ exported to `automations/master_bedroom_slider_dims_bedlamp.yaml`.
 - `action_slide_speed` = displacement **delta** since the last message (signed; a full slider ≈ 0–100). Each message runs
   `light.turn_on` `light.bedlamp` with `brightness_step_pct` = that delta (0.2 s transition), mode `queued` (max 30).
 - Up from off turns it on; down to 0 turns it off. The relays are not affected by sliding.
+
+### Living Room: Living Room Switch slider toggles Sofalamp
+
+`automation.living_room_switch_slider_toggles_sofalamp` (id `living_room_switch_slider_toggles_sofalamp`),
+exported to `automations/living_room_switch_slider_toggles_sofalamp.yaml` (#78).
+
+| Slider gesture (captured) | Action |
+|---|---|
+| tap (`action: "slider_single"`, one message) | `light.toggle` → `light.sofalamp` (turns on at its last level) |
+| slide up / down (`slider_up` / `slider_down`, several messages per slide) | `light.turn_on` `light.sofalamp`, `brightness_step_pct` = `action_slide_speed` delta (0.2 s transition) |
+
+- Trigger: MQTT `zigbee2mqtt/Living Room Switch` (Z1 Pro, `0x54ef441001251769`). A template condition only lets through
+  `slider_single`, or `slider_up`/`slider_down` with a non-zero delta (the last message of a slide has delta 0). Mode `queued` (max 30).
+- Same dimming as the Bedroom slider: up from off turns it on; down to 0 turns it off.
+- The relay rockers (Ceiling Fan, LED Cove, TV Light) are not touched. No double tap was seen in the capture, so none is mapped.
+- The **4th (wireless) rocker** sends `action: "single_wireless"`. It is **not mapped** (user decision): only a tap on the slider strip toggles.
+- Tap detection on the strip is unreliable (re-test #78): taps often arrive as tiny slides (dim slightly), `slider_hold` or `single_wireless`. Sliding is the reliable way to turn it on and off.
 
 ### Office: switch lighting scene by time
 
