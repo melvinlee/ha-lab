@@ -433,15 +433,14 @@ because MCP can't create automations.
 - Captured the hold payload: `action: "hold"` (3 holds, one message each, no release). Created `living_room_mini_switch_hold_away` (MQTT trigger, `hold` → `scene.turn_on` `scene.away`, mode `single`), area **Living Room**, exported. Relies on the whole-house Away from #74.
 - **Verified:** a real hold at 11:42:05 started the automation, and its trace finished. The logbook shows every Away entity switched off by it. The Kitchen Cabinet LED and Walkway came back on at 11:42:31 with no automation context, most likely from someone pressing the rocker by hand. The house was restored from a snapshot. The Office ambient ring came back on during the restore and was turned off by hand, after which all 22 states matched.
 - Note: restoring a snapshot with the T1 ceiling light on can turn its ambient ring on too.
+- **Double press removed** (user request): deleted `living_room_mini_switch_double_all_off` (#58) via `DELETE /api/config/automation/config/<id>`. The repo export had matched live, so it stays recoverable from git history. Removed the export and README section. The Mini Switch now only has hold → Away.
+- **Verified:** DELETE `ok`; `/api/states/automation.living_room_mini_switch_double_press_turns_off_living_dining_kitchen_lights` returns 404. No dashboard referenced it.
 
 ## Open items
 
 **Laundry Light / washer energy (#60)**
 - [ ] Washer energy: did `sensor.laundry_room_washer_energy` move after the 07:49 cycle? If not, find another way to meter the washer.
 - [x] Laundry Light turned itself off at ~07:59:52, 10 min after the cycle (verified 2026-11-19).
-
-**Living Room Mini Switch (#58)**
-- [ ] Double-press the switch: Living, Dining, Kitchen lights go off; fan and washer stay on; Kitchen Switch 1 bottom LED goes off.
 
 **Front door / Back Home (#32)**
 - [ ] Open and close the front door once so the sensor reports (entities read `unknown` until then).
