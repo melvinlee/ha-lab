@@ -436,7 +436,26 @@ because MCP can't create automations.
 - **Double press removed** (user request): deleted `living_room_mini_switch_double_all_off` (#58) via `DELETE /api/config/automation/config/<id>`. The repo export had matched live, so it stays recoverable from git history. Removed the export and README section. The Mini Switch now only has hold → Away.
 - **Verified:** DELETE `ok`; `/api/states/automation.living_room_mini_switch_double_press_turns_off_living_dining_kitchen_lights` returns 404. No dashboard referenced it.
 
+### 42. Living Room Switch: slider toggles and dims the Sofalamp (#78)
+
+- Captured the slider with `mqtt-listen.mjs` (2026-11-20 13:24): a tap sends one `action: "slider_single"`. A slide streams `slider_up` / `slider_down` messages with a signed `action_slide_speed` delta (e.g. up 3.5, 40.2, 49.7, 0; down -3.5, -67.3, -23.6), the same as the Bedroom Z1 Pro. No double-tap action was seen. The 4th (wireless) rocker sends `single_wireless`; it is left unmapped (user decision: only the strip toggles).
+- Created `living_room_switch_slider_toggles_sofalamp` (MQTT `zigbee2mqtt/Living Room Switch`; `slider_single` → `light.toggle` `light.sofalamp`; `slider_up`/`slider_down` → `light.turn_on` with `brightness_step_pct` = delta, 0.2 s; mode `queued`, max 30), area **Living Room**, exported. Entity renamed from the generated `automation.living_room_living_room_switch_slider_toggles_sofalamp` to `automation.living_room_switch_slider_toggles_sofalamp` (`config/entity_registry/update`, `new_entity_id`); automation id unchanged.
+- Decisions: a tap toggles (Q1 option a, since the Z1 Pro sends a distinct tap); sliding dims (Q2); a tap turns it on at its last level with a plain `light.toggle` (Q3 proposed default, not yet confirmed by the user). Relays untouched.
+- **Verified (real switch, 2026-11-20):**
+  - Sliding: logbook shows the automation turning the Sofalamp on at 13:29:11 (slide up from off), off at 13:29:15 (slide down to 0) and on at 13:29:17. Later slides dimmed and brightened it, and a slide down turned it off at 13:44:22. Traces `finished` at `action/0/default/0`.
+  - Tap: the strip tap at 13:43:01 (`slider_single`) toggled the Sofalamp on, exactly once.
+  - Messages from the 4th rocker (`single_wireless`) and zero-delta slide messages stop at the condition (`failed_conditions`), so nothing runs.
+  - Ceiling Fan, LED Cove and TV Light relays: no state change during any test (last changed 10:52 / 11:53).
+  - POST `ok`; `area_name()` = Living Room; export matches the live config. The Sofalamp was off at the start and is off at the end (13:44:22; the agent also turned it off at 13:41:34 between rounds).
+- **Not yet verified / open:**
+  - **Tap detection is unreliable.** In the strip re-test (13:43), only the first of the user's taps arrived as `slider_single`. The others arrived as tiny slides (`slider_down`, delta -2.5 to -5, which dim slightly instead of toggling), one `slider_hold` and, at 13:44, several `single_wireless`. A tap turning it **off** has not been seen. Follow-up to decide: also map `slider_hold`, or rely on sliding for on/off.
+  - Q3 (tap turns it on at the last level, plain `light.toggle`) is the proposed default, not confirmed by the user.
+
 ## Open items
+
+**Living Room Switch slider → Sofalamp (#78)**
+- [ ] Strip taps often arrive as tiny slides, `slider_hold` or `single_wireless`: decide whether to also map `slider_hold`, or rely on sliding for on/off.
+- [ ] Confirm Q3: a tap turns it on at the last level.
 
 **Laundry Light / washer energy (#60)**
 - [ ] Washer energy: did `sensor.laundry_room_washer_energy` move after the 07:49 cycle? If not, find another way to meter the washer.
