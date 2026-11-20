@@ -204,7 +204,7 @@ export const TIMELINE_ENTITIES = [
 export interface SceneDef { entity: string; name: string; icon: "sunrise" | "film" | "plane" | "moon"; hint: string }
 export const SCENES: SceneDef[] = [
   { entity: "scene.good_morning", name: "Good morning", icon: "sunrise", hint: "Lights up, curtain open" },
-  { entity: "scene.movie", name: "Movie", icon: "film", hint: "Sofalamp 50%, sofa spots off, curtain closed" },
+  { entity: "scene.movie", name: "Movie", icon: "film", hint: "Sofalamp 50%, sofa spots off" },
   { entity: "scene.away", name: "Away", icon: "plane", hint: "All lights off" },
   { entity: "scene.goodnight", name: "Goodnight", icon: "moon", hint: "Living, Dining, Kitchen, Laundry, Office off" },
 ];
