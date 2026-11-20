@@ -436,7 +436,7 @@ because MCP can't create automations.
 - **Double press removed** (user request): deleted `living_room_mini_switch_double_all_off` (#58) via `DELETE /api/config/automation/config/<id>`. The repo export had matched live, so it stays recoverable from git history. Removed the export and README section. The Mini Switch now only has hold → Away.
 - **Verified:** DELETE `ok`; `/api/states/automation.living_room_mini_switch_double_press_turns_off_living_dining_kitchen_lights` returns 404. No dashboard referenced it.
 
-### 42. Living Room Switch: slider toggles and dims the Sofalamp (#78)
+### 42. Living Room Switch: slider controls the Sofalamp, 4th rocker runs Movie (#78)
 
 - Captured the slider with `mqtt-listen.mjs` (2026-11-20 13:24): a tap sends one `action: "slider_single"`. A slide streams `slider_up` / `slider_down` messages with a signed `action_slide_speed` delta (e.g. up 3.5, 40.2, 49.7, 0; down -3.5, -67.3, -23.6), the same as the Bedroom Z1 Pro. No double-tap action was seen. The 4th (wireless) rocker sends `single_wireless`; it is left unmapped (user decision: only the strip toggles).
 - Created `living_room_switch_slider_toggles_sofalamp` (MQTT `zigbee2mqtt/Living Room Switch`; `slider_single` → `light.toggle` `light.sofalamp`; `slider_up`/`slider_down` → `light.turn_on` with `brightness_step_pct` = delta, 0.2 s; mode `queued`, max 30), area **Living Room**, exported. Entity renamed from the generated `automation.living_room_living_room_switch_slider_toggles_sofalamp` to `automation.living_room_switch_slider_toggles_sofalamp` (`config/entity_registry/update`, `new_entity_id`); automation id unchanged.
@@ -450,12 +450,19 @@ because MCP can't create automations.
 - **Not yet verified / open:**
   - **Tap detection is unreliable.** In the strip re-test (13:43), only the first of the user's taps arrived as `slider_single`. The others arrived as tiny slides (`slider_down`, delta -2.5 to -5, which dim slightly instead of toggling), one `slider_hold` and, at 13:44, several `single_wireless`. A tap turning it **off** has not been seen. Follow-up to decide: also map `slider_hold`, or rely on sliding for on/off.
   - Q3 (tap turns it on at the last level, plain `light.toggle`) is the proposed default, not confirmed by the user.
+- **Scope extended (user decisions): Movie on the 4th rocker.**
+  - `scene.movie` updated (`POST /api/config/scene/config/movie`, re-exported): keeps the Master Bedroom entities and the Office ring off, and adds `light.sofa_spotlights` off and `light.sofalamp` on at brightness 128 (50%). The Office ceiling light (`light.aqara_ceiling_light_t1_white`) was **removed** from Movie at the user's request ("don't turn off office light"), so Movie now leaves it unchanged.
+  - New automation `living_room_switch_4th_rocker_movie` (MQTT `single_wireless`, captured above, → `scene.turn_on` `scene.movie`, mode `single`), area **Living Room**, exported. The entity was generated doubled and renamed to `automation.living_room_switch_4th_rocker_runs_movie`.
+  - NG Premium Movie hint now reads "Cove + dim bedlamp, curtain closed; sofa lamp 50%, sofa spots off". Built and deployed; the served bundle contains it.
+  - **Verified:** a real 4th-rocker press at 13:49:33 (one `single_wireless` message), trace `73dea8f9…` `finished`. Logbook: Sofalamp on (128), Sofa Spotlights off, Office ceiling light off, all from the automation, and every entity read back at its Movie state. This run used the version that still had the Office ceiling light in it (the press came before it was removed). Someone switched the Office light back on with the E1 switch at 13:49:48. The other entities were restored from a pre-test snapshot (`scene.before_movie_78`) with `scene.apply`, applied twice and leaving the Office light alone. All 8 states then matched the snapshot (Sofa Spotlights on 138 @ 3508 K, Sofalamp off, Bedroom main/cove/curtain off, Bedlamp off, Office white on 255 @ 6024 K, ring off).
+  - **Not yet verified:** an activation of the final Movie (without the Office ceiling light); its config was read back and matches the export. The NG Premium hint has not been checked visually.
 
 ## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**
 - [ ] Strip taps often arrive as tiny slides, `slider_hold` or `single_wireless`: decide whether to also map `slider_hold`, or rely on sliding for on/off.
 - [ ] Confirm Q3: a tap turns it on at the last level.
+- [ ] Run the final Movie (no Office ceiling light) once and check the NG Premium Movie hint.
 
 **Laundry Light / washer energy (#60)**
 - [ ] Washer energy: did `sensor.laundry_room_washer_energy` move after the 07:49 cycle? If not, find another way to meter the washer.

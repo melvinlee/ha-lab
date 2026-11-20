@@ -1,0 +1,16 @@
+# Exported from HA via GET /api/config/automation/config/living_room_switch_4th_rocker_movie
+id: living_room_switch_4th_rocker_movie
+alias: 'Living Room: Living Room Switch 4th rocker runs Movie'
+description: A single press on the 4th (wireless) rocker of the Living Room Switch
+  (Z1 Pro, action single_wireless) runs scene.movie.
+triggers:
+- trigger: mqtt
+  topic: zigbee2mqtt/Living Room Switch
+  value_template: '{{ value_json.action | default("") }}'
+  payload: single_wireless
+conditions: []
+actions:
+- action: scene.turn_on
+  target:
+    entity_id: scene.movie
+mode: single

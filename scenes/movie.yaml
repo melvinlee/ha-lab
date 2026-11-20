@@ -12,8 +12,11 @@ entities:
     state: 'on'
     brightness: 38
     color_temp_kelvin: 2202
-  light.aqara_ceiling_light_t1_white:
-    state: 'off'
   light.aqara_ceiling_light_t1_rgb:
     state: 'off'
+  light.sofa_spotlights:
+    state: 'off'
+  light.sofalamp:
+    state: 'on'
+    brightness: 128
 icon: mdi:movie-open
