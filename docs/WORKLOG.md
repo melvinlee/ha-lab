@@ -451,18 +451,18 @@ because MCP can't create automations.
   - **Tap detection is unreliable.** In the strip re-test (13:43), only the first of the user's taps arrived as `slider_single`. The others arrived as tiny slides (`slider_down`, delta -2.5 to -5, which dim slightly instead of toggling), one `slider_hold` and, at 13:44, several `single_wireless`. A tap turning it **off** has not been seen. Follow-up to decide: also map `slider_hold`, or rely on sliding for on/off.
   - Q3 (tap turns it on at the last level, plain `light.toggle`) is the proposed default, not confirmed by the user.
 - **Scope extended (user decisions): Movie on the 4th rocker.**
-  - `scene.movie` updated (`POST /api/config/scene/config/movie`, re-exported) and is now **Living Room only, 2 entities**: `light.sofa_spotlights` off and `light.sofalamp` on at brightness 128 (50%). At the user's request (in steps) the Office ceiling light ("don't turn off office light"), the Master Bedroom lights (Main light, LED Cove, Bedlamp), the Office ring and the Night Curtain were removed, so Movie no longer touches the Master Bedroom or the Office.
-  - New automation `living_room_switch_4th_rocker_movie` (MQTT `single_wireless`, captured above, → `scene.turn_on` `scene.movie`, mode `single`), area **Living Room**, exported. The entity was generated doubled and renamed to `automation.living_room_switch_4th_rocker_runs_movie`.
-  - NG Premium Movie hint now reads "Sofalamp 50%, sofa spots off". Built and deployed; the served bundle contains it.
+  - `scene.movie` updated (`POST /api/config/scene/config/movie`, re-exported) and is now **Living Room only, 4 entities**: TV Light rocker `switch.living_room_switch_bottom` on, `light.tv_spotlights` on at brightness 128 (colour temp kept), `light.sofa_spotlights` off, `light.sofalamp` on at brightness 128 (50%). At the user's request (in steps) the Office ceiling light ("don't turn off office light"), the Master Bedroom lights (Main light, LED Cove, Bedlamp), the Office ring and the Night Curtain were removed, and the TV Spotlights were added.
+  - New automation `living_room_switch_4th_rocker_movie` (MQTT `single_wireless`, captured above; if the TV Light rocker is off, turn it on and wait 3 s for the bulbs to boot, like Back Home; then `scene.turn_on` `scene.movie`; mode `single`), area **Living Room**, exported. The entity was generated doubled and renamed to `automation.living_room_switch_4th_rocker_runs_movie`.
+  - NG Premium Movie hint now reads "Sofalamp + TV spots 50%, sofa spots off". The dashboard button runs the plain scene, so with the TV Light rocker off it may need a second press (noted in the README). Built and deployed; the served bundle contains it.
   - **Verified:** a real 4th-rocker press at 13:49:33 (one `single_wireless` message), trace `73dea8f9…` `finished`. Logbook: Sofalamp on (128), Sofa Spotlights off, Office ceiling light off, all from the automation, and every entity read back at its Movie state. This run used an earlier, 8-entity version (the original 6 entities plus the two sofa lights; the press came before the bedroom and office entities were removed). Someone switched the Office light back on with the E1 switch at 13:49:48. The other entities were restored from a pre-test snapshot (`scene.before_movie_78`) with `scene.apply`, applied twice and leaving the Office light alone. All 8 states then matched the snapshot (Sofa Spotlights on 138 @ 3508 K, Sofalamp off, Bedroom main/cove/curtain off, Bedlamp off, Office white on 255 @ 6024 K, ring off).
-  - **Not yet verified:** an activation of the final 2-entity Movie; its config was read back and matches the export. The NG Premium hint has not been checked visually.
+  - **Not yet verified:** an activation of the final 4-entity Movie, including the rocker-off path (rocker on, 3 s, TV Spotlights at 50%); its config was read back and matches the export. The NG Premium hint has not been checked visually.
 
 ## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**
 - [ ] Strip taps often arrive as tiny slides, `slider_hold` or `single_wireless`: decide whether to also map `slider_hold`, or rely on sliding for on/off.
 - [ ] Confirm Q3: a tap turns it on at the last level.
-- [ ] Run the final 2-entity Movie once (4th rocker) and check the NG Premium Movie hint.
+- [ ] Run the final Movie once from the 4th rocker, ideally with the TV Light rocker off (TV Spotlights should come up at 50%) and check the NG Premium Movie hint.
 
 **Laundry Light / washer energy (#60)**
 - [ ] Washer energy: did `sensor.laundry_room_washer_energy` move after the 07:49 cycle? If not, find another way to meter the washer.

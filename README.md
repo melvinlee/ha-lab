@@ -270,8 +270,10 @@ exported to `automations/living_room_switch_slider_toggles_sofalamp.yaml` (#78).
 `living_room_living_room_…`), exported to `automations/living_room_switch_4th_rocker_movie.yaml` (#78).
 
 - Trigger: MQTT `zigbee2mqtt/Living Room Switch`, `value_json.action == "single_wireless"` (captured: a single press on the 4th, wireless rocker,
-  which has no relay). Action: `scene.turn_on` `scene.movie`. Mode `single`.
-- Movie (2 entities since #78): Sofa Spotlights off, Sofalamp on at 50% (brightness 128). At the user's request it no longer touches the Master Bedroom (Main light, LED Cove, Night Curtain, Bedlamp) or the Office (ceiling light, ring).
+  which has no relay). Action: (TV Light rocker on + 3 s if it was off), then `scene.turn_on` `scene.movie`. Mode `single`.
+- Movie (Living Room only since #78, 4 entities): TV Light rocker `switch.living_room_switch_bottom` on, TV Spotlights on at 50% (brightness 128, colour temp kept), Sofa Spotlights off, Sofalamp on at 50%. At the user's request it no longer touches the Master Bedroom (Main light, LED Cove, Night Curtain, Bedlamp) or the Office (ceiling light, ring).
+- A scene can't sequence, and the TV Spotlights are unpowered while the TV Light rocker is off. So, like Back Home, the automation first turns the rocker on if it is off and waits 3 s for the bulbs to boot, then runs `scene.movie`.
+- The NG Premium **Movie button** runs the plain scene: if the TV Light rocker was off, the TV Spotlights may miss their 50% and need a **second press**.
 
 ### Office: switch lighting scene by time
 
@@ -343,7 +345,7 @@ Night Curtain = relay **ON = open, OFF = closed**.
 | Scene | Main light | LED Cove | Night Curtain | Bedlamp | Office (T1 white / ring) | Living Room (Sofa Spotlights / Sofalamp) |
 |---|---|---|---|---|---|---|
 | `scene.good_morning` | on | on | **open** (on) | on, 100% @ 4000 K | white on | *unchanged* |
-| `scene.movie` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | *unchanged* / *unchanged* | off / on, 50% (#78) |
+| `scene.movie` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | *unchanged* / *unchanged* | off / on, 50%; TV Light rocker on + TV Spotlights 50% (#78) |
 | `scene.away` | off | off | *unchanged* | off | off / off (whole house off, see below) | off / off |
 | `scene.goodnight` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | off / off (see below) | off / *unchanged* |
 
