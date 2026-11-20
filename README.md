@@ -34,6 +34,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
 | `automations/living_room_mini_switch_hold_away.yaml` | Living Room Mini Switch hold → `scene.away` (whole house off), exported from HA |
 | `automations/living_room_switch_slider_toggles_sofalamp.yaml` | Living Room Switch slider → Sofalamp (tap toggles, slide dims), exported from HA |
+| `automations/living_room_switch_4th_rocker_movie.yaml` | Living Room Switch 4th (wireless) rocker → `scene.movie`, exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
@@ -57,7 +58,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Office | Aqara Sensor (**drybox**, not room climate) | WSDCGQ11LM | Z2M `0x00158d008bbd8791` | `sensor.aqara_sensor_humidity`, `_temperature`, `_battery` |
 | Office | SLZB-06 Zigbee coordinator | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` |
 | Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
-| Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom` (relay that **powers the TV Spotlights**; off = bulbs unpowered, shown `unavailable` within ~5 min, see Z2M availability); touch **slider** → Sofalamp (tap `slider_single` toggles, `slider_up`/`slider_down` dim, #78); `sensor.living_room_switch_power` / `_energy` |
+| Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom` (relay that **powers the TV Spotlights**; off = bulbs unpowered, shown `unavailable` within ~5 min, see Z2M availability); touch **slider** → Sofalamp (tap `slider_single` toggles, `slider_up`/`slider_down` dim, #78); 4th (wireless) rocker `single_wireless` → **Movie** scene (#78); `sensor.living_room_switch_power` / `_energy` |
 | Living Room | TV Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001163f74` | `light.tv_spotlight_1`, `switch.tv_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | TV Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee86` | `light.tv_spotlight_2`, `switch.tv_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee3f` | `light.sofa_spotlight_1`, `switch.sofa_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
@@ -201,7 +202,7 @@ groups and filters them by room. This table is the record of that mapping (#66).
 | Office | `office_e1_switch_turns_on_ceiling_light`, `office_switch_lighting_scene_by_time` |
 | Bathroom | `bathroom_motion_turns_on_lights`, `bathroom_no_motion_15_min_turns_off_lights`, `bathroom_right_rocker_toggles_its_light`, `bathroom_right_rocker_pauses_auto_off` |
 | Kitchen | `kitchen_switch_1_bottom_toggles_main_light`, `kitchen_switch_1_bottom_status_follows_main_light`, `kitchen_presence_lights` |
-| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_hold_runs_the_away_scene` (whole house), `living_room_switch_slider_toggles_sofalamp` |
+| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_hold_runs_the_away_scene` (whole house), `living_room_switch_slider_toggles_sofalamp`, `living_room_switch_4th_rocker_runs_movie` |
 | Laundry room | `laundry_room_washer_finished_notification`, `laundry_room_dryer_finished_notification` |
 
 (Entity IDs, i.e. `automation.<name>`.) Set with `config/entity_registry/update` (`area_id`) via `scripts/ha-ws.mjs`.
@@ -260,8 +261,17 @@ exported to `automations/living_room_switch_slider_toggles_sofalamp.yaml` (#78).
   `slider_single`, or `slider_up`/`slider_down` with a non-zero delta (the last message of a slide has delta 0). Mode `queued` (max 30).
 - Same dimming as the Bedroom slider: up from off turns it on; down to 0 turns it off.
 - The relay rockers (Ceiling Fan, LED Cove, TV Light) are not touched. No double tap was seen in the capture, so none is mapped.
-- The **4th (wireless) rocker** sends `action: "single_wireless"`. It is **not mapped** (user decision): only a tap on the slider strip toggles.
+- The **4th (wireless) rocker** sends `action: "single_wireless"`. It does not toggle the Sofalamp (user decision: only a tap on the slider strip toggles); it runs the Movie scene (next section).
 - Tap detection on the strip is unreliable (re-test #78): taps often arrive as tiny slides (dim slightly), `slider_hold` or `single_wireless`. Sliding is the reliable way to turn it on and off.
+
+### Living Room: Living Room Switch 4th rocker runs Movie
+
+`automation.living_room_switch_4th_rocker_runs_movie` (id `living_room_switch_4th_rocker_movie`; entity renamed from the generated doubled
+`living_room_living_room_…`), exported to `automations/living_room_switch_4th_rocker_movie.yaml` (#78).
+
+- Trigger: MQTT `zigbee2mqtt/Living Room Switch`, `value_json.action == "single_wireless"` (captured: a single press on the 4th, wireless rocker,
+  which has no relay). Action: `scene.turn_on` `scene.movie`. Mode `single`.
+- Movie also changes the Master Bedroom (cove on, bedlamp dim, curtain closed) and keeps the Office ring off. The user chose this, knowing it. The Office ceiling light is not in Movie (removed in #78 at the user's request).
 
 ### Office: switch lighting scene by time
 
@@ -330,12 +340,12 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 Created with `POST /api/config/scene/config/<id>`, exported to `scenes/<id>.yaml`.
 Night Curtain = relay **ON = open, OFF = closed**.
 
-| Scene | Main light | LED Cove | Night Curtain | Bedlamp | Office (T1 white / ring) |
-|---|---|---|---|---|---|
-| `scene.good_morning` | on | on | **open** (on) | on, 100% @ 4000 K | white on |
-| `scene.movie` | off | on | **closed** (off) | on, 15% @ 2200 K | off / off |
-| `scene.away` | off | off | *unchanged* | off | off / off (whole house off, see below) |
-| `scene.goodnight` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | off / off (see below) |
+| Scene | Main light | LED Cove | Night Curtain | Bedlamp | Office (T1 white / ring) | Living Room (Sofa Spotlights / Sofalamp) |
+|---|---|---|---|---|---|---|
+| `scene.good_morning` | on | on | **open** (on) | on, 100% @ 4000 K | white on | *unchanged* |
+| `scene.movie` | off | on | **closed** (off) | on, 15% @ 2200 K | *unchanged* / off | off / on, 50% (#78) |
+| `scene.away` | off | off | *unchanged* | off | off / off (whole house off, see below) | off / off |
+| `scene.goodnight` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | off / off (see below) | off / *unchanged* |
 
 **Goodnight** (`scene.goodnight`, reworked in #38) leaves the **Master Bedroom untouched** (no main light/cove/bedlamp change, curtain not moved) and turns **off**:
 - **Living Room:** Ceiling Fan, LED Cove, TV Light rocker, TV Spotlights, Sofa Spotlights. (Sofalamp is not in Goodnight yet.)
