@@ -33,6 +33,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
 | `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
 | `automations/living_room_mini_switch_double_all_off.yaml` | Living Room Mini Switch double press → Living, Dining, Kitchen lights, Ceiling Fan and Laundry Light off, exported from HA |
+| `automations/living_room_mini_switch_hold_away.yaml` | Living Room Mini Switch hold → `scene.away` (whole house off), exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
@@ -62,7 +63,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Living Room | Sofa Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012aee3f` | `light.sofa_spotlight_1`, `switch.sofa_spotlight_1_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Sofa Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012ae78b` | `light.sofa_spotlight_2`, `switch.sofa_spotlight_2_power_outage_memory` (**on**: restores the last state after a power cut) |
 | Living Room | Front Door Sensor | Aqara door and window sensor (battery, sleepy) | Z2M `0x00158d008bbf6e42` | `binary_sensor.front_door_sensor_contact` (door; on = open), `sensor.front_door_sensor_battery` / `_voltage` / `_device_temperature` |
-| Living Room | Living Room Mini Switch | Aqara Wireless mini switch E1 (battery, sleepy; no press entity, MQTT trigger on `zigbee2mqtt/Living Room Mini Switch`) | Z2M `0x54ef4410013efd93` | `sensor.living_room_mini_switch_battery` / `_voltage` / `_device_temperature`; double press → all Living/Dining/Kitchen lights, Ceiling Fan and Laundry Light off |
+| Living Room | Living Room Mini Switch | Aqara Wireless mini switch E1 (battery, sleepy; no press entity, MQTT trigger on `zigbee2mqtt/Living Room Mini Switch`) | Z2M `0x54ef4410013efd93` | `sensor.living_room_mini_switch_battery` / `_voltage` / `_device_temperature`; double press → all Living/Dining/Kitchen lights, Ceiling Fan and Laundry Light off; **hold → Away scene** (#76) |
 | Living Room | TV Spotlights / Sofa Spotlights | Z2M groups (id 1: TV Spotlight 1+2, id 2: Sofa Spotlight 1+2), one Zigbee broadcast each | Z2M group | `light.tv_spotlights`, `light.sofa_spotlights`; set once to 3500 K / 50% (no default scene/automation) |
 | Living Room | Sofalamp | IKEA TRADFRI bulb E26/E27, white spectrum, globe, clear, 806 lm (2202-4000 K) | Z2M `0x04cd15fffe6bf316` | `light.sofalamp`, `select.sofalamp_power_on_behavior` (**previous**), `sensor.sofalamp_color_options`, `button.sofalamp_identify`, `update.sofalamp`. Not the Sofa Spotlights |
 | Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top`, Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
@@ -200,7 +201,7 @@ groups and filters them by room. This table is the record of that mapping (#66).
 | Office | `office_e1_switch_turns_on_ceiling_light`, `office_switch_lighting_scene_by_time` |
 | Bathroom | `bathroom_motion_turns_on_lights`, `bathroom_no_motion_15_min_turns_off_lights`, `bathroom_right_rocker_toggles_its_light`, `bathroom_right_rocker_pauses_auto_off` |
 | Kitchen | `kitchen_switch_1_bottom_toggles_main_light`, `kitchen_switch_1_bottom_status_follows_main_light`, `kitchen_presence_lights` |
-| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_double_press_turns_off_living_dining_kitchen_lights` (also turns off Dining and Kitchen; filed where the switch is) |
+| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_double_press_turns_off_living_dining_kitchen_lights` (also turns off Dining and Kitchen; filed where the switch is), `living_room_mini_switch_hold_runs_the_away_scene` (whole house) |
 | Laundry room | `laundry_room_washer_finished_notification`, `laundry_room_dryer_finished_notification` |
 
 (Entity IDs, i.e. `automation.<name>`.) Set with `config/entity_registry/update` (`area_id`) via `scripts/ha-ws.mjs`.
@@ -294,10 +295,19 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 |---|---|---|
 | `living_room_mini_switch_double_all_off` (mode `single`) | MQTT `zigbee2mqtt/Living Room Mini Switch`, `action: double` | In sequence: **Dining** (Dining Spotlights, then center / bottom (Table) / top (Walkway) rockers) → 2 s → **Living** (TV + Sofa Spotlights, then LED Cove, TV Light, Ceiling Fan) → 2 s → **Kitchen** (Cabinet LED, Walkway, Main Light `switch.kitchen_switch_2_right`, Laundry Light `switch.kitchen_switch_2_left`) |
 
-- Includes the **Ceiling Fan** (`switch.living_room_switch_top`) and the **Laundry Light** (`switch.kitchen_switch_2_left`). Leaves the Roborock alone. Single / long press do nothing.
+- Includes the **Ceiling Fan** (`switch.living_room_switch_top`) and the **Laundry Light** (`switch.kitchen_switch_2_left`). Leaves the Roborock alone. Single press does nothing; hold runs Away (below).
 - Kitchen Main Light is switched off on its real relay (Switch 2 right); `kitchen_main_light_indicator` then mirrors the decoupled Switch 1 bottom LED.
 - If someone is in the kitchen, the presence automation turns the kitchen lights back on at its next detection.
 - `double` confirmed with a real press on this device (2026-11-18). The staged order (Dining > 2 s > Living > 2 s > Kitchen) was verified on the device the same day.
+
+### Living Room: Mini Switch hold runs the Away scene
+
+| Automation (id) | Trigger | Action |
+|---|---|---|
+| `living_room_mini_switch_hold_away` (mode `single`) | MQTT `zigbee2mqtt/Living Room Mini Switch`, `action: hold` | `scene.turn_on` → `scene.away`: the whole house off, Night Curtain unchanged (see Scenes) |
+
+- `hold` was captured from the device with `mqtt-listen.mjs` (2026-11-20). One long press sends one `hold` message, with no release message.
+- Hold was picked over single press, which is too easy to hit by accident. Double press keeps its own staged all-off.
 
 ### Laundry Room: washer / dryer finished
 

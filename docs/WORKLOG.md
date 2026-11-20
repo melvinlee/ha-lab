@@ -428,6 +428,12 @@ because MCP can't create automations.
 - **Verified:** the POST returned `ok`; the live config read back has 21 entities, all `off`, and matches the export. Activated on 2026-11-20 at ~11:40: all 21 entities read `off` after 8 s, and `kitchen_main_light_indicator` turned the decoupled Switch 1 bottom off. The house was then put back from a `scene.create` snapshot, applied twice so the bulbs behind rockers came back after the rocker. Afterwards all 22 states matched the snapshot.
 - **Not yet verified:** the bulbs physically, and the NG Premium Away button (it calls the same `scene.away`; no dashboard change).
 
+### 41. Living Room Mini Switch: hold runs the Away scene (#76)
+
+- Captured the hold payload: `action: "hold"` (3 holds, one message each, no release). Created `living_room_mini_switch_hold_away` (MQTT trigger, `hold` → `scene.turn_on` `scene.away`, mode `single`), area **Living Room**, exported. Relies on the whole-house Away from #74.
+- **Verified:** a real hold at 11:42:05 started the automation, and its trace finished. The logbook shows every Away entity switched off by it. The Kitchen Cabinet LED and Walkway came back on at 11:42:31 with no automation context, most likely from someone pressing the rocker by hand. The house was restored from a snapshot. The Office ambient ring came back on during the restore and was turned off by hand, after which all 22 states matched.
+- Note: restoring a snapshot with the T1 ceiling light on can turn its ambient ring on too.
+
 ## Open items
 
 **Laundry Light / washer energy (#60)**
