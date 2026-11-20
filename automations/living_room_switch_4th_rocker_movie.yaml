@@ -2,7 +2,9 @@
 id: living_room_switch_4th_rocker_movie
 alias: 'Living Room: Living Room Switch 4th rocker runs Movie'
 description: A single press on the 4th (wireless) rocker of the Living Room Switch
-  (Z1 Pro, action single_wireless) runs scene.movie.
+  (Z1 Pro, action single_wireless) runs scene.movie. If the TV Light rocker is off,
+  it is turned on first and the TV Spotlights get 3 s to boot (they are unpowered
+  while it is off).
 triggers:
 - trigger: mqtt
   topic: zigbee2mqtt/Living Room Switch
@@ -10,6 +12,16 @@ triggers:
   payload: single_wireless
 conditions: []
 actions:
+- if:
+  - condition: state
+    entity_id: switch.living_room_switch_bottom
+    state: 'off'
+  then:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.living_room_switch_bottom
+  - delay:
+      seconds: 3
 - action: scene.turn_on
   target:
     entity_id: scene.movie

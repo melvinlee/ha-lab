@@ -2,6 +2,11 @@
 id: movie
 name: Movie
 entities:
+  switch.living_room_switch_bottom:
+    state: 'on'
+  light.tv_spotlights:
+    state: 'on'
+    brightness: 128
   light.sofa_spotlights:
     state: 'off'
   light.sofalamp:
