@@ -271,7 +271,7 @@ exported to `automations/living_room_switch_slider_toggles_sofalamp.yaml` (#78).
 
 - Trigger: MQTT `zigbee2mqtt/Living Room Switch`, `value_json.action == "single_wireless"` (captured: a single press on the 4th, wireless rocker,
   which has no relay). Action: `scene.turn_on` `scene.movie`. Mode `single`.
-- Movie (4 entities since #78): Sofa Spotlights off, Sofalamp on at 50% (brightness 128), Night Curtain closed, Office ring off. At the user's request it no longer touches the Office ceiling light or the Master Bedroom lights (Main light, LED Cove, Bedlamp).
+- Movie (2 entities since #78): Sofa Spotlights off, Sofalamp on at 50% (brightness 128). At the user's request it no longer touches the Master Bedroom (Main light, LED Cove, Night Curtain, Bedlamp) or the Office (ceiling light, ring).
 
 ### Office: switch lighting scene by time
 
@@ -343,7 +343,7 @@ Night Curtain = relay **ON = open, OFF = closed**.
 | Scene | Main light | LED Cove | Night Curtain | Bedlamp | Office (T1 white / ring) | Living Room (Sofa Spotlights / Sofalamp) |
 |---|---|---|---|---|---|---|
 | `scene.good_morning` | on | on | **open** (on) | on, 100% @ 4000 K | white on | *unchanged* |
-| `scene.movie` | *unchanged* | *unchanged* | **closed** (off) | *unchanged* | *unchanged* / off | off / on, 50% (#78) |
+| `scene.movie` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | *unchanged* / *unchanged* | off / on, 50% (#78) |
 | `scene.away` | off | off | *unchanged* | off | off / off (whole house off, see below) | off / off |
 | `scene.goodnight` | *unchanged* | *unchanged* | *unchanged* | *unchanged* | off / off (see below) | off / *unchanged* |
 
