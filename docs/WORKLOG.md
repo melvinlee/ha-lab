@@ -466,6 +466,14 @@ because MCP can't create automations.
 - **Verified:** both repairs cleared by themselves: 0 active at 2026-11-20 09:59 SGT, about 24 h after they were raised (none cleared during the first 10 minutes of polling, so HA re-checks roughly daily).
 - **Not yet verified:** the Energy card on the dashboard (user).
 
+### 44. Office: room temperature sensor (#80)
+
+- New Aqara WSDCGQ11LM `0x00158d008cd53909` (paired, no name/area) renamed in Z2M to **Office Temperature Sensor** (`homeassistant_rename: true`) and assigned to the **Office**. Entities: `sensor.office_temperature_sensor_temperature` / `_humidity` / `_pressure` / `_battery` / `_voltage`. Before the rename it read 29.92 °C, 77.79 % RH, 1008.7 hPa.
+- NG Premium: the Office `climate` now points at the new sensor, so the **Indoor** KPI averages it (the first room sensor). Room cards show a climate badge (`°C · % RH`, or `Temp unknown` until the sensor reports). The drybox sensor stays separate.
+- No `climate.*` / aircon entity exists, so there is no actual temperature *control*. That would be a separate issue.
+- **Verified:** Z2M rename applied; 5 new entity IDs, 0 `0x00158d008cd53909` IDs left; device area = Office; `npm run build` passes.
+- **Not yet verified:** the new entities read `unknown` until the sensor's next report (battery device); dashboard deploy and the badge/KPI visually.
+
 ## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**
