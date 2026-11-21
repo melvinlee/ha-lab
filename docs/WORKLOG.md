@@ -474,6 +474,14 @@ because MCP can't create automations.
 - **Verified:** Z2M rename applied; 5 new entity IDs, 0 `0x00158d008cd53909` IDs left; device area = Office; `npm run build` passes; the sensor reported 29.41 °C / 78.07 % RH after the rename; deployed with `deploy-premium.sh`, and the served bundle (`index-Db55ysml.js`, same as the local build) contains both Office sensor IDs.
 - **Not yet verified:** the Office badge and Indoor KPI visually (refresh the dashboard).
 
+### 45. Back Home: Dining Walkway on; front door runs the scene (#82)
+
+- `scene.back_home` now also turns on the **Dining Walkway** (`switch.dining_switch_top`), 6 entities. Otherwise it is the automation's old end state: rockers, Ceiling Fan, TV + Dining Spotlights 50% / 3500 K.
+- `living_room_front_door_back_home` no longer runs its own staged steps. If the Dining center or TV Light rocker is off, it turns both on and waits 3 s, then runs `scene.back_home` (same pattern as Movie). The scene is now the one definition of Back Home. Trigger and condition are unchanged.
+- User decisions: Walkway in both; the automation calls the scene.
+- **Verified:** both configs saved (`ok`) and exported. Test on 2026-11-21 ~21:30: `automation.trigger` (`skip_condition: true`) with both rockers off and the bulbs `unavailable`. The trace finished at `action/1`; rockers, Ceiling Fan and both spotlight groups came on at 50% / 3508 K. The house was put back afterwards (spotlights off, then rockers off).
+- **Not yet verified:** Walkway turning on from off (it was already on during the test); a real door opening.
+
 ## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**
