@@ -1,10 +1,12 @@
+# Exported from HA via GET /api/config/automation/config/living_room_front_door_back_home
 ---
 id: living_room_front_door_back_home
 alias: 'Living Room: front door opens → Back Home'
-description: 'Front door opens while the TV Spotlights are off (or their TV Light
-  rocker is off). Staged: Dining center rocker on, 3 s, Dining Spotlights; 3 s, TV
-  Light rocker on (powers the TV Spotlights); 3 s boot, TV Spotlights; 2 s, Ceiling
-  Fan. Lights at 3500K/50%. scene.back_home holds the same end state for manual use.'
+description: Front door opens while the TV Spotlights are off (or their TV Light rocker
+  is off). If the Dining center or TV Light rocker is off, both spotlight rockers
+  go on first and it waits 3 s for the bulbs to boot; then it runs scene.back_home
+  (Walkway, rockers, Dining + TV Spotlights 3500K/50%, Ceiling Fan). The scene is
+  the single definition of Back Home (#82).
 triggers:
 - trigger: state
   entity_id: binary_sensor.front_door_sensor_contact
@@ -20,33 +22,24 @@ conditions:
     entity_id: light.tv_spotlights
     state: 'off'
 actions:
-- action: switch.turn_on
+- if:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: switch.dining_switch_center
+      state: 'off'
+    - condition: state
+      entity_id: switch.living_room_switch_bottom
+      state: 'off'
+  then:
+  - action: switch.turn_on
+    target:
+      entity_id:
+      - switch.dining_switch_center
+      - switch.living_room_switch_bottom
+  - delay:
+      seconds: 3
+- action: scene.turn_on
   target:
-    entity_id: switch.dining_switch_center
-- delay:
-    seconds: 3
-- action: light.turn_on
-  target:
-    entity_id: light.dining_spotlights
-  data:
-    brightness_pct: 50
-    color_temp_kelvin: 3500
-- delay:
-    seconds: 3
-- action: switch.turn_on
-  target:
-    entity_id: switch.living_room_switch_bottom
-- delay:
-    seconds: 3
-- action: light.turn_on
-  target:
-    entity_id: light.tv_spotlights
-  data:
-    brightness_pct: 50
-    color_temp_kelvin: 3500
-- delay:
-    seconds: 2
-- action: switch.turn_on
-  target:
-    entity_id: switch.living_room_switch_top
+    entity_id: scene.back_home
 mode: single

@@ -9,6 +9,8 @@ entities:
     state: 'on'
   switch.dining_switch_center:
     state: 'on'
+  switch.dining_switch_top:
+    state: 'on'
   light.tv_spotlights:
     state: 'on'
     brightness: 128

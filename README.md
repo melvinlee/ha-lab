@@ -313,11 +313,10 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 
 | Automation (id) | Trigger | Condition | Action |
 |---|---|---|---|
-| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | TV Light rocker (`switch.living_room_switch_bottom`) is off **or** `light.tv_spotlights` is off | Dining center rocker on → 3 s → Dining Spotlights 3500 K / 50% → 3 s → TV Light rocker on → 3 s → TV Spotlights 3500 K / 50% → 2 s → Ceiling Fan (`switch.living_room_switch_top`) on |
+| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | TV Light rocker (`switch.living_room_switch_bottom`) is off **or** `light.tv_spotlights` is off | If the Dining center or TV Light rocker is off: both on → 3 s. Then `scene.turn_on` **`scene.back_home`** (#82) |
 
 - The TV Spotlights are powered by the Living Room **TV Light** rocker (`switch.living_room_switch_bottom`), and the Dining Spotlights by the Dining center rocker. Each rocker goes on 3 s before its bulbs, so they can boot and rejoin before being set to 3500 K / 50%. The condition includes the rocker because unpowered bulbs show `unavailable`, not `off`.
-- Order when the door opens: Dining center rocker; +3 s Dining Spotlights; +3 s TV Light rocker; +3 s (bulb boot) TV Spotlights; +2 s Ceiling Fan. The automation runs these steps itself; the scene is the same end state, for manual use.
-  Unpowered bulbs show `unavailable` within ~5 min (Z2M availability, #35); after the rocker turns on, the **3 s delay** gives them time to boot and rejoin.
+- Since #82 the automation **runs the scene**, so `scene.back_home` is the single definition of Back Home. It only powers the spotlight rockers first (3 s for the bulbs to boot and rejoin; unpowered bulbs show `unavailable` within ~5 min, #35), like the Movie automation.
 
 ### Living Room: Mini Switch hold runs the Away scene
 
@@ -380,7 +379,7 @@ the unnamed Spotlight T3 `light.0x54ef4410011b5686` (not set up yet), the SHIELD
 | `scene.office_hour` | on, **6000 K** (the light reports 6024 K, its nearest step) | **off** |
 | `scene.after_office` | on, **4000 K** | **off** |
 
-**Living/Dining scene**: `scene.back_home` (**Back Home**): Ceiling Fan `switch.living_room_switch_top` on, Dining center rocker `switch.dining_switch_center` on, `light.tv_spotlights` and `light.dining_spotlights` on at **50% (128) / 3500 K** (bulbs report 3508 K). Same end state as the front-door automation, for manual use (the automation runs its own staged steps); not in NG Premium (user decision).
+**Living/Dining scene**: `scene.back_home` (**Back Home**): Ceiling Fan `switch.living_room_switch_top` on, **Dining Walkway `switch.dining_switch_top` on** (#82), Dining center rocker `switch.dining_switch_center` on, TV Light rocker `switch.living_room_switch_bottom` on, `light.tv_spotlights` and `light.dining_spotlights` on at **50% (128) / 3500 K** (bulbs report 3508 K). Run by the front-door automation (after it powers the rockers) and by the Back Home tile on North Gaia. Not in NG Premium (user decision).
 
 ## Dashboard
 
