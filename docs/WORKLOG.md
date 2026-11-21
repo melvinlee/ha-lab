@@ -471,8 +471,8 @@ because MCP can't create automations.
 - New Aqara WSDCGQ11LM `0x00158d008cd53909` (paired, no name/area) renamed in Z2M to **Office Temperature Sensor** (`homeassistant_rename: true`) and assigned to the **Office**. Entities: `sensor.office_temperature_sensor_temperature` / `_humidity` / `_pressure` / `_battery` / `_voltage`. Before the rename it read 29.92 °C, 77.79 % RH, 1008.7 hPa.
 - NG Premium: the Office `climate` now points at the new sensor, so the **Indoor** KPI averages it (the first room sensor). Room cards show a climate badge (`°C · % RH`, or `Temp unknown` until the sensor reports). The drybox sensor stays separate.
 - No `climate.*` / aircon entity exists, so there is no actual temperature *control*. That would be a separate issue.
-- **Verified:** Z2M rename applied; 5 new entity IDs, 0 `0x00158d008cd53909` IDs left; device area = Office; `npm run build` passes.
-- **Not yet verified:** the new entities read `unknown` until the sensor's next report (battery device); dashboard deploy and the badge/KPI visually.
+- **Verified:** Z2M rename applied; 5 new entity IDs, 0 `0x00158d008cd53909` IDs left; device area = Office; `npm run build` passes; the sensor reported 29.41 °C / 78.07 % RH after the rename; deployed with `deploy-premium.sh`, and the served bundle (`index-Db55ysml.js`, same as the local build) contains both Office sensor IDs.
+- **Not yet verified:** the Office badge and Indoor KPI visually (refresh the dashboard).
 
 ## Open items
 
