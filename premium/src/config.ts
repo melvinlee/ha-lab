@@ -89,7 +89,8 @@ export const ROOMS: Room[] = [
     id: "office",
     name: "Office",
     icon: "desk",
-    climate: {},
+    // Room sensor: Office Temperature Sensor (#80). The drybox sensor below is separate.
+    climate: { temperature: "sensor.office_temperature_sensor_temperature", humidity: "sensor.office_temperature_sensor_humidity" },
     // Office-only scenes: ceiling light colour temperature (brightness and ring untouched)
     routinesTitle: "Lighting",
     routines: [

@@ -318,6 +318,8 @@ function RoomCard({ room }: { room: Room }) {
   const Icon = roomIcon[room.icon];
   const motion = room.motion ? get(room.motion) : undefined;
   const thermostat = room.climate.thermostat ? get(room.climate.thermostat) : undefined;
+  const roomTemp = room.climate.temperature ? get(room.climate.temperature) : undefined;
+  const roomHum = room.climate.humidity ? get(room.climate.humidity) : undefined;
   const lights = room.controls.filter((c) => c.kind === "light" || c.kind === "switch");
   const lightCount = lights.length;
   const onCount = lights.filter((c) => get(c.entity)?.state === "on").length;
@@ -331,6 +333,10 @@ function RoomCard({ room }: { room: Room }) {
           {room.motion && (
             isUnavailable(motion) ? <Badge tone="muted" icon={Activity} label="Motion unknown" /> :
             motion!.state === "on" ? <Badge tone="accent" icon={Activity} label="Motion" /> : <Badge tone="muted" icon={Activity} label="No motion" />
+          )}
+          {room.climate.temperature && (
+            isUnavailable(roomTemp) ? <Badge tone="muted" icon={Thermometer} label="Temp unknown" /> :
+            <Badge tone="muted" icon={Thermometer} label={`${fmt(Number(roomTemp!.state), 1)}°C${isUnavailable(roomHum) ? "" : ` · ${fmt(Number(roomHum!.state), 0)}% RH`}`} />
           )}
           {lightCount > 0 && (
             onCount > 0 ? <Badge tone="accent" icon={Lightbulb} label={`${onCount} on`} /> : <Badge tone="muted" icon={LightbulbOff} label="All off" />
