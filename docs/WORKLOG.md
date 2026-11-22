@@ -491,6 +491,14 @@ because MCP can't create automations.
 - **Verified:** history and statistics checked; `npm run build` passes; deployed, and the served bundle (`index-DqtN3J51.js`) formats kWh to 1 decimal, shows the cost line and has no laundry `_power` reference; registry update `success` on all 4 sensors.
 - **Not yet verified:** a cycle compared against the SmartThings app's energy figure (user), and the card visually.
 
+### 47. NG Premium: 24-hour graph in the Indoor KPI tile (#86)
+
+- The **Indoor** tile now has a 24 h temperature sparkline along its bottom, like Power now and Devices on. Data: 5-minute `mean` statistics of the room temperature sensors (`ROOMS[].climate.temperature`; today only the Office sensor, #80), **averaged** across sensors per bucket (new `useMeanSeries` in `lib/data.ts`). The drybox stays excluded.
+- `Sparkline` got a `fit` option: the y-axis spans the data's own range (±0.2) instead of starting at 0. Otherwise a 29.6–29.8 °C day would be a flat line at the top.
+- The footer adds the 24 h low–high: "Average of 1 room sensor · 24 h 29.6–29.8°".
+- **Verified:** `npm run typecheck` and `npm run build` pass; the Office sensor has 287 five-minute means in the last 24 h (29.64–29.75 °C); deployed, and the served bundle (`index-BmFNIw8B.js`) has the series, the fitted scale and the range text.
+- **Not yet verified:** the tile visually on the dashboard.
+
 ## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**

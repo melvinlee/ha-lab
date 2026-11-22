@@ -38,7 +38,8 @@ export function Skeleton({ w = "100%", h = 16, style }: { w?: number | string; h
   return <div className="skel" style={{ width: w, height: h, ...style }} aria-hidden />;
 }
 
-export function Sparkline({ data, color = "var(--accent)" }: { data: { t: number; v: number }[]; color?: string }) {
+/** fit: scale the y-axis to the data's own range (for values like temperature that never go near 0). */
+export function Sparkline({ data, color = "var(--accent)", fit = false }: { data: { t: number; v: number }[]; color?: string; fit?: boolean }) {
   const id = useId().replace(/:/g, "");
   if (data.length < 2) return <div className="spark" />;
   return (
@@ -51,7 +52,7 @@ export function Sparkline({ data, color = "var(--accent)" }: { data: { t: number
               <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <YAxis hide domain={[0, "dataMax"]} />
+          <YAxis hide domain={fit ? [(min: number) => min - 0.2, (max: number) => max + 0.2] : [0, "dataMax"]} />
           <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#g${id})`} isAnimationActive={false} dot={false} />
         </AreaChart>
       </ResponsiveContainer>
