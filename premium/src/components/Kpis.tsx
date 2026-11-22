@@ -24,6 +24,8 @@ export function Kpis() {
   const onSeries = useOnCountSeries(DEVICE_ENTITIES);
   const tempIds = ROOMS.map((r) => r.climate.temperature).filter((x): x is string => !!x);
   const tempSeries = useMeanSeries(tempIds);
+  const humIds = ROOMS.map((r) => r.climate.humidity).filter((x): x is string => !!x);
+  const humSeries = useMeanSeries(humIds);
 
   // Power now: live state sum
   const powerEntities = POWER_SENSORS.map(get);
@@ -61,6 +63,9 @@ export function Kpis() {
   // Indoor 24 h low–high from the temperature series (#86)
   const tv = tempSeries.status === "ready" ? tempSeries.data.map((p) => p.v) : [];
   const tempRange = tv.length > 1 ? `${fmt(Math.min(...tv), 1)}–${fmt(Math.max(...tv), 1)}°` : null;
+  // Humidity 24 h low–high (#88)
+  const hv = humSeries.status === "ready" ? humSeries.data.map((p) => p.v) : [];
+  const humRange = hv.length > 1 ? `${fmt(Math.min(...hv), 0)}–${fmt(Math.max(...hv), 0)}% RH` : null;
 
   // Devices on
   const devs = DEVICE_ENTITIES.map(get);
@@ -83,8 +88,8 @@ export function Kpis() {
         label="Indoor" icon={Thermometer} loading={!entities}
         value={temps.length ? `${fmt(avg(temps), 1)}°` : "—"}
         unit={hums.length ? ` ${fmt(avg(hums), 0)}% RH` : undefined}
-        foot={temps.length || hums.length ? <span>Average of {temps.length} room sensor{temps.length === 1 ? "" : "s"}{tempRange ? ` · 24 h ${tempRange}` : ""}</span> : <Badge tone="muted" icon={Info} label="No room climate sensor" />}
-        spark={tempSeries.status === "ready" ? <Sparkline data={tempSeries.data} fit /> : null}
+        foot={temps.length || hums.length ? <span>Average of {temps.length} room sensor{temps.length === 1 ? "" : "s"}{tempRange || humRange ? ` · 24 h ${[tempRange, humRange].filter(Boolean).join(" · ")}` : ""}</span> : <Badge tone="muted" icon={Info} label="No room climate sensor" />}
+        spark={tempSeries.status === "ready" || humSeries.status === "ready" ? <Sparkline data={tempSeries.status === "ready" ? tempSeries.data : []} fit data2={humSeries.status === "ready" ? humSeries.data : undefined} /> : null}
       />
       <Tile
         label="Devices on" icon={Power} loading={!entities}

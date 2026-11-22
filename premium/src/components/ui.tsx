@@ -1,5 +1,5 @@
 import { useId, useState, useEffect, type ReactNode, type CSSProperties } from "react";
-import { Area, AreaChart, ResponsiveContainer, YAxis } from "recharts";
+import { Area, AreaChart, ComposedChart, Line, ResponsiveContainer, YAxis } from "recharts";
 import { CircleCheck, CircleAlert, CircleX, CircleDashed, CircleMinus, type LucideIcon } from "lucide-react";
 
 export function Card({ title, icon: Icon, right, children, className = "", style }: { title?: ReactNode; icon?: LucideIcon; right?: ReactNode; children: ReactNode; className?: string; style?: CSSProperties }) {
@@ -38,23 +38,54 @@ export function Skeleton({ w = "100%", h = 16, style }: { w?: number | string; h
   return <div className="skel" style={{ width: w, height: h, ...style }} aria-hidden />;
 }
 
-/** fit: scale the y-axis to the data's own range (for values like temperature that never go near 0). */
-export function Sparkline({ data, color = "var(--accent)", fit = false }: { data: { t: number; v: number }[]; color?: string; fit?: boolean }) {
+/** fit: scale the y-axis to the data's own range (for values like temperature that never go near 0).
+ *  data2: optional second series (e.g. humidity, #88) on its own hidden, fitted y-axis, drawn as a dashed line
+ *  in color2 with padding pad2. Joined to `data` by timestamp. */
+export function Sparkline({ data, color = "var(--accent)", fit = false, data2, color2 = "var(--text-3)", pad2 = 1 }: {
+  data: { t: number; v: number }[]; color?: string; fit?: boolean;
+  data2?: { t: number; v: number }[]; color2?: string; pad2?: number;
+}) {
   const id = useId().replace(/:/g, "");
-  if (data.length < 2) return <div className="spark" />;
+  const two = !!data2 && data2.length >= 2;
+  if (data.length < 2 && !two) return <div className="spark" />;
+  const domain = fit ? [(min: number) => min - 0.2, (max: number) => max + 0.2] as const : [0, "dataMax"] as const;
+  if (!two) {
+    return (
+      <div className="spark" aria-hidden>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
+            <defs>
+              <linearGradient id={`g${id}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={color} stopOpacity={0.18} />
+                <stop offset="100%" stopColor={color} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <YAxis hide domain={[...domain]} />
+            <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#g${id})`} isAnimationActive={false} dot={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  }
+  const rows = new Map<number, { t: number; v?: number; v2?: number }>();
+  for (const p of data) rows.set(p.t, { t: p.t, v: p.v });
+  for (const p of data2!) rows.set(p.t, { ...(rows.get(p.t) ?? { t: p.t }), v2: p.v });
+  const joined = [...rows.values()].sort((a, b) => a.t - b.t);
   return (
     <div className="spark" aria-hidden>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
+        <ComposedChart data={joined} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id={`g${id}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={color} stopOpacity={0.18} />
               <stop offset="100%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <YAxis hide domain={fit ? [(min: number) => min - 0.2, (max: number) => max + 0.2] : [0, "dataMax"]} />
-          <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#g${id})`} isAnimationActive={false} dot={false} />
-        </AreaChart>
+          <YAxis yAxisId="a" hide domain={[...domain]} />
+          <YAxis yAxisId="b" hide domain={[(min: number) => min - pad2, (max: number) => max + pad2]} />
+          <Area yAxisId="a" type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#g${id})`} isAnimationActive={false} dot={false} connectNulls />
+          <Line yAxisId="b" type="monotone" dataKey="v2" stroke={color2} strokeWidth={1.25} strokeDasharray="3 3" isAnimationActive={false} dot={false} connectNulls />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
