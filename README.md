@@ -31,7 +31,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/master_bedroom_slider_dims_bedlamp.yaml` | Z1 Pro slider → Bedlamp brightness, exported from HA |
 | `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
 | `automations/office_scene_schedule.yaml` | Office hour / After office by time and on light-on, exported from HA |
-| `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (staged: rockers and spotlights, then fan), exported from HA |
+| `automations/living_room_front_door_back_home.yaml` | Front door opens → Back Home (powers the spotlight rockers if off, then runs `scene.back_home`), exported from HA |
 | `automations/living_room_mini_switch_hold_away.yaml` | Living Room Mini Switch hold → `scene.away` (whole house off), exported from HA |
 | `automations/living_room_switch_slider_toggles_sofalamp.yaml` | Living Room Switch slider → Sofalamp (tap toggles, slide dims), exported from HA |
 | `automations/living_room_switch_4th_rocker_movie.yaml` | Living Room Switch 4th (wireless) rocker → `scene.movie`, exported from HA |
