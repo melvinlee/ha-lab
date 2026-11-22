@@ -499,7 +499,18 @@ because MCP can't create automations.
 - **Verified:** `npm run typecheck` and `npm run build` pass; the Office sensor has 287 five-minute means in the last 24 h (29.64–29.75 °C); deployed, and the served bundle (`index-BmFNIw8B.js`) has the series, the fitted scale and the range text.
 - **Not yet verified:** the tile visually on the dashboard.
 
+### 48. NG Premium: humidity line in the Indoor KPI graph (#88)
+
+- The Indoor tile's sparkline now carries **humidity** too: a second series from `useMeanSeries` over `ROOMS[].climate.humidity` (today only `sensor.office_temperature_sensor_humidity`). It is drawn as a **dashed, muted** line (`--text-3`) on its own hidden y-axis fitted to the data (±1), so the blue temperature line stays the accent.
+- `Sparkline` got optional `data2` / `color2` / `pad2`; it joins the two series by timestamp in a `ComposedChart`. Single-series callers (Power now, Devices on) still use the old `AreaChart` path unchanged.
+- Footer: "Average of 1 room sensor · 24 h 29.6–29.8° · 76–76% RH".
+- **Found: the Office sensor has gone silent.** Its last report was 2026-11-21 15:17 (29.75 °C, 76.36 %, battery 100 %), and nothing has arrived since. The 24 h statistics are therefore one repeated value, so both lines are flat. It is still paired in Z2M (interview successful, not disabled). It probably dropped off after it was mounted. Next: press its button once; if it still doesn't report, re-pair it near a router.
+- **Verified:** `npm run typecheck` and `npm run build` pass; deployed, and the served bundle (`index-WEfjKyWT.js`) has the humidity series, the dashed line and the `% RH` range.
+- **Not yet verified:** the tile visually, and a moving humidity line (needs the sensor reporting again).
+
 ## Open items
+
+- **Office Temperature Sensor silent since 2026-11-21 15:17** (#88): press its button or re-pair; until then the Indoor value, graph and Office badge show its last reading.
 
 **Living Room Switch slider → Sofalamp (#78)**
 - [ ] Strip taps often arrive as tiny slides, `slider_hold` or `single_wireless`: decide whether to also map `slider_hold`, or rely on sliding for on/off.
