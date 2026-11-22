@@ -206,7 +206,8 @@ function ApplianceRow({ a }: { a: Appliance }) {
   const paused = s === "pause";
   const pct = prog && !isUnavailable(prog) ? Math.min(100, Math.max(0, Number(prog.state))) : null;
   const jobLabel = job && !isUnavailable(job) && job.state !== "none" ? cap(job.state) : null;
-  const watts = pw && !isUnavailable(pw) ? Number(pw.state) : null;
+  // SmartThings' power field has only ever reported 0 W, even mid-cycle (#84): show watts only when non-zero.
+  const watts = pw && !isUnavailable(pw) && Number(pw.state) > 0 ? Number(pw.state) : null;
   const finish = done && !isUnavailable(done) ? Date.parse(done.state) : NaN;
   const active = running || paused;
   const badge = unavailable ? <Badge tone="muted" label={m ? "Unavailable" : "Not found"} /> :
@@ -239,7 +240,8 @@ function ApplianceRow({ a }: { a: Appliance }) {
   );
 }
 
-/** kWh today from a daily utility meter. "unknown" = no source update since the last reset, i.e. 0. */
+/** kWh today from a daily utility meter. "unknown" = no source update since the last reset, i.e. 0.
+ *  The SmartThings source moves in 0.1 kWh steps every 15 min, so it is shown to 1 decimal (#84). */
 function kwhToday(e?: HassEntity): number | null {
   if (!e || e.state === "unavailable") return null;
   if (e.state === "unknown") return 0;
@@ -260,10 +262,10 @@ function ApplianceEnergy({ items }: { items: Appliance[] }) {
         <div className="row-name">
           <div>Energy today</div>
           {parts.map((p) => (
-            <div key={p.name} className="num" style={{ fontSize: "var(--t-xs)", color: "var(--text-2)", fontWeight: 400 }}>{p.name} {p.v == null ? "—" : `${fmt(p.v, 2)} kWh`}</div>
+            <div key={p.name} className="num" style={{ fontSize: "var(--t-xs)", color: "var(--text-2)", fontWeight: 400 }}>{p.name} {p.v == null ? "—" : `${fmt(p.v, 1)} kWh`}</div>
           ))}
         </div>
-        {known.length ? <span className="num" style={{ fontSize: 14, fontWeight: 600 }}>{fmt(total, 2)} kWh</span> : <Badge tone="muted" label="Unavailable" />}
+        {known.length ? <span className="num" style={{ fontSize: 14, fontWeight: 600 }}>{fmt(total, 1)} kWh</span> : <Badge tone="muted" label="Unavailable" />}
       </div>
     </div>
   );
