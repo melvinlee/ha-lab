@@ -1,10 +1,10 @@
 import { Activity, ThermometerSnowflake, Play, Pause, Home as HomeIcon, Loader, Blinds, Package, Droplets, Thermometer, BatteryLow, WashingMachine, Wind, Clock, Zap } from "lucide-react";
-import { fmt, relTime } from "../lib/format";
+import { fmt, fmtMoney, relTime } from "../lib/format";
 import { useState } from "react";
 import { Sofa, DoorOpen, UtensilsCrossed, Brush, Check, Lightbulb, LightbulbOff, Briefcase, Sunset } from "lucide-react";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { useHass, isUnavailable } from "../ha/store";
-import { ROOMS, type Room, type RoomControl, type Appliance } from "../config";
+import { ROOMS, TARIFF_SGD_PER_KWH, CURRENCY, type Room, type RoomControl, type Appliance } from "../config";
 import { controlIcon, roomIcon } from "../lib/icons";
 import { Card, Switch, Slider, Badge, Empty, Skeleton } from "./ui";
 
@@ -262,7 +262,13 @@ function ApplianceEnergy({ items }: { items: Appliance[] }) {
             <div key={p.name} className="num" style={{ fontSize: "var(--t-xs)", color: "var(--text-2)", fontWeight: 400 }}>{p.name} {p.v == null ? "—" : `${fmt(p.v, 1)} kWh`}</div>
           ))}
         </div>
-        {known.length ? <span className="num" style={{ fontSize: 14, fontWeight: 600 }}>{fmt(total, 1)} kWh</span> : <Badge tone="muted" label="Unavailable" />}
+        {known.length ? (
+          <div className="num" style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>{fmt(total, 1)} kWh</div>
+            {/* Cost at the flat tariff used by the Energy card (#84) */}
+            <div style={{ fontSize: "var(--t-xs)", color: "var(--text-2)" }} title={`${CURRENCY} ${fmt(TARIFF_SGD_PER_KWH, 2)}/kWh`}>{fmtMoney(total * TARIFF_SGD_PER_KWH, CURRENCY)}</div>
+          </div>
+        ) : <Badge tone="muted" label="Unavailable" />}
       </div>
     </div>
   );
