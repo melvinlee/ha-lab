@@ -487,7 +487,8 @@ because MCP can't create automations.
 - **The unit is correct.** Cumulative `sensor.laundry_room_{washer,dryer}_energy`, the daily utility meters and their recorder statistics are all `kWh` / `energy`. The amounts are realistic for kWh: a washer cycle on 2026-11-20 (11:36–13:35) used 0.7 kWh, and the dryer used 0.5 kWh on 2026-11-21. Lifetime: washer 85.0 kWh with 18,219 L of water, dryer 146.9 kWh.
 - **The resolution is coarse.** SmartThings' power consumption report updates every **15 min** in **0.1 kWh steps**. The card showed 2 decimals ("0.10 kWh"), so it now shows **1 decimal** for each machine and the total. HA display precision on the 4 energy sensors was also set to 1 (entity registry `display_precision`).
 - **Power is never reported.** `sensor.laundry_room_{washer,dryer}_power` has only held `0` (or `unavailable`) since it was added, including mid-cycle on 2026-11-22 with both machines running. The card showed "Rinse · 0 W"; power is now removed from the card and from `config.ts` (`Appliance.power`), so the row reads "Rinse", or "Off" when idle.
-- **Verified:** history and statistics checked; `npm run build` passes; deployed, and the served bundle (`index-RVqGfWkv.js`) formats kWh to 1 decimal and has no `_power` reference; registry update `success` on all 4 sensors.
+- **Cost:** the Energy today total now has the cost under it, at the same flat tariff the Energy card uses (`TARIFF_SGD_PER_KWH`, SGD 0.30/kWh), e.g. 0.3 kWh → SGD 0.09.
+- **Verified:** history and statistics checked; `npm run build` passes; deployed, and the served bundle (`index-DqtN3J51.js`) formats kWh to 1 decimal, shows the cost line and has no laundry `_power` reference; registry update `success` on all 4 sensors.
 - **Not yet verified:** a cycle compared against the SmartThings app's energy figure (user), and the card visually.
 
 ## Open items
