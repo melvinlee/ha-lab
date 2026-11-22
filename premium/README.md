@@ -25,7 +25,7 @@ Deploy into HA: `scripts/deploy-premium.sh` (from the repo root). It needs the H
 ## Where to change things
 
 `src/config.ts` maps entities to rooms, KPIs, energy (tariff **SGD 0.30/kWh**), security, timeline and scenes.
-Empty arrays (locks, doors, cameras, solar, room climate) render designed empty states.
+Empty arrays (locks, doors, cameras, solar, room climate for rooms without a sensor; Office has one since #80) render designed empty states.
 
 ## Design system (`src/styles.css`)
 
