@@ -2,7 +2,7 @@
 id: office_e1_switch_light_on
 alias: 'Office: E1 switch controls ceiling light'
 description: 'Aqara E1 wireless switch: double press turns ON, single press turns
-  OFF the Aqara Ceiling Light T1 in the office.'
+  OFF the Office Light (Aqara Ceiling Light T1) in the office.'
 triggers:
 - id: 'on'
   trigger: mqtt
