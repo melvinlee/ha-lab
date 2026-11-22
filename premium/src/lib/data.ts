@@ -54,6 +54,27 @@ export function usePowerSeries(ids: string[]) {
   );
 }
 
+/** Mean of several measurement sensors (e.g. room temperatures), 5-minute buckets, last 24h.
+ *  Averaged across the sensors that reported in each bucket, not summed (#86). */
+export function useMeanSeries(ids: string[]) {
+  return usePoll(
+    ids.length
+      ? async (conn) => {
+          const r = await stats(conn, ids, new Date(Date.now() - 24 * 3600e3), "5minute", ["mean"]);
+          const sum = new Map<number, { s: number; n: number }>();
+          for (const rows of Object.values(r)) for (const row of rows) {
+            if (row.mean == null) continue;
+            const b = sum.get(row.start) ?? { s: 0, n: 0 };
+            b.s += row.mean; b.n += 1; sum.set(row.start, b);
+          }
+          return [...sum.entries()].sort((a, b) => a[0] - b[0]).map(([t, b]) => ({ t, v: b.s / b.n }));
+        }
+      : null,
+    [ids.join()],
+    5 * 60e3,
+  );
+}
+
 /** kWh per hour (sum of `change`) for the last 24h. */
 export function useHourlyEnergy(ids: string[]) {
   return usePoll(

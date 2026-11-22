@@ -2,7 +2,7 @@ import { Zap, BatteryCharging, Thermometer, Power, TrendingUp, TrendingDown, Min
 import type { ReactNode } from "react";
 import { useHass, isUnavailable } from "../ha/store";
 import { POWER_SENSORS, ENERGY_SENSORS, ROOMS, DEVICE_ENTITIES } from "../config";
-import { usePowerSeries, useDailyEnergy, useOnCountSeries } from "../lib/data";
+import { usePowerSeries, useDailyEnergy, useOnCountSeries, useMeanSeries } from "../lib/data";
 import { fmtPower, fmtKwh, fmt } from "../lib/format";
 import { Card, Sparkline, Skeleton, Badge } from "./ui";
 
@@ -22,6 +22,8 @@ export function Kpis() {
   const power = usePowerSeries(POWER_SENSORS);
   const daily = useDailyEnergy(ENERGY_SENSORS);
   const onSeries = useOnCountSeries(DEVICE_ENTITIES);
+  const tempIds = ROOMS.map((r) => r.climate.temperature).filter((x): x is string => !!x);
+  const tempSeries = useMeanSeries(tempIds);
 
   // Power now: live state sum
   const powerEntities = POWER_SENSORS.map(get);
@@ -56,6 +58,10 @@ export function Kpis() {
   const hums = ROOMS.map((r) => r.climate.humidity).filter(Boolean).map((id) => get(id!)).filter((e) => !isUnavailable(e));
   const avg = (xs: typeof temps) => xs.reduce((a, e) => a + Number(e!.state), 0) / xs.length;
 
+  // Indoor 24 h low–high from the temperature series (#86)
+  const tv = tempSeries.status === "ready" ? tempSeries.data.map((p) => p.v) : [];
+  const tempRange = tv.length > 1 ? `${fmt(Math.min(...tv), 1)}–${fmt(Math.max(...tv), 1)}°` : null;
+
   // Devices on
   const devs = DEVICE_ENTITIES.map(get);
   const avail = devs.filter((e) => !isUnavailable(e));
@@ -77,7 +83,8 @@ export function Kpis() {
         label="Indoor" icon={Thermometer} loading={!entities}
         value={temps.length ? `${fmt(avg(temps), 1)}°` : "—"}
         unit={hums.length ? ` ${fmt(avg(hums), 0)}% RH` : undefined}
-        foot={temps.length || hums.length ? <span>Average of {temps.length} room sensor{temps.length === 1 ? "" : "s"}</span> : <Badge tone="muted" icon={Info} label="No room climate sensor" />}
+        foot={temps.length || hums.length ? <span>Average of {temps.length} room sensor{temps.length === 1 ? "" : "s"}{tempRange ? ` · 24 h ${tempRange}` : ""}</span> : <Badge tone="muted" icon={Info} label="No room climate sensor" />}
+        spark={tempSeries.status === "ready" ? <Sparkline data={tempSeries.data} fit /> : null}
       />
       <Tile
         label="Devices on" icon={Power} loading={!entities}
