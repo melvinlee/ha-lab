@@ -28,7 +28,7 @@ export interface Room {
   routinesTitle?: string;
   /** Drybox (enclosure) climate shown inside the room card. Not counted as room climate. */
   drybox?: { humidity: string; temperature?: string; battery?: string; goodMax: number; watchMax: number };
-  /** Read-only appliances (e.g. SmartThings washer/dryer): state, job, progress, finish time, power. */
+  /** Read-only appliances (e.g. SmartThings washer/dryer): state, job, progress, finish time. No power: SmartThings only ever reports 0 W (#84). */
   appliances?: Appliance[];
 }
 
@@ -39,13 +39,12 @@ export interface Appliance {
   jobState?: string;
   progress?: string;
   completionTime?: string;
-  power?: string;
   /** Daily utility meter (kWh) on the machine's cumulative energy sensor. */
   energyToday?: string;
 }
 
 const samsung = (name: string, icon: Appliance["icon"], p: string): Appliance => ({
-  name, icon, machineState: `${p}_machine_state`, jobState: `${p}_job_state`, progress: `${p}_progress`, completionTime: `${p}_completion_time`, power: `${p}_power`, energyToday: `${p}_energy_today`,
+  name, icon, machineState: `${p}_machine_state`, jobState: `${p}_job_state`, progress: `${p}_progress`, completionTime: `${p}_completion_time`, energyToday: `${p}_energy_today`,
 });
 
 export const ROOMS: Room[] = [
