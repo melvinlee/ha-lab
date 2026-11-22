@@ -53,7 +53,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 
 | Area | Device | Model | Integration | Key entities |
 |---|---|---|---|---|
-| Office | Aqara Ceiling Light T1 | HCXDD12LM | Z2M `0x54ef44100130d787` | `light.aqara_ceiling_light_t1_white` (main), `..._rgb` (ring) |
+| Office | **Office Light** (was Aqara Ceiling Light T1; renamed #90, name only) | Aqara Ceiling Light T1 HCXDD12LM | Z2M `0x54ef44100130d787` (topic `zigbee2mqtt/Office Light`) | `light.aqara_ceiling_light_t1_white` (main), `..._rgb` (ring). Entity IDs kept on purpose: 2 automations, 5 scenes and both dashboards use them |
 | Office | Aqara E1 Switch | WXKG20LM (wireless) | Z2M `0x54ef441001328ec0` | presses on MQTT `zigbee2mqtt/Aqara E1 Switch`; `sensor.aqara_e1_switch_battery` |
 | Office | Aqara Sensor (**drybox**, not room climate) | WSDCGQ11LM | Z2M `0x00158d008bbd8791` | `sensor.aqara_sensor_humidity`, `_temperature`, `_battery` |
 | Office | **Office Temperature Sensor** (room climate) | Aqara temperature and humidity sensor WSDCGQ11LM (battery) | Z2M `0x00158d008cd53909` | `sensor.office_temperature_sensor_temperature`, `_humidity`, `_pressure`, `_battery`, `_voltage`. NG Premium Office card badge + Indoor KPI and its 24 h temperature + humidity graph (#80, #86, #88) |
@@ -221,7 +221,7 @@ from the original name), created via `POST /api/config/automation/config/<id>`
 
 - Trigger: MQTT topic `zigbee2mqtt/Aqara E1 Switch`, matched on `value_json.action`
   (Aqara Wireless mini switch E1, WXKG20LM, `0x54ef441001328ec0`)
-- Light: Aqara Ceiling Light T1 (`0x54ef44100130d787`), main white channel
+- Light: **Office Light** (Aqara Ceiling Light T1, `0x54ef44100130d787`), main white channel
 - The topic uses the Z2M friendly name. If the device is renamed in Z2M, update the triggers.
 
 ### Master Bedroom: TRADFRI button toggles LED Cove

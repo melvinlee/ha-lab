@@ -508,6 +508,14 @@ because MCP can't create automations.
 - **Verified:** `npm run typecheck` and `npm run build` pass; deployed, and the served bundle (`index-WEfjKyWT.js`) has the humidity series, the dashed line and the `% RH` range.
 - **Not yet verified:** the tile visually, and a moving humidity line (needs the sensor reporting again).
 
+### 49. Office ceiling light renamed to Office Light (#90)
+
+- The Aqara Ceiling Light T1 (`0x54ef44100130d787`) is renamed in Z2M to **Office Light**, with `homeassistant_rename: false`. The HA device name followed, so entities now show as "Office Light White" / "Office Light Rgb" etc. Area stays **Office**.
+- **Name only (user decision):** the entity IDs stay `light.aqara_ceiling_light_t1_white` / `_rgb` and the other `aqara_ceiling_light_t1_*` entities. They are used by `office_e1_switch_light_on`, `office_scene_schedule`, 5 scenes (Office hour, After office, Good morning, Goodnight, Away), the North Gaia dashboard and NG Premium.
+- No automation listened on the old topic `zigbee2mqtt/Aqara Ceiling Light T1`; only the `office_e1_switch_light_on` description named it. The description was updated and re-exported.
+- **Verified:** device name `Office Light`, area Office, all 10 entity IDs unchanged, no `0x54ef44100130d787` IDs; a `get` on `zigbee2mqtt/Office Light` answered (white ON, 254, 250 mired, linkquality 65); the automation saved `ok` and is `on`.
+- **Not yet verified:** the E1 switch press and a scene on the renamed light (the IDs and command path are unchanged).
+
 ## Open items
 
 - **Office Temperature Sensor silent since 2026-11-21 15:17** (#88): press its button or re-pair; until then the Indoor value, graph and Office badge show its last reading.
