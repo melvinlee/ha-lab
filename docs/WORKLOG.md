@@ -482,6 +482,14 @@ because MCP can't create automations.
 - **Verified:** both configs saved (`ok`) and exported. Test on 2026-11-21 ~21:30: `automation.trigger` (`skip_condition: true`) with both rockers off and the bulbs `unavailable`. The trace finished at `action/1`; rockers, Ceiling Fan and both spotlight groups came on at 50% / 3508 K. The house was put back afterwards (spotlights off, then rockers off).
 - **Not yet verified:** Walkway turning on from off (it was already on during the test); a real door opening.
 
+### 46. Laundry Room card: Energy today unit and precision (#84)
+
+- **The unit is correct.** Cumulative `sensor.laundry_room_{washer,dryer}_energy`, the daily utility meters and their recorder statistics are all `kWh` / `energy`. The amounts are realistic for kWh: a washer cycle on 2026-11-20 (11:36–13:35) used 0.7 kWh, and the dryer used 0.5 kWh on 2026-11-21. Lifetime: washer 85.0 kWh with 18,219 L of water, dryer 146.9 kWh.
+- **The resolution is coarse.** SmartThings' power consumption report updates every **15 min** in **0.1 kWh steps**. The card showed 2 decimals ("0.10 kWh"), so it now shows **1 decimal** for each machine and the total. HA display precision on the 4 energy sensors was also set to 1 (entity registry `display_precision`).
+- **Power is never reported.** `sensor.laundry_room_{washer,dryer}_power` has only held `0` (or `unavailable`) since it was added, including mid-cycle on 2026-11-22 with both machines running. The card showed "Rinse · 0 W"; it now hides watts at 0, so the row reads "Rinse", or "Off" when idle.
+- **Verified:** history and statistics checked; `npm run build` passes; deployed, and the served bundle (`index-RVqGfWkv.js`) formats kWh to 1 decimal and hides 0 W; registry update `success` on all 4 sensors.
+- **Not yet verified:** a cycle compared against the SmartThings app's energy figure (user), and the card visually.
+
 ## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**
