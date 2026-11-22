@@ -198,7 +198,6 @@ function ApplianceRow({ a }: { a: Appliance }) {
   const job = a.jobState ? get(a.jobState) : undefined;
   const prog = a.progress ? get(a.progress) : undefined;
   const done = a.completionTime ? get(a.completionTime) : undefined;
-  const pw = a.power ? get(a.power) : undefined;
   const Icon = applianceIcon[a.icon];
   const unavailable = isUnavailable(m);
   const s = m?.state ?? "";
@@ -206,8 +205,6 @@ function ApplianceRow({ a }: { a: Appliance }) {
   const paused = s === "pause";
   const pct = prog && !isUnavailable(prog) ? Math.min(100, Math.max(0, Number(prog.state))) : null;
   const jobLabel = job && !isUnavailable(job) && job.state !== "none" ? cap(job.state) : null;
-  // SmartThings' power field has only ever reported 0 W, even mid-cycle (#84): show watts only when non-zero.
-  const watts = pw && !isUnavailable(pw) && Number(pw.state) > 0 ? Number(pw.state) : null;
   const finish = done && !isUnavailable(done) ? Date.parse(done.state) : NaN;
   const active = running || paused;
   const badge = unavailable ? <Badge tone="muted" label={m ? "Unavailable" : "Not found"} /> :
@@ -222,7 +219,7 @@ function ApplianceRow({ a }: { a: Appliance }) {
         <div className="row-name">
           <div>{a.name}</div>
           <div className="num">
-            {unavailable ? "—" : [jobLabel, watts != null ? `${fmt(watts, 0)} W` : null].filter(Boolean).join(" · ") || "Off"}
+            {unavailable ? "—" : jobLabel || "Off"}
             {active && finishText ? <> · <Clock size={11} aria-hidden style={{ verticalAlign: -1 }} /> Done {finishText}</> : null}
           </div>
         </div>
