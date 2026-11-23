@@ -61,6 +61,8 @@ export const ROOMS: Room[] = [
       { entity: "light.tv_spotlights", name: "TV Spotlights", kind: "light", icon: "spot" },
       { entity: "light.sofa_spotlights", name: "Sofa Spotlights", kind: "light", icon: "spot" },
       { entity: "light.sofalamp", name: "Sofalamp", kind: "light", icon: "lamp" },
+      // Matter LED driver (#99); on 08:30, off 09:30 by automation (#101)
+      { entity: "light.living_room_display_led", name: "Display LED", kind: "light", icon: "strip" },
       { entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" },
     ],
     // Roborock app routines, exposed by the roborock integration as buttons
@@ -197,6 +199,7 @@ export const TIMELINE_ENTITIES = [
   "binary_sensor.aqara_motion_sensor_p1_occupancy",
   "binary_sensor.front_door_sensor_contact",
   "automation.living_room_front_door_opens_back_home",
+  "automation.living_room_display_led_daily_schedule",
   "automation.master_bedroom_tradfri_button_toggles_led_cove",
   "automation.office_e1_switch_turns_on_ceiling_light",
   "automation.office_switch_lighting_scene_by_time",
