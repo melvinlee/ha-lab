@@ -23,8 +23,12 @@ function ControlRow({ c }: { c: RoomControl }) {
   const supportsBrightness = c.kind === "light" && Array.isArray(e?.attributes.supported_color_modes) && (e!.attributes.supported_color_modes as string[]).some((m) => m !== "onoff");
   const bri = typeof e?.attributes.brightness === "number" ? Math.round(((e.attributes.brightness as number) / 255) * 100) : 0;
   const domain = c.entity.split(".")[0];
+  const kelvin = typeof e?.attributes.color_temp_kelvin === "number" ? (e.attributes.color_temp_kelvin as number) : null;
+  const presets = c.kind === "light" ? c.kelvinPresets ?? [] : [];
+  // Lights round K through mireds (3500 K can read back as 3497 or 3508), so match within 75 K.
+  const activePreset = on && kelvin != null ? presets.find((p) => Math.abs(p - kelvin) <= 75) : undefined;
 
-  const sub = unavailable ? null : on ? (supportsBrightness ? `On · ${bri}%` : "On") : "Off";
+  const sub = unavailable ? null : on ? (supportsBrightness ? `On · ${bri}%` : "On") + (presets.length && kelvin != null ? ` · ${kelvin}K` : "") : "Off";
 
   return (
     <div className="row">
@@ -54,6 +58,22 @@ function ControlRow({ c }: { c: RoomControl }) {
               : call("light", "turn_on", { entity_id: c.entity, brightness_pct: v }, { entity: c.entity, state: "on", attributes: { brightness: Math.round((v / 100) * 255) } })
           }
         />
+      )}
+      {presets.length > 0 && !unavailable && (
+        <div className="seg" role="radiogroup" aria-label={`${c.name} colour temperature`} style={{ alignSelf: "flex-start" }}>
+          {presets.map((p) => (
+            <button
+              key={p}
+              type="button"
+              role="radio"
+              aria-checked={activePreset === p}
+              className="seg-btn num"
+              onClick={() => call("light", "turn_on", { entity_id: c.entity, color_temp_kelvin: p }, { entity: c.entity, state: "on", attributes: { color_temp_kelvin: p } })}
+            >
+              {p}K
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );

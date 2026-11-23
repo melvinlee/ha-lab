@@ -556,7 +556,17 @@ because MCP can't create automations.
 - **Verified:** automation saved (`ok`), enabled, area Living Room. The served bundle contains the new entities. `light.turn_on` on the light works (#99).
 - **Not yet verified:** the first real runs (08:30 and 09:30 on 2026-11-24, checked via the trace or logbook); the tile on the tablet.
 
+### 55. Display LED: 3500K / 4000K / 6000K buttons on NG Premium (#103)
+
+- New optional `kelvinPresets` on a room control (`config.ts`). `ControlRow` draws it as a segmented control under the brightness slider, in the theme switch `.seg` style with `role="radiogroup"`. A tap calls `light.turn_on` with `color_temp_kelvin` (turning the light on if it is off, optimistic state). A button is highlighted when the reported K is within 75 K, and the sub line becomes `On · 100% · 6535K`.
+- Display LED: `[3500, 4000, 6000]` (the light supports 2702–6535 K).
+- **Verified:** build passes and is deployed (served bundle `index-DVEjD1BT.js` contains `kelvinPresets` and the radiogroup label). Each preset was sent live and read back: 3500 → 3508, 4000 → 4000, 6000 → 6024 (all within 1 s and inside the 75 K match). The light was put back to 6535 K at 100 %.
+- **Not yet verified:** the buttons on the tablet (tap, highlight, Day/Night).
+
 ## Open items
+
+**Display LED colour presets (#103)**
+- [ ] Tablet: the 3 buttons show under the Display LED slider, a tap changes the colour, and the active one is highlighted.
 
 **Display LED schedule (#101)**
 - [ ] 2026-11-24: on at 08:30 and off at 09:30 (traces / logbook).
