@@ -532,6 +532,15 @@ because MCP can't create automations.
 - **Verified:** new readings at 08:22:36: 31.09 °C, 74.34 % RH. The Indoor KPI, its 24 h graph and the Office badge are live again.
 - **Not yet verified:** the battery report (sent less often), and the 24 h lines moving on the dashboard.
 
+### 52. Junior Bedroom temperature sensor added (#96)
+
+- New Aqara WSDCGQ11LM (battery) `0x00158d008ccfb909` renamed in Z2M to **Junior Bedroom Temperature Sensor** with `homeassistant_rename: true`, so the IDs follow: `sensor.junior_bedroom_temperature_sensor_{temperature,humidity,pressure,battery,voltage}`. Before the rename it read 29.56 °C, 66 %, 1008.9 hPa.
+- New area **Junior Bedroom** (`junior_bedroom`); the device (HA `680e9e5b0b58114a0195aef4d7710093`) is assigned to it.
+- NG Premium: new **Junior Bedroom** room card (after Master Bedroom, `bed` icon, no controls, `climate` = the new temperature + humidity). The card shows the temperature badge and the "No climate control" empty state.
+- **Indoor KPI now averages 2 room sensors** (Office + Junior Bedroom), and so does its 24 h temperature/humidity graph. The user accepted this. North Gaia is unchanged.
+- **Verified:** device name, area Junior Bedroom, all 5 new entities in the area, no `0x00158d008ccfb909` IDs left. `npm run build` passes; deployed, and the served bundle references `junior_bedroom_temperature_sensor`. The sensor reported under the new IDs at 11:10:05 (03:10 UTC): 29.56 °C, 75.59 % RH, 1008.9 hPa (MQTT listener + HA states).
+- **Not yet verified:** battery and voltage (still `unknown`; the sensor sends them less often), and the Junior Bedroom card / 2-sensor Indoor KPI on the tablet, visually.
+
 ## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**
