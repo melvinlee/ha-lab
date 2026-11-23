@@ -593,14 +593,26 @@ because MCP can't create automations.
 - Display LED (Matter over Thread) has been `unavailable` since **20:23:14** (logbook), which is before the 20:28 coordinator switch, so probably not caused by it. Not investigated.
 - CLAUDE.md, README and `zigbee2mqtt/app-config.yaml` still describe the SLZB-06 / zstack.
 
+### 57. MR5U follow-ups: docs, decoupled rockers, Bathroom motion sensor re-paired (#105)
+
+- **Docs and dashboard (PR #107):** CLAUDE.md, README and `zigbee2mqtt/app-config.yaml` now describe the SLZB-MR5U (`192.168.1.42`, `ember`). The North Gaia System view coordinator card and badge use `*living_room_slzb_mr5u_*` (radio 1) and were pushed. Live: `binary_sensor.zigbee2mqtt_bridge_connection_state_2` was renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state`, so existing references work. Every System view entity exists. `binary_sensor.living_room_slzb_mr5u_internet` is `off` (Zigbee doesn't need internet).
+- **Bathroom Switch D1** (read from the device): left / center `control_relay`, right **`decoupled`**. Presses between 21:38 and 22:24 arrived as `single_right`; `bathroom_right_rocker_toggles_its_light` toggled Bath mode, and `bathroom_right_rocker_pauses_auto_off` paused / resumed the auto-off each time.
+- **Kitchen Switch 1** (read from the device): top / center `control_relay`, bottom **`decoupled`**. `single_bottom` → Main Light, and the LED mirror is in step (both off).
+- **Kitchen Switch 2**: left reads `control_left_relay`. The right rocker's operation mode can't be read back (`genBasic.read` on endpoint 2 fails; the device is otherwise responsive and reports `state_right`), so `select.kitchen_switch_2_operation_mode_right` stays `unknown`. The right rocker is the Main Light relay and isn't meant to be decoupled.
+- **Bathroom Motion Sensor P1:** silent since 21:37:41. It flashed blue on motion, but no messages reached Z2M: it was orphaned after the router re-pairs, and its configure had never completed (3 timeouts at 21:18–21:19). It was re-paired (`device_announce` 22:28:12) and `bridge/request/device/configure` was retried while the user tapped its button: configured at 22:28:49, linkquality 88. IDs unchanged; detection interval 30 s.
+- **Verified:** walk-in at 22:29:31 → occupancy `on` → `bathroom_motion_turns_on_lights` → LED Cove + Main Light on (same second). Auto-off automation enabled.
+- **Not yet verified:** Kitchen Switch 2 right rocker physical press (Main Light toggles, the Switch 1 bottom LED follows); the 15-min no-motion auto-off after this re-pair.
+- Lesson: after a coordinator migration, sleepy end devices can lose their parent when routers re-pair and go silent while still looking alive (the LED flashes). Fix: re-pair, then retry `device/configure` while keeping the device awake.
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
 - [ ] Re-pair the Sofalamp (6 power cycles) and the Aqara Motion sensor P1 (hold 5 s).
-- [ ] Test the TRADFRI (single = LED Cove, double = Bedlamp); retry configure on the Bathroom Motion Sensor P1; re-read the Dining Switch operation modes.
-- [ ] Stale references: 10 `*office_slzb_06*` entities (SLZB-06 off) and `binary_sensor.zigbee2mqtt_bridge_connection_state` (the new bridge entity is `_2`).
-- [ ] Display LED unavailable (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
-- [ ] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (MR5U `.42`, `ember`).
+- [ ] Test the TRADFRI (single = LED Cove, double = Bedlamp); re-read the Dining Switch operation modes; press-test the Kitchen Switch 2 right rocker.
+- [x] Bathroom Motion Sensor P1 re-paired and configured; walk-in verified (22:29).
+- [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
+- [ ] Display LED unavailable since 20:23 (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
+- [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
 
 **Display LED colour presets (#103)**
 - [ ] Tablet: the 3 colour swatches show under the Display LED slider and read as amber / warm / cool, a tap changes the colour, and the active one is highlighted.
