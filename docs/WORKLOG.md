@@ -556,11 +556,11 @@ because MCP can't create automations.
 - **Verified:** automation saved (`ok`), enabled, area Living Room. The served bundle contains the new entities. `light.turn_on` on the light works (#99).
 - **Not yet verified:** the first real runs (08:30 and 09:30 on 2026-11-24, checked via the trace or logbook); the tile on the tablet.
 
-### 55. Display LED: 3500K / 4000K / 6000K buttons on NG Premium (#103)
+### 55. Display LED: colour temperature swatches (3500 / 4000 / 6000 K) on NG Premium (#103)
 
-- New optional `kelvinPresets` on a room control (`config.ts`). `ControlRow` draws it as a segmented control under the brightness slider, in the theme switch `.seg` style with `role="radiogroup"`. A tap calls `light.turn_on` with `color_temp_kelvin` (turning the light on if it is off, optimistic state). A button is highlighted when the reported K is within 75 K. The buttons are **colour swatches, not text** (user request): `kelvinColor()` interpolates warm amber → cool blue-white, so 3500 is amber, 4000 warm white and 6000 cool white. The K value stays in `aria-label` and `title`. The swatch group is centred under the slider, and each swatch is centred in a fixed 32 px button (`.k-btn`, not `:has()`, which older tablet webviews ignore).
+- New optional `kelvinPresets` on a room control (`config.ts`). `ControlRow` draws it as a segmented control under the brightness slider, in the theme switch `.seg` style with `role="radiogroup"`. A tap calls `light.turn_on` with `color_temp_kelvin` (turning the light on if it is off, optimistic state). A button is highlighted when the reported K is within 75 K. The buttons are **colour swatches, not text** (user request): `kelvinColor()` interpolates warm amber → cool blue-white, so 3500 is amber, 4000 warm white and 6000 cool white. The K value stays in `aria-label` and `title`. The swatch group is centred under the slider, and each swatch is centred in a fixed 32 px button (`.k-btn`, not `:has()`, which older tablet webviews ignore). The swatch border is `--border-strong` with a 12% inset ring, so the near-white 6000 K swatch stays visible on the Day theme surface.
 - Display LED: `[3500, 4000, 6000]` (the light supports 2702–6535 K).
-- **Verified:** build passes and is deployed (served bundle `index-B49zVjlV.js` contains the swatch class `k-swatch`). Each preset was sent live and read back: 3500 → 3508, 4000 → 4000, 6000 → 6024 (all within 1 s and inside the 75 K match). The light was put back to 6535 K at 100 %.
+- **Verified:** build passes and is deployed (served bundle `index-GOkATxLR.js` contains the swatch class `k-swatch`). Each preset was sent live and read back: 3500 → 3508, 4000 → 4000, 6000 → 6024 (all within 1 s and inside the 75 K match). The light was put back to 6535 K at 100 %.
 - **Not yet verified:** the buttons on the tablet (tap, highlight, Day/Night).
 
 ## Open items
