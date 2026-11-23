@@ -570,11 +570,12 @@ because MCP can't create automations.
 - At the user's request `coordinator_backup.json` was renamed to `coordinator_backup-bak.json` on the share (the zstack backup, kept). Z2M then started at 20:42 with **no valid backup** and **formed a new network** from config: same channel 11, PAN, extended PAN and network key, new coordinator IEEE `0x982ac3fffe77f520`, 0 devices.
 - HA dropped the old device/entity entries. Devices that rejoined were rediscovered from their Z2M friendly names, so most IDs came back unchanged. The exception was the Office Light, whose IDs are HA-only (#90): it came back as `light.office_light_*`.
 - Both coordinators ran the same network identity until the SLZB-06 was shut down (~20:55). Even after that, the old routers still expected the old coordinator IEEE: constant `ROUTE_ERROR_ADDRESS_CONFLICT for "0"`, and `Delivery failed` for every unicast to the Office Light. Delivery worked once the routers had rejoined the MR5U.
+- 21:12:05–21:12:36: 9 more failed Z2M starts with `adapter: ember` but the old `192.168.1.41` address (`EHOSTUNREACH`, the SLZB-06 was off); the config was back on `.42` for the 21:13:11 start. Z2M logs from before 21:12 have rotated away.
 - User decision: **stay on the MR5U** and re-pair everything (the alternative was going back to the SLZB-06).
 
 **Done**
 - Office Light: entity IDs renamed back to `light.aqara_ceiling_light_t1_*` (all 10 entities), twice: after the first drop, and after a forced remove + re-pair (Z2M name restored with `homeassistant_rename: false`). The Office automations (`office_e1_switch_turns_on_ceiling_light`, `office_switch_lighting_scene_by_time`) and 5 scenes resolve again; the live automation configs match the repo exports.
-- **25 of 27 devices on the MR5U**, names and HA entity IDs unchanged. Most routers moved over without a reset once pairing was open. The Dining Spotlights only rejoined after a factory reset done by cycling `switch.dining_switch_center` 5× from HA (1.5 s off / 1.5 s on); a cycle from the wall rocker did not register. The TRADFRI bind failed 13× while it slept; it configured after `bridge/request/device/configure` was retried every 3 s while the user pressed it.
+- **25 of 27 devices on the MR5U**, names and HA entity IDs unchanged. Most routers moved over without a reset once pairing was open. The Dining Spotlights only rejoined after a factory reset done by cycling `switch.dining_switch_center` 5× from HA (1.5 s off / 1.5 s on); a cycle from the wall rocker did not register. The TRADFRI bind failed 13× while it slept; it configured at 21:42:58 after `bridge/request/device/configure` was retried (about every 6 s) while the user pressed it.
 - Re-applied: Z2M groups 1–3 (TV / Sofa / Dining Spotlights) were empty, so members were re-added; `power_outage_memory` on for all 7 spotlights. The Bathroom Switch D1 right rocker had come back `control_relay` and was set to `decoupled` again. Kitchen Switch 1 bottom was still `decoupled`; the Living Room, Bedroom and Dining Z1 Pro rockers are `control_relay` (correct).
 
 **Verified**
@@ -589,7 +590,7 @@ because MCP can't create automations.
 - Bathroom Motion Sensor P1: configure timed out 3× (sleepy).
 - Dining Switch operation modes read back as `unknown`.
 - The Dining bulbs may be at factory brightness / colour temperature after the reset.
-- Display LED (Matter over Thread) has been `unavailable` since 20:35. This may be related to the MR5U setup; not investigated.
+- Display LED (Matter over Thread) has been `unavailable` since **20:23:14** (logbook), which is before the 20:28 coordinator switch, so probably not caused by it. Not investigated.
 - CLAUDE.md, README and `zigbee2mqtt/app-config.yaml` still describe the SLZB-06 / zstack.
 
 ## Open items
