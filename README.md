@@ -55,7 +55,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Area | Device | Model | Integration | Key entities |
 |---|---|---|---|---|
 | Office | **Office Light** (was Aqara Ceiling Light T1; renamed #90, name only) | Aqara Ceiling Light T1 HCXDD12LM | Z2M `0x54ef44100130d787` (topic `zigbee2mqtt/Office Light`) | `light.aqara_ceiling_light_t1_white` (main), `..._rgb` (ring). Entity IDs kept on purpose: 2 automations, 5 scenes and both dashboards use them |
-| Office | Aqara E1 Switch | WXKG20LM (wireless) | Z2M `0x54ef441001328ec0` | presses on MQTT `zigbee2mqtt/Aqara E1 Switch`; `sensor.aqara_e1_switch_battery` |
+| Office | **Office Mini Switch** (was Aqara E1 Switch; renamed #111, IDs follow) | Aqara Wireless mini switch E1 WXKG20LM (battery) | Z2M `0x54ef441001328ec0` | presses on MQTT `zigbee2mqtt/Office Mini Switch`; `sensor.office_mini_switch_battery` / `_voltage` / `_device_temperature` |
 | Office | **Drybox Sensor** (**drybox**, not room climate; was Aqara Sensor, renamed #92) | WSDCGQ11LM | Z2M `0x00158d008bbd8791` | `sensor.drybox_sensor_humidity`, `_temperature`, `_battery`, `_pressure`, `_voltage` |
 | Office | **Office Temperature Sensor** (room climate) | Aqara temperature and humidity sensor WSDCGQ11LM (battery) | Z2M `0x00158d008cd53909` | `sensor.office_temperature_sensor_temperature`, `_humidity`, `_pressure`, `_battery`, `_voltage`. NG Premium Office card badge + Indoor KPI and its 24 h temperature + humidity graph (#80, #86, #88) |
 | Living Room | **SLZB-MR5U** Zigbee coordinator (since #105; radio 1 = coordinator) | SMLIGHT SLZB-MR5U, Ethernet, `192.168.1.42` | `smlight` | `sensor.living_room_slzb_mr5u_*` (`_zigbee_type` = `coordinator`, `_connection_mode` = `eth`, `_firmware_channel`). Radio 2 entities end in `_2` |
@@ -231,7 +231,7 @@ from the original name), created via `POST /api/config/automation/config/<id>`
 | double-click | `light.turn_on` → `light.aqara_ceiling_light_t1_white`  |
 | single-click | `light.turn_off` → `light.aqara_ceiling_light_t1_white` |
 
-- Trigger: MQTT topic `zigbee2mqtt/Aqara E1 Switch`, matched on `value_json.action`
+- Trigger: MQTT topic `zigbee2mqtt/Office Mini Switch` (was `zigbee2mqtt/Aqara E1 Switch` until #111), matched on `value_json.action`
   (Aqara Wireless mini switch E1, WXKG20LM, `0x54ef441001328ec0`)
 - Light: **Office Light** (Aqara Ceiling Light T1, `0x54ef44100130d787`), main white channel
 - The topic uses the Z2M friendly name. If the device is renamed in Z2M, update the triggers.
