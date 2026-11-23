@@ -563,7 +563,43 @@ because MCP can't create automations.
 - **Verified:** build passes and is deployed (served bundle `index-GOkATxLR.js` contains the swatch class `k-swatch`). Each preset was sent live and read back: 3500 → 3508, 4000 → 4000, 6000 → 6024 (all within 1 s and inside the 75 K match). The light was put back to 6535 K at 100 %.
 - **Not yet verified:** the buttons on the tablet (tap, highlight, Day/Night).
 
+### 56. Zigbee coordinator moved to SLZB-MR5U; devices re-paired (#105, in progress)
+
+**What happened (2026-11-23)**
+- ~20:28: Z2M `configuration.yaml` was switched from the Office **SLZB-06** (`tcp://192.168.1.41:6638`, `zstack`) to the Living Room **SLZB-MR5U** (`tcp://192.168.1.42:6638`, `ember`, EmberZNet 7.4.2, firmware channel `dev`). Z2M then failed to start 5 times: `[BACKUP] Current backup file is not for EmberZNet stack`. This Z2M (2.14.3) can't restore a zstack backup onto ember.
+- At the user's request `coordinator_backup.json` was renamed to `coordinator_backup-bak.json` on the share (the zstack backup, kept). Z2M then started at 20:42 with **no valid backup** and **formed a new network** from config: same channel 11, PAN, extended PAN and network key, new coordinator IEEE `0x982ac3fffe77f520`, 0 devices.
+- HA dropped the old device/entity entries. Devices that rejoined were rediscovered from their Z2M friendly names, so most IDs came back unchanged. The exception was the Office Light, whose IDs are HA-only (#90): it came back as `light.office_light_*`.
+- Both coordinators ran the same network identity until the SLZB-06 was shut down (~20:55). Even after that, the old routers still expected the old coordinator IEEE: constant `ROUTE_ERROR_ADDRESS_CONFLICT for "0"`, and `Delivery failed` for every unicast to the Office Light. Delivery worked once the routers had rejoined the MR5U.
+- User decision: **stay on the MR5U** and re-pair everything (the alternative was going back to the SLZB-06).
+
+**Done**
+- Office Light: entity IDs renamed back to `light.aqara_ceiling_light_t1_*` (all 10 entities), twice: after the first drop, and after a forced remove + re-pair (Z2M name restored with `homeassistant_rename: false`). The Office automations (`office_e1_switch_turns_on_ceiling_light`, `office_switch_lighting_scene_by_time`) and 5 scenes resolve again; the live automation configs match the repo exports.
+- **25 of 27 devices on the MR5U**, names and HA entity IDs unchanged. Most routers moved over without a reset once pairing was open. The Dining Spotlights only rejoined after a factory reset done by cycling `switch.dining_switch_center` 5× from HA (1.5 s off / 1.5 s on); a cycle from the wall rocker did not register. The TRADFRI bind failed 13× while it slept; it configured after `bridge/request/device/configure` was retried every 3 s while the user pressed it.
+- Re-applied: Z2M groups 1–3 (TV / Sofa / Dining Spotlights) were empty, so members were re-added; `power_outage_memory` on for all 7 spotlights. The Bathroom Switch D1 right rocker had come back `control_relay` and was set to `decoupled` again. Kitchen Switch 1 bottom was still `decoupled`; the Living Room, Bedroom and Dining Z1 Pro rockers are `control_relay` (correct).
+
+**Verified**
+- Office Light: E1 single press = off, double press = on (21:22, delivered within a second). Reads of the Bathroom D1 and TV Spotlight 1 were answered.
+- Front Door Sensor: open/close at 21:26 reported `on`/`off`. Back Home did not run on that opening because the state came from `unknown`; the next opening should trigger it.
+- Drybox Sensor: full report after a button press (29.9 °C, 57.9 %, battery 83 %).
+- 105 repo entity references checked against live HA; the 15 still missing are in the open items.
+
+**Not yet verified / not done**
+- Sofalamp and Aqara Motion sensor P1 not migrated.
+- TRADFRI presses (single = LED Cove, double = Bedlamp) not tested.
+- Bathroom Motion Sensor P1: configure timed out 3× (sleepy).
+- Dining Switch operation modes read back as `unknown`.
+- The Dining bulbs may be at factory brightness / colour temperature after the reset.
+- Display LED (Matter over Thread) has been `unavailable` since 20:35. This may be related to the MR5U setup; not investigated.
+- CLAUDE.md, README and `zigbee2mqtt/app-config.yaml` still describe the SLZB-06 / zstack.
+
 ## Open items
+
+**Zigbee migration to the SLZB-MR5U (#105)**
+- [ ] Re-pair the Sofalamp (6 power cycles) and the Aqara Motion sensor P1 (hold 5 s).
+- [ ] Test the TRADFRI (single = LED Cove, double = Bedlamp); retry configure on the Bathroom Motion Sensor P1; re-read the Dining Switch operation modes.
+- [ ] Stale references: 10 `*office_slzb_06*` entities (SLZB-06 off) and `binary_sensor.zigbee2mqtt_bridge_connection_state` (the new bridge entity is `_2`).
+- [ ] Display LED unavailable (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
+- [ ] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (MR5U `.42`, `ember`).
 
 **Display LED colour presets (#103)**
 - [ ] Tablet: the 3 colour swatches show under the Display LED slider and read as amber / warm / cool, a tap changes the colour, and the active one is highlighted.
