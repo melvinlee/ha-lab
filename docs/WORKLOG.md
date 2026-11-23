@@ -540,8 +540,13 @@ because MCP can't create automations.
 - **Indoor KPI now averages 2 room sensors** (Office + Junior Bedroom), and so does its 24 h temperature/humidity graph. The user accepted this. North Gaia is unchanged.
 - **Verified:** device name, area Junior Bedroom, all 5 new entities in the area, no `0x00158d008ccfb909` IDs left. `npm run build` passes; deployed, and the served bundle references `junior_bedroom_temperature_sensor`. The sensor reported under the new IDs at 11:10:05 (03:10 UTC): 29.56 °C, 75.59 % RH, 1008.9 hPa (MQTT listener + HA states).
 - **Not yet verified:** battery and voltage (still `unknown`; the sensor sends them less often), and the Junior Bedroom card / 2-sensor Indoor KPI on the tablet, visually.
+- Merged as PR #97 (rebase). A 10-min MQTT watch after the rename saw one report (11:10:05, sent twice): 29.56 °C, 75.59 %, ~1009 hPa, linkquality 61–65. It carried no battery or voltage.
 
 ## Open items
+
+**Junior Bedroom sensor (#96)**
+- [ ] Battery and voltage report (next full report from the sensor).
+- [ ] Tablet: Junior Bedroom card shows and the Indoor KPI says "Average of 2 room sensors".
 
 **Living Room Switch slider → Sofalamp (#78)**
 - [ ] Strip taps often arrive as tiny slides, `slider_hold` or `single_wireless`: decide whether to also map `slider_hold`, or rely on sliding for on/off.
