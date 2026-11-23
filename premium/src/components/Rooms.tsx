@@ -75,7 +75,7 @@ function ControlRow({ c }: { c: RoomControl }) {
         />
       )}
       {presets.length > 0 && !unavailable && (
-        <div className="seg" role="radiogroup" aria-label={`${c.name} colour temperature`} style={{ alignSelf: "flex-start" }}>
+        <div className="seg" role="radiogroup" aria-label={`${c.name} colour temperature`} style={{ alignSelf: "center" }}>
           {presets.map((p) => (
             <button
               key={p}
@@ -84,7 +84,7 @@ function ControlRow({ c }: { c: RoomControl }) {
               aria-checked={activePreset === p}
               aria-label={`${p} K`}
               title={`${p} K`}
-              className="seg-btn"
+              className="seg-btn k-btn"
               onClick={() => call("light", "turn_on", { entity_id: c.entity, color_temp_kelvin: p }, { entity: c.entity, state: "on", attributes: { color_temp_kelvin: p } })}
             >
               <span className="k-swatch" style={{ background: kelvinColor(p) }} aria-hidden />
