@@ -622,7 +622,8 @@ because MCP can't create automations.
 - The reset had put the bottom rocker back to `control_relay`. Set to `decoupled` again; the device confirmed it at 06:58:22. Top / center stay `control_relay`. Names and IDs unchanged.
 - The Main Light had come on at 06:56:35 while Switch 1 was unreachable, so the LED mirror missed it. `switch.kitchen_switch_1_bottom` was turned on to match (06:59:49).
 - **Verified:** walk-in at 06:59:16 → `kitchen_presence_lights` → Cabinet LED + Walkway on; no Kitchen Switch 1 delivery failures since 06:57.
-- **Not yet verified:** the 5-min clear → lights off (due ~07:04:29); the Office E1 Switch rejoin (no join during the 22:56–23:01 pairing window).
+- **Verified later (logbook):** presence cleared 06:59:29 → at 07:04:29 Walkway + Main Light off, Cabinet LED off 10 s later (07:04:39), as designed.
+- The Office E1 Switch (renamed Office Mini Switch in step 59) came back without a re-pair. See step 59.
 
 ### 59. Aqara E1 Switch renamed Office Mini Switch (#111)
 
@@ -630,7 +631,7 @@ because MCP can't create automations.
 - The MQTT topic changes with the name, so the `office_e1_switch_light_on` automation (`automation.office_e1_switch_turns_on_ceiling_light`) now triggers on `zigbee2mqtt/Office Mini Switch` (both triggers). Saved live (`ok`) and exported. The automation ID/entity ID are unchanged.
 - North Gaia: 4 entity references and their tile labels updated ("Office Mini Switch", "Office Mini battery" / "voltage" / "temperature"); pushed.
 - **Verified:** Z2M config `friendly_name: Office Mini Switch`; the 3 new entities exist in the Office; no `aqara_e1_switch` IDs left; automation enabled with the new topic.
-- **Not yet verified:** a press test. The switch has been offline since 21:34 on 2026-11-23 (#105), and its sensors read `unknown` until it rejoins and reports.
+- **Verified (2026-11-24):** the switch came back online without a re-pair (probably via the Office Light, now correctly a router, step 58). Single press 07:26:58 → Office Light off, double 07:27:01 → on, on the new topic `zigbee2mqtt/Office Mini Switch`. `sensor.office_mini_switch_battery` 78 %, linkquality 92.
 
 ## Open items
 
@@ -640,7 +641,7 @@ because MCP can't create automations.
 - [x] Bathroom Motion Sensor P1 re-paired and configured; walk-in verified (22:29).
 - [ ] Bathroom Motion Sensor P1 battery reads 0 % (2800 mV) since the re-pair: recheck after its next report; replace the batteries if it stays low.
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
-- [ ] **Office Mini Switch** (was Aqara E1 Switch, #111) offline since 21:34: re-pair (hold 5 s, then keep it awake for configure); then press-test single = off, double = on.
+- [x] **Office Mini Switch** (was Aqara E1 Switch, #111) back online 2026-11-24 without a re-pair; single = off / double = on verified 07:27.
 - [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58).
 - [ ] Display LED unavailable since 20:23 (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
