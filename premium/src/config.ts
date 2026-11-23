@@ -12,6 +12,8 @@ export interface RoomControl {
   pauses?: string;
   /** curtain on a relay: which relay state means "open". */
   openState?: "on" | "off";
+  /** light: colour temperature buttons (K), a segmented control under the brightness slider. Tapping one turns the light on at that temperature. */
+  kelvinPresets?: number[];
 }
 
 export interface Room {
@@ -62,7 +64,7 @@ export const ROOMS: Room[] = [
       { entity: "light.sofa_spotlights", name: "Sofa Spotlights", kind: "light", icon: "spot" },
       { entity: "light.sofalamp", name: "Sofalamp", kind: "light", icon: "lamp" },
       // Matter LED driver (#99); on 08:30, off 09:30 by automation (#101)
-      { entity: "light.living_room_display_led", name: "Display LED", kind: "light", icon: "strip" },
+      { entity: "light.living_room_display_led", name: "Display LED", kind: "light", icon: "strip", kelvinPresets: [3500, 4000, 6000] },
       { entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" },
     ],
     // Roborock app routines, exposed by the roborock integration as buttons
