@@ -524,9 +524,15 @@ because MCP can't create automations.
 - **Verified after the rename (2026-11-23):** the sensor reported under the new IDs: humidity 60.47 %, temperature 30.26 °C, battery 83 %, pressure 1010.2 hPa, voltage 2975 mV. PR review: no live automation, scene, script or config file references the old IDs or name.
 - **Not yet verified:** the drybox meter on both dashboards, visually.
 
-## Open items
+### 51. Office Temperature Sensor rejoined (#88)
 
-- **Office Temperature Sensor silent since 2026-11-21 15:17** (#88): press its button or re-pair; until then the Indoor value, graph and Office badge show its last reading.
+- The sensor (`0x00158d008cd53909`) had been silent since 2026-11-21 15:17, probably after it was mounted. A short button press did nothing.
+- Re-paired on 2026-11-23: Z2M `permit_join` opened for 240 s at 08:21, the user held the button ~5 s, and the device announced at 08:21:54 and 08:22:25. Pairing was closed early at 08:22:49 (`time: 0`). Nothing else joined.
+- It came back under the same friendly name and entity IDs, so nothing else changed.
+- **Verified:** new readings at 08:22:36: 31.09 °C, 74.34 % RH. The Indoor KPI, its 24 h graph and the Office badge are live again.
+- **Not yet verified:** the battery report (sent less often), and the 24 h lines moving on the dashboard.
+
+## Open items
 
 **Living Room Switch slider → Sofalamp (#78)**
 - [ ] Strip taps often arrive as tiny slides, `slider_hold` or `single_wireless`: decide whether to also map `slider_hold`, or rely on sliding for on/off.
