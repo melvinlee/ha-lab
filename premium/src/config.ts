@@ -97,9 +97,9 @@ export const ROOMS: Room[] = [
       { entity: "scene.after_office", name: "After office", icon: "sunset" },
     ],
     drybox: {
-      humidity: "sensor.aqara_sensor_humidity",
-      temperature: "sensor.aqara_sensor_temperature",
-      battery: "sensor.aqara_sensor_battery",
+      humidity: "sensor.drybox_sensor_humidity",
+      temperature: "sensor.drybox_sensor_temperature",
+      battery: "sensor.drybox_sensor_battery",
       goodMax: 40, // <= 40% RH good
       watchMax: 50, // 40–50% watch, > 50% replace/recharge desiccant
     },

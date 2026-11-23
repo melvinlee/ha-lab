@@ -516,6 +516,13 @@ because MCP can't create automations.
 - **Verified:** device name `Office Light`, area Office, all 10 entity IDs unchanged, no `0x54ef44100130d787` IDs; a `get` on `zigbee2mqtt/Office Light` answered (white ON, 254, 250 mired, linkquality 65); the automation saved `ok` and is `on`.
 - **Not yet verified:** the E1 switch press and a scene on the renamed light (the IDs and command path are unchanged).
 
+### 50. Drybox sensor renamed to Drybox Sensor (#92)
+
+- The Office drybox sensor (Aqara WSDCGQ11LM `0x00158d008bbd8791`, was "Aqara Sensor") is renamed in Z2M to **Drybox Sensor** with `homeassistant_rename: true`. Entity IDs moved: `sensor.aqara_sensor_{humidity,temperature,battery,pressure,voltage}` → `sensor.drybox_sensor_*`. Area stays Office.
+- No automation or scene used it. The two dashboards were updated: `dashboards/home.yaml` (12 references, pushed) and `premium/src/config.ts` drybox mapping (built and deployed).
+- **Verified:** device name Drybox Sensor, area Office, 5 new IDs, no `aqara_sensor_*` or `0x00158d008bbd8791` IDs left. History (113 rows since 2026-11-22) and statistics metadata moved to `sensor.drybox_sensor_humidity`. Saved North Gaia config: 12 new references, 0 old. NG Premium served bundle `index-BZKTAYQ2.js` uses only the new IDs.
+- **Not yet verified:** values after the rename. They read `unknown` until the sensor's next report (battery device); then check the drybox meter on both dashboards.
+
 ## Open items
 
 - **Office Temperature Sensor silent since 2026-11-21 15:17** (#88): press its button or re-pair; until then the Indoor value, graph and Office badge show its last reading.

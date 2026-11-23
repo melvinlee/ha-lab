@@ -30,7 +30,7 @@ views:
         tap_action:
           action: toggle
       - type: entity
-        entity: sensor.aqara_sensor_humidity
+        entity: sensor.drybox_sensor_humidity
         name: Drybox
         icon: mdi:package-variant-closed
         show_name: true
@@ -89,10 +89,10 @@ views:
               {{ state_attr('weather.home', 'temperature') }}{{ state_attr('weather.home', 'temperature_unit') }}
               · Sunset {{ as_timestamp(states('sensor.sun_next_setting')) | timestamp_custom('%H:%M') }}
 
-              {% set rh = states('sensor.aqara_sensor_humidity') | float(0) %}
+              {% set rh = states('sensor.drybox_sensor_humidity') | float(0) %}
               📦 Drybox {{ rh | round(0) | int }}% RH
               {{ '✅' if rh <= 40 else '⚠️' if rh <= 50 else '🔴 replace desiccant' }}
-              · {{ states('sensor.aqara_sensor_temperature') | float(0) | round(1) }}°C
+              · {{ states('sensor.drybox_sensor_temperature') | float(0) | round(1) }}°C
           - type: weather-forecast
             entity: weather.home
             forecast_type: daily
@@ -160,15 +160,15 @@ views:
             heading_style: subtitle
             badges:
               - type: entity
-                entity: sensor.aqara_sensor_temperature
+                entity: sensor.drybox_sensor_temperature
                 show_state: true
                 show_icon: true
               - type: entity
-                entity: sensor.aqara_sensor_battery
+                entity: sensor.drybox_sensor_battery
                 show_state: true
                 show_icon: true
           - type: tile
-            entity: sensor.aqara_sensor_humidity
+            entity: sensor.drybox_sensor_humidity
             name: Replace / recharge desiccant
             icon: mdi:water-alert
             color: red
@@ -176,10 +176,10 @@ views:
               columns: full
             visibility:
               - condition: numeric_state
-                entity: sensor.aqara_sensor_humidity
+                entity: sensor.drybox_sensor_humidity
                 above: 50
           - type: gauge
-            entity: sensor.aqara_sensor_humidity
+            entity: sensor.drybox_sensor_humidity
             name: Humidity
             unit: "%"
             min: 0
@@ -192,7 +192,7 @@ views:
             grid_options:
               columns: 6
           - type: sensor
-            entity: sensor.aqara_sensor_temperature
+            entity: sensor.drybox_sensor_temperature
             name: Temperature
             graph: line
             hours_to_show: 24
@@ -203,7 +203,7 @@ views:
             title: Humidity (7 days)
             hours_to_show: 168
             entities:
-              - entity: sensor.aqara_sensor_humidity
+              - entity: sensor.drybox_sensor_humidity
                 name: Humidity
             grid_options:
               columns: full
@@ -773,7 +773,7 @@ views:
             entity: sensor.aqara_e1_switch_voltage
             name: E1 voltage
           - type: tile
-            entity: sensor.aqara_sensor_battery
+            entity: sensor.drybox_sensor_battery
             name: Drybox sensor battery
           - type: tile
             entity: sensor.aqara_motion_sensor_p1_battery
@@ -785,7 +785,7 @@ views:
             entity: sensor.smart_wall_switch_z1_pro_device_temperature
             name: Z1 Pro temperature
           - type: tile
-            entity: sensor.aqara_sensor_voltage
+            entity: sensor.drybox_sensor_voltage
             name: Drybox sensor voltage
           - type: tile
             entity: sensor.aqara_ceiling_light_t1_device_temperature
