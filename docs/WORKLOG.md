@@ -609,7 +609,7 @@ because MCP can't create automations.
 
 **Router records were wrong (2026-11-23 ~22:55)**
 - Z2M had the **Bathroom Switch D1** (`lumi.switch.n3acn3`) as `EndDevice` / `Battery`, which is impossible for a mains switch reporting power. The user pointed out it is a router. A re-interview (`bridge/request/device/interview`) fixed it: **Router, Mains**. The **Office Light** (T1, `lumi.light.acn031`) was the same: re-interviewed, now **Router**. The bad records came from devices rejoining on their own during the coordinator conflict (step 56).
-- The 4 **Z1 Pro** switches (`lumi.switch.acn059`: Living Room, Dining, Kitchen 1, Bedroom) still report `EndDevice` after a fresh interview, so the devices themselves currently say so. Not known whether a full factory reset would bring them back as routers.
+- The 4 **Z1 Pro** switches (`lumi.switch.acn059`: Living Room, Dining, Kitchen 1, Bedroom) report `EndDevice` after a fresh interview. That is correct: the **Z1 Pro is not a router** (confirmed by the user). They never relay, and they need a powered router nearby.
 - Routers now: Office Light, Bathroom Switch D1, Kitchen Switch 2, Bedlamp, Spotlight T3, and the 7 spotlights.
 
 **Why end devices keep dropping off**
@@ -634,7 +634,6 @@ because MCP can't create automations.
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
 - [ ] **Office E1 Switch** offline since 21:34: re-pair (hold 5 s, then keep it awake for configure).
 - [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58).
-- [ ] Optional: factory-reset one Z1 Pro to see whether it rejoins as a router.
 - [ ] Display LED unavailable since 20:23 (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
 
