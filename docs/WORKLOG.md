@@ -521,7 +521,8 @@ because MCP can't create automations.
 - The Office drybox sensor (Aqara WSDCGQ11LM `0x00158d008bbd8791`, was "Aqara Sensor") is renamed in Z2M to **Drybox Sensor** with `homeassistant_rename: true`. Entity IDs moved: `sensor.aqara_sensor_{humidity,temperature,battery,pressure,voltage}` → `sensor.drybox_sensor_*`. Area stays Office.
 - No automation or scene used it. The two dashboards were updated: `dashboards/home.yaml` (12 references, pushed) and `premium/src/config.ts` drybox mapping (built and deployed).
 - **Verified:** device name Drybox Sensor, area Office, 5 new IDs, no `aqara_sensor_*` or `0x00158d008bbd8791` IDs left. History (113 rows since 2026-11-22) and statistics metadata moved to `sensor.drybox_sensor_humidity`. Saved North Gaia config: 12 new references, 0 old. NG Premium served bundle `index-BZKTAYQ2.js` uses only the new IDs.
-- **Not yet verified:** values after the rename. They read `unknown` until the sensor's next report (battery device); then check the drybox meter on both dashboards.
+- **Verified after the rename (2026-11-23):** the sensor reported under the new IDs: humidity 60.47 %, temperature 30.26 °C, battery 83 %, pressure 1010.2 hPa, voltage 2975 mV. PR review: no live automation, scene, script or config file references the old IDs or name.
+- **Not yet verified:** the drybox meter on both dashboards, visually.
 
 ## Open items
 
