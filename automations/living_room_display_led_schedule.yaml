@@ -1,0 +1,31 @@
+# Exported from HA via GET /api/config/automation/config/living_room_display_led_schedule
+---
+id: living_room_display_led_schedule
+alias: 'Living Room: Display LED daily schedule'
+description: 'Display LED (Matter LED driver, #99) on every day at 08:30 and off at
+  09:30 (#101). Each trigger only sets its own state; nothing else is touched.'
+triggers:
+- trigger: time
+  at: '08:30:00'
+  id: 'on'
+- trigger: time
+  at: '09:30:00'
+  id: 'off'
+conditions: []
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id: 'on'
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id: light.living_room_display_led
+  - conditions:
+    - condition: trigger
+      id: 'off'
+    sequence:
+    - action: light.turn_off
+      target:
+        entity_id: light.living_room_display_led
+mode: single

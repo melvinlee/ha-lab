@@ -549,7 +549,18 @@ because MCP can't create automations.
 - **Verified:** device name, 10 new IDs, friendly names "Display LED …", area Living Room, no `smart_light` IDs left. `light.turn_on` on the new ID succeeded while it was already on (no visible change): on, 255, 6535 K.
 - **Not yet verified:** nothing on the device side. The rename does not reach the device itself, and the Matter/vendor app may still show the old name.
 
+### 54. Display LED: NG Premium tile + daily 08:30 on / 09:30 off (#101)
+
+- New automation `automation.living_room_display_led_daily_schedule` (id `living_room_display_led_schedule`, area Living Room). Time triggers at 08:30 (`on`) and 09:30 (`off`) every day, with `choose` on the trigger id turning `light.living_room_display_led` on or off. No conditions, mode `single`. Exported.
+- NG Premium: **Display LED** light tile in the Living Room card (after Sofalamp, `strip` icon). It counts in the devices-on KPI, and the automation is in the events timeline. Built and deployed: the served bundle `index-Csq0sYrD.js` contains both IDs.
+- **Verified:** automation saved (`ok`), enabled, area Living Room. The served bundle contains the new entities. `light.turn_on` on the light works (#99).
+- **Not yet verified:** the first real runs (08:30 and 09:30 on 2026-11-24, checked via the trace or logbook); the tile on the tablet.
+
 ## Open items
+
+**Display LED schedule (#101)**
+- [ ] 2026-11-24: on at 08:30 and off at 09:30 (traces / logbook).
+- [ ] Display LED tile in the NG Premium Living Room card on the tablet.
 
 **Junior Bedroom sensor (#96)**
 - [ ] Battery and voltage report (next full report from the sensor).
