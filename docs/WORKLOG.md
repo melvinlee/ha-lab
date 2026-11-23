@@ -542,6 +542,13 @@ because MCP can't create automations.
 - **Not yet verified:** battery and voltage (still `unknown`; the sensor sends them less often), and the Junior Bedroom card / 2-sensor Indoor KPI on the tablet, visually.
 - Merged as PR #97 (rebase). A 10-min MQTT watch after the rename saw one report (11:10:05, sent twice): 29.56 °C, 75.59 %, ~1009 hPa, linkquality 61–65. It carried no battery or voltage.
 
+### 53. Living Room Matter Smart Light renamed Display LED (#99)
+
+- The Matter LED driver (Chuan Dian Intelligent drive power supply, serial `10021945800140`) in the Living Room was **Smart Light**. Its device `name_by_user` is now **Display LED**.
+- Nothing referenced it (`search/related`: no automation, scene or script; no repo or dashboard file), so all 10 entity IDs were renamed too: `*.living_room_smart_light*` became `*.living_room_display_led*` (`light`, `select` power-on behavior, 6 `number`s, `button` identify, `update` firmware). Not on either dashboard.
+- **Verified:** device name, 10 new IDs, friendly names "Display LED …", area Living Room, no `smart_light` IDs left. `light.turn_on` on the new ID succeeded while it was already on (no visible change): on, 255, 6535 K.
+- **Not yet verified:** nothing on the device side. The rename does not reach the device itself, and the Matter/vendor app may still show the old name.
+
 ## Open items
 
 **Junior Bedroom sensor (#96)**
