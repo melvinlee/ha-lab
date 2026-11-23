@@ -605,6 +605,25 @@ because MCP can't create automations.
 - **Not yet verified:** Kitchen Switch 2 right rocker physical press (Main Light toggles, the Switch 1 bottom LED follows); the 15-min no-motion auto-off after this re-pair. The Bathroom P1 has reported **`battery: 0`** (voltage 2800 mV) in every payload since the re-pair (before: 53–63 %). It may be a stale reading until its next battery report, or the batteries may really be low. It would trip a low-battery alert.
 - Lesson: after a coordinator migration, sleepy end devices can lose their parent when routers re-pair and go silent while still looking alive (the LED flashes). Fix: re-pair, then retry `device/configure` while keeping the device awake.
 
+### 58. Weak mesh after the MR5U move: router records, Kitchen Switch 1 back (#105)
+
+**Router records were wrong (2026-11-23 ~22:55)**
+- Z2M had the **Bathroom Switch D1** (`lumi.switch.n3acn3`) as `EndDevice` / `Battery`, which is impossible for a mains switch reporting power. The user pointed out it is a router. A re-interview (`bridge/request/device/interview`) fixed it: **Router, Mains**. The **Office Light** (T1, `lumi.light.acn031`) was the same: re-interviewed, now **Router**. The bad records came from devices rejoining on their own during the coordinator conflict (step 56).
+- The 4 **Z1 Pro** switches (`lumi.switch.acn059`: Living Room, Dining, Kitchen 1, Bedroom) still report `EndDevice` after a fresh interview, so the devices themselves currently say so. Not known whether a full factory reset would bring them back as routers.
+- Routers now: Office Light, Bathroom Switch D1, Kitchen Switch 2, Bedlamp, Spotlight T3, and the 7 spotlights.
+
+**Why end devices keep dropping off**
+- The 7 spotlights sit behind the TV Light and Dining centre rockers. When those rockers are off, the bulbs are unpowered (`unavailable` ~5 min later) and stop routing. End devices whose parent was one of them lose their route and go silent while looking normal. Seen so far: the Office E1 Switch (silent since 21:34), the Bathroom Motion Sensor P1 (fixed in step 57) and Kitchen Switch 1 (silent 03:04–06:57).
+- Before the move, the SLZB-06 coordinator sat in the Office and was always on, which covered the Office and Bathroom.
+- Fix still to do: an **always-on router** near the Office/Bathroom, either the SLZB-06 flashed to **router** firmware (never as a coordinator with the old settings again) or a mains Zigbee smart plug.
+
+**Kitchen Switch 1 (2026-11-24)**
+- The presence automation ran at ~05:55 (present) and 06:00:53 (clear), but every command to Kitchen Switch 1 failed (`Delivery failed`); its last message was at 03:04:46. It came back with `device_announce` at 06:57:30 / 06:57:54, after the user reset it.
+- The reset had put the bottom rocker back to `control_relay`. Set to `decoupled` again; the device confirmed it at 06:58:22. Top / center stay `control_relay`. Names and IDs unchanged.
+- The Main Light had come on at 06:56:35 while Switch 1 was unreachable, so the LED mirror missed it. `switch.kitchen_switch_1_bottom` was turned on to match (06:59:49).
+- **Verified:** walk-in at 06:59:16 → `kitchen_presence_lights` → Cabinet LED + Walkway on; no Kitchen Switch 1 delivery failures since 06:57.
+- **Not yet verified:** the 5-min clear → lights off (due ~07:04:29); the Office E1 Switch rejoin (no join during the 22:56–23:01 pairing window).
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -613,6 +632,9 @@ because MCP can't create automations.
 - [x] Bathroom Motion Sensor P1 re-paired and configured; walk-in verified (22:29).
 - [ ] Bathroom Motion Sensor P1 battery reads 0 % (2800 mV) since the re-pair: recheck after its next report; replace the batteries if it stays low.
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
+- [ ] **Office E1 Switch** offline since 21:34: re-pair (hold 5 s, then keep it awake for configure).
+- [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58).
+- [ ] Optional: factory-reset one Z1 Pro to see whether it rejoins as a router.
 - [ ] Display LED unavailable since 20:23 (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
 
