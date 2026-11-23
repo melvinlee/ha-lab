@@ -55,7 +55,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 |---|---|---|---|---|
 | Office | **Office Light** (was Aqara Ceiling Light T1; renamed #90, name only) | Aqara Ceiling Light T1 HCXDD12LM | Z2M `0x54ef44100130d787` (topic `zigbee2mqtt/Office Light`) | `light.aqara_ceiling_light_t1_white` (main), `..._rgb` (ring). Entity IDs kept on purpose: 2 automations, 5 scenes and both dashboards use them |
 | Office | Aqara E1 Switch | WXKG20LM (wireless) | Z2M `0x54ef441001328ec0` | presses on MQTT `zigbee2mqtt/Aqara E1 Switch`; `sensor.aqara_e1_switch_battery` |
-| Office | Aqara Sensor (**drybox**, not room climate) | WSDCGQ11LM | Z2M `0x00158d008bbd8791` | `sensor.aqara_sensor_humidity`, `_temperature`, `_battery` |
+| Office | **Drybox Sensor** (**drybox**, not room climate; was Aqara Sensor, renamed #92) | WSDCGQ11LM | Z2M `0x00158d008bbd8791` | `sensor.drybox_sensor_humidity`, `_temperature`, `_battery`, `_pressure`, `_voltage` |
 | Office | **Office Temperature Sensor** (room climate) | Aqara temperature and humidity sensor WSDCGQ11LM (battery) | Z2M `0x00158d008cd53909` | `sensor.office_temperature_sensor_temperature`, `_humidity`, `_pressure`, `_battery`, `_voltage`. NG Premium Office card badge + Indoor KPI and its 24 h temperature + humidity graph (#80, #86, #88) |
 | Office | SLZB-06 Zigbee coordinator | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` |
 | Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
