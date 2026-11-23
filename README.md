@@ -58,7 +58,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Office | Aqara E1 Switch | WXKG20LM (wireless) | Z2M `0x54ef441001328ec0` | presses on MQTT `zigbee2mqtt/Aqara E1 Switch`; `sensor.aqara_e1_switch_battery` |
 | Office | **Drybox Sensor** (**drybox**, not room climate; was Aqara Sensor, renamed #92) | WSDCGQ11LM | Z2M `0x00158d008bbd8791` | `sensor.drybox_sensor_humidity`, `_temperature`, `_battery`, `_pressure`, `_voltage` |
 | Office | **Office Temperature Sensor** (room climate) | Aqara temperature and humidity sensor WSDCGQ11LM (battery) | Z2M `0x00158d008cd53909` | `sensor.office_temperature_sensor_temperature`, `_humidity`, `_pressure`, `_battery`, `_voltage`. NG Premium Office card badge + Indoor KPI and its 24 h temperature + humidity graph (#80, #86, #88) |
-| Office | SLZB-06 Zigbee coordinator | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` |
+| Living Room | **SLZB-MR5U** Zigbee coordinator (since #105; radio 1 = coordinator) | SMLIGHT SLZB-MR5U, Ethernet, `192.168.1.42` | `smlight` | `sensor.living_room_slzb_mr5u_*` (`_zigbee_type` = `coordinator`, `_connection_mode` = `eth`, `_firmware_channel`). Radio 2 entities end in `_2` |
+| Office | SLZB-06 (old coordinator, **off** since 2026-11-23, #105) | SMLIGHT SLZB-06 | `smlight` | `sensor.office_slzb_06_*` (unavailable) |
 | Junior Bedroom | **Junior Bedroom Temperature Sensor** (room climate; added #96) | Aqara temperature and humidity sensor WSDCGQ11LM (battery) | Z2M `0x00158d008ccfb909` | `sensor.junior_bedroom_temperature_sensor_temperature`, `_humidity`, `_pressure`, `_battery`, `_voltage`. NG Premium **Junior Bedroom** card badge; counts in the Indoor KPI average and its 24 h graph (now 2 room sensors, #96). Not on North Gaia |
 | Living Room | Qrevo 2 Breeze + dock | Roborock a294 | `roborock` | `vacuum.living_room_qrevo_2_breeze`, map `image.living_room_qrevo_2_breeze_ng_29` |
 | Living Room | Living Room Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired) | Z2M `0x54ef441001251769` | Top **Ceiling Fan** `switch.living_room_switch_top`, Center **LED Cove** `switch.living_room_switch_center`, Bottom **TV Light** `switch.living_room_switch_bottom` (relay that **powers the TV Spotlights**; off = bulbs unpowered, shown `unavailable` within ~5 min, see Z2M availability); touch **slider** → Sofalamp (tap `slider_single` toggles, `slider_up`/`slider_down` dim, #78); 4th (wireless) rocker `single_wireless` → **Movie** scene (#78); `sensor.living_room_switch_power` / `_energy` |
@@ -120,7 +121,8 @@ If you point macOS DNS at Pi-hole (192.168.1.250), set `HA_URL=http://ha.home`.
 
 ## Zigbee via MQTT (Zigbee2MQTT)
 
-Status (2026-11-15): **working**. Mosquitto + MQTT integration loaded, Z2M 2.14.3 running, SLZB-06 at 192.168.1.41.
+Status (2026-11-23): **working**. Mosquitto + MQTT integration loaded, Z2M 2.14.3 running on the **SLZB-MR5U** at 192.168.1.42 (`ember`).
+Until 2026-11-23 the coordinator was the Office SLZB-06 at 192.168.1.41 (`zstack`); see "Coordinator move" below and WORKLOG step 56 (#105).
 The MCP tools can only start/stop/restart *installed* apps. They can't install apps
 or run integration config flows, so these steps are done in the HA UI.
 
@@ -141,12 +143,13 @@ or run integration config flows, so these steps are done in the HA UI.
 - Install **Zigbee2MQTT**, then set the coordinator in its **Configuration** tab (see below)
 - **Start** it and turn on **Show in sidebar** (pairing happens in the Z2M UI)
 
-### Coordinator: SMLIGHT SLZB-06 (network)
+### Coordinator: SMLIGHT SLZB-MR5U (network)
 
-Hardware: **TI CC2652P** radio (ESP32 core, Ethernet), PoE or USB-C power.
-Z2M adapter = **`zstack`**.
+Living Room, Ethernet, `192.168.1.42`. Silicon Labs radio running **EmberZNet 7.4.2**, so the Z2M adapter is **`ember`**.
+It has two radios: radio 1 is the Zigbee coordinator (`sensor.living_room_slzb_mr5u_zigbee_type`); radio 2 entities end in `_2`.
+Firmware channel reads `dev` (consider `release`, #105).
 
-Prep on the SLZB web UI (`http://192.168.1.41`):
+Prep on the SLZB web UI (`http://192.168.1.42`):
 
 1. Give it a **DHCP reservation / static IP**. Z2M connects by IP.
 2. Use **Ethernet** (PoE or USB power + LAN), which is more stable than Wi-Fi.
@@ -158,12 +161,18 @@ Z2M app config (`serial` section):
 
 ```yaml
 serial:
-  port: tcp://192.168.1.41:6638
-  adapter: zstack
+  port: tcp://192.168.1.42:6638
+  adapter: ember
   baudrate: 115200
 ```
 
-(If the coordinator is ever swapped for a Silabs-based SLZB, e.g. 06M/06MG24, use `adapter: ember`.)
+**Coordinator move (2026-11-23, #105).** The previous coordinator was the Office SLZB-06 (TI CC2652P, `zstack`, `.41`).
+Z2M 2.14.3 can't restore a `zstack` `coordinator_backup.json` onto `ember` (`Current backup file is not for EmberZNet stack`),
+so it formed a new network with the same channel/PAN/key and every device had to rejoin. While the old routers still expected the
+old coordinator, unicasts failed (`ROUTE_ERROR_ADDRESS_CONFLICT`, `Delivery failed`). Most routers moved over once pairing was open;
+others needed a factory reset. Groups and per-device settings (power-outage memory, decoupled rockers) had to be re-applied.
+The old zstack backup is kept as `/config/zigbee2mqtt/coordinator_backup-bak.json`.
+**Never run two coordinators with the same network settings at once.**
 
 Notes:
 - Port `6638` is the SLZB's Zigbee socket (shown on its web UI dashboard).
@@ -188,12 +197,12 @@ Paired devices appear in HA under the MQTT integration.
 - **Z2M exits with code 1 and the watchdog restart-loops it**: check the Z2M app's **Log** tab
   (Supervisor logs only show the exit code). Usual causes: `serial.port` left as a placeholder,
   wrong `adapter`, or another client (ZHA) holding the SLZB socket.
-- Check the socket from the Mac: `nc -z 192.168.1.41 6638`
+- Check the socket from the Mac: `nc -z 192.168.1.42 6638`
 - **Settings on battery (sleepy) devices**, e.g. the P1 detection interval: send the change **once** and press the device's button
   to wake it. Z2M queues the write. Re-sending replaces the queued write (`Request superseded` in the debug log).
 - To see Z2M write errors, set `select.zigbee2mqtt_bridge_log_level` to `debug` and watch `node scripts/mqtt-listen.mjs zigbee2mqtt/bridge/logging 60`. Set it back to `info` afterwards.
-- SLZB health in HA: `sensor.office_slzb_06_zigbee_type` should be `coordinator` and
-  `sensor.office_slzb_06_connection_mode` should be `eth`.
+- SLZB health in HA: `sensor.living_room_slzb_mr5u_zigbee_type` should be `coordinator` and
+  `sensor.living_room_slzb_mr5u_connection_mode` should be `eth`.
 
 ## Automations
 
@@ -404,7 +413,7 @@ the unnamed Spotlight T3 `light.0x54ef4410011b5686` (not set up yet), the SHIELD
 | View | Sections |
 |---|---|
 | **Home** | tablet header (greeting, clock, weather, drybox RH) · weather (phone) · **Office** (ceiling light, ring, E1 automation, **Drybox** subsection: humidity gauge, desiccant alert >50% RH, temperature, 7-day history) · **Living Room** (Roborock controls, alerts, routines, mop settings) · Roborock map · **Master Bedroom** (Main light / LED Cove / Night Curtain toggles, Bedlamp brightness and colour temperature, power, motion, light level, TRADFRI, automation tiles, low-battery alerts) · Media (SHIELD) · Shopping list |
-| **System** | Zigbee2MQTT · SLZB-06 coordinator · Roborock maintenance · Device health (batteries, temperatures) · Updates & backups |
+| **System** | Zigbee2MQTT · SLZB-MR5U coordinator · Roborock maintenance · Device health (batteries, temperatures) · Updates & backups |
 
 Badges at the top: person, weather, Office light, Drybox RH, plus Bedroom motion / Roborock / SHIELD / Pairing
 (shown only when active). Restart buttons ask for confirmation. Automation tiles: tap the icon to enable or disable.

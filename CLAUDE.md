@@ -51,7 +51,8 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
 - **Source of truth is live HA.** `automations/`, `scenes/` are *exports*; `ha-config/` holds copies of files edited on the Samba
   share (`configuration.yaml` with `rest: !include rest.yaml`, `rest.yaml`); `zigbee2mqtt/app-config.yaml` is a reference copy only.
   `dashboards/home.yaml` and `premium/` are the exception: edited here, then pushed/deployed.
-- **Zigbee**: Zigbee2MQTT app ← SMLIGHT SLZB-06 coordinator over TCP (`tcp://192.168.1.41:6638`, `zstack`) → Mosquitto → HA MQTT.
+- **Zigbee**: Zigbee2MQTT app ← SMLIGHT **SLZB-MR5U** coordinator over TCP (`tcp://192.168.1.42:6638`, `ember`, Living Room) → Mosquitto → HA MQTT.
+  Moved from the Office SLZB-06 (`.41`, `zstack`) on 2026-11-23 (#105): a zstack backup can't be restored onto ember, so every device was re-paired.
   Wireless buttons/sliders have **no press entity** (Z2M 2.x); automations use **MQTT triggers** on `zigbee2mqtt/<friendly name>`
   matched on `value_json.action` (e.g. `on`, `single_right`, `slider_up`). Capture payloads with `mqtt-listen.mjs` before writing them.
 - **NG Premium** (`premium/`): static build served from `/config/www/premium/` (`/local/premium/`), shown full-screen in a panel-view

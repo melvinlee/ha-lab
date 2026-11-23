@@ -2,10 +2,11 @@
 # HA's API doesn't expose app options (GET /api/hassio/.../info -> 401), so this is the
 # config documented during setup. Verify against: Settings -> Apps -> Zigbee2MQTT -> Configuration.
 #
-# Coordinator: SMLIGHT SLZB-06 (TI CC2652P), Ethernet, 192.168.1.41
-# MQTT: Mosquitto broker app (auto-discovered by Z2M, no credentials needed)
+# Coordinator: SMLIGHT SLZB-MR5U (Silicon Labs, EmberZNet 7.4.2), Ethernet, 192.168.1.42, Living Room (since 2026-11-23, #105).
+# Before that: SMLIGHT SLZB-06 (TI CC2652P), tcp://192.168.1.41:6638, adapter zstack.
+# Live file: /config/zigbee2mqtt/configuration.yaml (holds the network key and MQTT credentials: not copied here).
 
 serial:
-  port: tcp://192.168.1.41:6638
-  adapter: zstack
+  port: tcp://192.168.1.42:6638
+  adapter: ember
   baudrate: 115200

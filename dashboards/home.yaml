@@ -618,7 +618,7 @@ views:
         name: Zigbee
         show_name: true
       - type: entity
-        entity: binary_sensor.office_slzb_06_ethernet
+        entity: binary_sensor.living_room_slzb_mr5u_ethernet
         name: SLZB
         show_name: true
       - type: entity
@@ -660,58 +660,58 @@ views:
               confirmation:
                 text: Restart Zigbee2MQTT?
 
-      # ── SLZB-06 coordinator ──
+      # ── SLZB-MR5U coordinator ──
       - type: grid
         cards:
           - type: heading
-            heading: SLZB-06 coordinator
+            heading: SLZB-MR5U coordinator
             icon: mdi:router-wireless
             heading_style: title
             badges:
               - type: entity
-                entity: sensor.office_slzb_06_zigbee_type
+                entity: sensor.living_room_slzb_mr5u_zigbee_type
               - type: entity
-                entity: sensor.office_slzb_06_connection_mode
+                entity: sensor.living_room_slzb_mr5u_connection_mode
           - type: tile
-            entity: binary_sensor.office_slzb_06_ethernet
+            entity: binary_sensor.living_room_slzb_mr5u_ethernet
             name: Ethernet
           - type: tile
-            entity: binary_sensor.office_slzb_06_internet
+            entity: binary_sensor.living_room_slzb_mr5u_internet
             name: Internet
           - type: tile
-            entity: sensor.office_slzb_06_zigbee_chip_temp
+            entity: sensor.living_room_slzb_mr5u_zigbee_chip_temp
             name: Zigbee chip
           - type: tile
-            entity: sensor.office_slzb_06_core_chip_temp
+            entity: sensor.living_room_slzb_mr5u_core_chip_temp
             name: Core chip
           - type: tile
-            entity: switch.office_slzb_06_led_night_mode
+            entity: switch.living_room_slzb_mr5u_led_night_mode
             name: LED night mode
           - type: tile
-            entity: switch.office_slzb_06_disable_leds
+            entity: switch.living_room_slzb_mr5u_disable_leds
             name: Disable LEDs
           - type: tile
-            entity: button.office_slzb_06_zigbee_restart
+            entity: button.living_room_slzb_mr5u_zigbee_restart
             name: Restart Zigbee
             icon: mdi:restart
             tap_action:
               action: perform-action
               perform_action: button.press
               target:
-                entity_id: button.office_slzb_06_zigbee_restart
+                entity_id: button.living_room_slzb_mr5u_zigbee_restart
               confirmation:
-                text: Restart the SLZB-06 Zigbee radio? Zigbee devices will drop briefly.
+                text: Restart the SLZB-MR5U Zigbee radio (coordinator, radio 1)? Zigbee devices will drop briefly.
           - type: tile
-            entity: button.office_slzb_06_core_restart
+            entity: button.living_room_slzb_mr5u_core_restart
             name: Restart core
             icon: mdi:power-cycle
             tap_action:
               action: perform-action
               perform_action: button.press
               target:
-                entity_id: button.office_slzb_06_core_restart
+                entity_id: button.living_room_slzb_mr5u_core_restart
               confirmation:
-                text: Reboot the SLZB-06?
+                text: Reboot the SLZB-MR5U? Zigbee drops until it is back.
 
       # ── Roborock maintenance ──
       - type: grid
