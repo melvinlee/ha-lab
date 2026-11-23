@@ -601,15 +601,17 @@ because MCP can't create automations.
 - **Kitchen Switch 2**: left reads `control_left_relay`. The right rocker's operation mode can't be read back (`genBasic.read` on endpoint 2 fails; the device is otherwise responsive and reports `state_right`), so `select.kitchen_switch_2_operation_mode_right` stays `unknown`. The right rocker is the Main Light relay and isn't meant to be decoupled.
 - **Bathroom Motion Sensor P1:** silent since 21:37:41. It flashed blue on motion, but no messages reached Z2M: it was orphaned after the router re-pairs, and its configure had never completed (3 timeouts at 21:18–21:19). It was re-paired (`device_announce` 22:28:12) and `bridge/request/device/configure` was retried while the user tapped its button: configured at 22:28:49, linkquality 88. IDs unchanged; detection interval 30 s.
 - **Verified:** walk-in at 22:29:31 → occupancy `on` → `bathroom_motion_turns_on_lights` → LED Cove + Main Light on (same second). Auto-off automation enabled.
-- **Not yet verified:** Kitchen Switch 2 right rocker physical press (Main Light toggles, the Switch 1 bottom LED follows); the 15-min no-motion auto-off after this re-pair.
+- The old SLZB-06 has been **removed from HA**: its smlight device, config entry and `*office_slzb_06*` entities are gone (the only smlight entry is the SLZB-MR5U).
+- **Not yet verified:** Kitchen Switch 2 right rocker physical press (Main Light toggles, the Switch 1 bottom LED follows); the 15-min no-motion auto-off after this re-pair. The Bathroom P1 has reported **`battery: 0`** (voltage 2800 mV) in every payload since the re-pair (before: 53–63 %). It may be a stale reading until its next battery report, or the batteries may really be low. It would trip a low-battery alert.
 - Lesson: after a coordinator migration, sleepy end devices can lose their parent when routers re-pair and go silent while still looking alive (the LED flashes). Fix: re-pair, then retry `device/configure` while keeping the device awake.
 
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
-- [ ] Re-pair the Sofalamp (6 power cycles) and the Aqara Motion sensor P1 (hold 5 s).
+- [ ] Re-pair the Sofalamp (6 power cycles) and the **Master Bedroom** Aqara Motion sensor P1 `0x54ef4410013ddb88` (hold 5 s). Not the Bathroom one, which is done.
 - [ ] Test the TRADFRI (single = LED Cove, double = Bedlamp); re-read the Dining Switch operation modes; press-test the Kitchen Switch 2 right rocker.
 - [x] Bathroom Motion Sensor P1 re-paired and configured; walk-in verified (22:29).
+- [ ] Bathroom Motion Sensor P1 battery reads 0 % (2800 mV) since the re-pair: recheck after its next report; replace the batteries if it stays low.
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
 - [ ] Display LED unavailable since 20:23 (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
