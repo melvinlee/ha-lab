@@ -8,6 +8,21 @@ import { ROOMS, TARIFF_SGD_PER_KWH, CURRENCY, type Room, type RoomControl, type 
 import { controlIcon, roomIcon } from "../lib/icons";
 import { Card, Switch, Slider, Badge, Empty, Skeleton } from "./ui";
 
+/** Swatch colour for a colour temperature: warm amber at ≤3000 K to cool blue-white at ≥6500 K (blackbody, exaggerated a little so neighbours differ). */
+function kelvinColor(k: number): string {
+  const stops: [number, [number, number, number]][] = [[2700, [255, 166, 87]], [3500, [255, 190, 120]], [4000, [255, 214, 165]], [5000, [255, 236, 215]], [6000, [236, 241, 255]], [6500, [214, 228, 255]]];
+  if (k <= stops[0][0]) return `rgb(${stops[0][1].join(",")})`;
+  for (let i = 1; i < stops.length; i++) {
+    const [k1, c1] = stops[i];
+    if (k <= k1) {
+      const [k0, c0] = stops[i - 1];
+      const t = (k - k0) / (k1 - k0);
+      return `rgb(${c0.map((v, j) => Math.round(v + (c1[j] - v) * t)).join(",")})`;
+    }
+  }
+  return `rgb(${stops[stops.length - 1][1].join(",")})`;
+}
+
 function ControlRow({ c }: { c: RoomControl }) {
   const { get, call, isPending } = useHass();
   const e = get(c.entity);
@@ -28,7 +43,7 @@ function ControlRow({ c }: { c: RoomControl }) {
   // Lights round K through mireds (3500 K can read back as 3497 or 3508), so match within 75 K.
   const activePreset = on && kelvin != null ? presets.find((p) => Math.abs(p - kelvin) <= 75) : undefined;
 
-  const sub = unavailable ? null : on ? (supportsBrightness ? `On · ${bri}%` : "On") + (presets.length && kelvin != null ? ` · ${kelvin}K` : "") : "Off";
+  const sub = unavailable ? null : on ? (supportsBrightness ? `On · ${bri}%` : "On") : "Off";
 
   return (
     <div className="row">
@@ -67,10 +82,12 @@ function ControlRow({ c }: { c: RoomControl }) {
               type="button"
               role="radio"
               aria-checked={activePreset === p}
-              className="seg-btn num"
+              aria-label={`${p} K`}
+              title={`${p} K`}
+              className="seg-btn"
               onClick={() => call("light", "turn_on", { entity_id: c.entity, color_temp_kelvin: p }, { entity: c.entity, state: "on", attributes: { color_temp_kelvin: p } })}
             >
-              {p}K
+              <span className="k-swatch" style={{ background: kelvinColor(p) }} aria-hidden />
             </button>
           ))}
         </div>
