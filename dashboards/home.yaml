@@ -142,15 +142,15 @@ views:
               - type: light-brightness
           - type: tile
             entity: automation.office_e1_switch_turns_on_ceiling_light
-            name: E1 switch automation
+            name: Office Mini Switch automation
             icon: mdi:gesture-double-tap
             tap_action:
               action: more-info
             icon_tap_action:
               action: toggle
           - type: tile
-            entity: sensor.aqara_e1_switch_battery
-            name: E1 switch
+            entity: sensor.office_mini_switch_battery
+            name: Office Mini Switch
             icon: mdi:light-switch-off
           # ── Drybox (Aqara temp/humidity sensor inside the box, in Office) ──
           # Thresholds: <=40% RH good, 40-50% watch, >50% replace/recharge desiccant.
@@ -767,11 +767,11 @@ views:
             icon: mdi:heart-pulse
             heading_style: title
           - type: tile
-            entity: sensor.aqara_e1_switch_battery
-            name: E1 battery
+            entity: sensor.office_mini_switch_battery
+            name: Office Mini battery
           - type: tile
-            entity: sensor.aqara_e1_switch_voltage
-            name: E1 voltage
+            entity: sensor.office_mini_switch_voltage
+            name: Office Mini voltage
           - type: tile
             entity: sensor.drybox_sensor_battery
             name: Drybox sensor battery
@@ -791,8 +791,8 @@ views:
             entity: sensor.aqara_ceiling_light_t1_device_temperature
             name: T1 temperature
           - type: tile
-            entity: sensor.aqara_e1_switch_device_temperature
-            name: E1 temperature
+            entity: sensor.office_mini_switch_device_temperature
+            name: Office Mini temperature
 
       # ── Updates & backups ──
       - type: grid

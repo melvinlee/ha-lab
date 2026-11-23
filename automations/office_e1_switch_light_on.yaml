@@ -6,12 +6,12 @@ description: 'Aqara E1 wireless switch: double press turns ON, single press turn
 triggers:
 - id: 'on'
   trigger: mqtt
-  topic: zigbee2mqtt/Aqara E1 Switch
+  topic: zigbee2mqtt/Office Mini Switch
   value_template: "{{ value_json.action }}"
   payload: double
 - id: 'off'
   trigger: mqtt
-  topic: zigbee2mqtt/Aqara E1 Switch
+  topic: zigbee2mqtt/Office Mini Switch
   value_template: "{{ value_json.action }}"
   payload: single
 conditions: []
