@@ -280,9 +280,9 @@ exported to `automations/living_room_display_led_schedule.yaml` (#101).
 exported to `automations/living_room_walkway_*.yaml` (#114).
 
 - Motion lights, mode `restart`, condition: the Dining Switch top rocker (Walkway, `switch.dining_switch_top`) is **on**:
-  - `binary_sensor.walkway_motion_sensor_occupancy` off→on → `light.walkway_spotlights` **80 % / 3500 K**.
-  - on→off (the sensor's own clear) → **20 % / 3500 K**, or **off** between **00:00 and 07:00**.
-- Midnight off: every day at **00:00** → `light.walkway_spotlights` off. The rocker stays on, so the bulbs keep power and motion turns them on again.
+  - `binary_sensor.walkway_motion_sensor_occupancy` off→on → `light.walkway_spotlights` **80 % / 3500 K**, fading up over **2 s** (`transition: 2`).
+  - on→off (the sensor's own clear) → **20 % / 3500 K**, or **off** between **00:00 and 07:00**, fading over **5 s** (`transition: 5`).
+- Midnight off: every day at **00:00** → `light.walkway_spotlights` off with a **5 s** fade. The rocker stays on, so the bulbs keep power and motion turns them on again.
 - Neither automation switches the rocker. With the rocker off the bulbs have no power (`unavailable` ~5 min later).
 - `power_outage_memory` stays **on** (user decision): after an outage or a rocker off/on the bulbs restore their last state, so after the midnight off a rocker flip leaves them **off** until motion.
 

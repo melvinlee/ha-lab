@@ -661,6 +661,16 @@ because MCP can't create automations.
 - **Verified:** HA serves `assets/index-BTuUh_ac.js`, which contains `light.walkway_spotlights` and the walkway timeline entities.
 - **Not yet verified:** the tile on the tablet (toggle, brightness slider, motion changes showing in the Living Room badge / timeline).
 
+### 63. Walkway: fade instead of jumps (#114 follow-up)
+
+- The user asked for the walkway to dim slowly instead of jumping to 20 % / 80 %. Added `transition` to every light action:
+  - `living_room_walkway_motion_lights`: motion → 80 % / 3500 K with `transition: 2` (short, so the walkway is lit quickly when someone walks in); clear → 20 % / 3500 K, or off between 00:00 and 07:00, with `transition: 5`.
+  - `living_room_walkway_midnight_off`: off with `transition: 5`.
+- Saved live (`ok` ×2) and re-exported.
+- Before the change, the real clear at **09:56:25** (after the 09:55:23 walk-in) took the group to 20 %.
+- **Verified:** direct group commands with the same data were accepted: 80 % with `transition: 2` (09:57:31, brightness 203) and 20 % with `transition: 5` (09:57:42, brightness 51). Z2M reports the target level straight away, so this does not show the fade itself.
+- **Not yet verified:** that the fade is visible on the bulbs; a real walk-in / clear through the automation with the transitions.
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -679,6 +689,7 @@ because MCP can't create automations.
 - [x] Motion automation + midnight off created; clear → 20 % verified 09:46.
 - [x] Walk-in → 80 % / 3508 K verified 09:55:23.
 - [ ] 00:00 off; a clear between 00:00 and 07:00 → off.
+- [ ] Fade visible on the bulbs (2 s up, 5 s down / off), step 63.
 - [x] NG Premium Living Room tile (step 62). [ ] Tablet check; North Gaia tile if wanted.
 
 **Display LED colour presets (#103)**
