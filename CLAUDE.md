@@ -77,7 +77,7 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
 - `scripts/ha-ws.mjs` must not `process.exit()` before stdout flushes (large outputs truncate).
 - HA caches `/local`. `deploy-premium.sh` cache-busts with `?v=<timestamp>`; users may still need a refresh.
 - **Light groups are Z2M groups** (`bridge/request/group/add`, then `group/members/add`). The bulbs change in sync, and the group shows up
-  as `light.<group>`. HA won't put a group entity in an area directly, so assign the group's *device* instead. Group ids 1–3 are in use.
+  as `light.<group>`. HA won't put a group entity in an area directly, so assign the group's *device* instead. Group ids 1–4 are in use.
 - **Aqara Spotlight T2 has no `power_on_behavior`**, only `switch.*_power_outage_memory` (on = restore the last state). Bulbs behind a
   relay rocker (TV Light, Dining center) lose power when it's off. Z2M **availability** is on **per device for the 7 spotlights only**
   (`availability: {timeout: 5}`; global off), so they show `unavailable` ~5 min later. A new availability setting needed a **Z2M restart**.

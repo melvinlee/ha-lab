@@ -633,6 +633,15 @@ because MCP can't create automations.
 - **Verified:** Z2M config `friendly_name: Office Mini Switch`; the 3 new entities exist in the Office; no `aqara_e1_switch` IDs left; automation enabled with the new topic.
 - **Verified (2026-11-24):** the switch came back online without a re-pair (probably via the Office Light, now correctly a router, step 58). Single press 07:26:58 → Office Light off, double 07:27:01 → on, on the new topic `zigbee2mqtt/Office Mini Switch`. `sensor.office_mini_switch_battery` 78 %, linkquality 92.
 
+### 60. Living Room walkway: 3 Spotlight T2 + High precision motion sensor named and grouped (#114)
+
+- The devices were already paired to the MR5U (T2s 2026-11-24 09:20, motion sensor 09:29), unnamed and with no area.
+- Z2M group **id 4 Walkway Spotlights** (`light.walkway_spotlights`), members `0x54ef4410011a97df`, `0x54ef441001289291`, `0x54ef44100128921c`.
+- Z2M renames with `homeassistant_rename: true`: **Walkway Spotlight 1 / 2 / 3** (in that IEEE order) and **Walkway Motion Sensor** (`0x54ef44100136b369`). IDs followed (`light.walkway_spotlight_*`, `binary_sensor.walkway_motion_sensor_occupancy`, …).
+- Area **Living Room** for the 3 bulbs, the group device and the sensor (the issue first said Dining Room; corrected by the user).
+- **Verified:** `bridge/groups` lists the 3 members in group 4; all new entities exist in the Living Room; no `0x…` IDs left for these 4 devices; after a `/get` the 3 bulbs report on, 255, 4000 K and the group follows.
+- **Not yet verified:** a group command reaching all 3 bulbs; the motion sensor's first occupancy/battery report under the new name.
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -645,6 +654,11 @@ because MCP can't create automations.
 - [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58).
 - [ ] Display LED unavailable since 20:23 (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
+
+**Living Room walkway (#114)**
+- [ ] Which rocker powers the walkway bulbs; `power_outage_memory` on and availability timeout if they sit behind a relay.
+- [ ] Walkway motion automation (off delay, brightness / colour temperature); dashboard tiles.
+- [ ] Group on/off test; motion sensor first report.
 
 **Display LED colour presets (#103)**
 - [ ] Tablet: the 3 colour swatches show under the Display LED slider and read as amber / warm / cool, a tap changes the colour, and the active one is highlighted.
