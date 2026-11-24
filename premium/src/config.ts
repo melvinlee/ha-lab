@@ -155,6 +155,8 @@ export const ROOMS: Room[] = [
       // Curtain on the Z1 Pro bottom relay: relay ON = curtain OPEN, OFF = closed.
       { entity: "switch.smart_wall_switch_z1_pro_bottom", name: "Night Curtain", kind: "curtain", icon: "curtain", openState: "on" },
       { entity: "light.bedlamp", name: "Bedlamp", kind: "light", icon: "lamp" },
+      // Aqara Spotlight T3 (#117)
+      { entity: "light.bedroom_spotlight", name: "Bedroom Spotlight", kind: "light", icon: "spot" },
     ],
   },
   {
