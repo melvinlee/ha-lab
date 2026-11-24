@@ -674,8 +674,8 @@ because MCP can't create automations.
 ### 64. Back Home powers the Walkway rocker first (#114 follow-up)
 
 - Checked that Back Home turns on the Dining Spotlight rocker (`switch.dining_switch_center`) and the Walkway rocker (`switch.dining_switch_top`), from the logbook:
-  - 09:16 door open: center on 09:16:48, top on 09:16:51, Dining Spotlights on 09:16:52. Everything stayed on.
-  - 08:29 door open: center on 08:29:52, top on 08:29:55. The Mini Switch hold (Away scene) turned both off at 08:29:56, one second later (leaving the house).
+  - 09:16 door open: center on 09:16:48 (power-first step), top on 09:16:51 (only with the scene, after the 3 s wait: the power-first step did not include it yet), Dining Spotlights on 09:16:52. They stayed on from that run; the rocker flips at 09:20 (walkway bulb pairing) and the 09:24 offs were outside the automation.
+  - 08:29 door open: center on 08:29:52 (power-first), top on 08:29:55 (scene). The Mini Switch hold (Away scene) turned both off at 08:29:56, one second later (leaving the house).
 - Gap: the power-first step only covered the Dining center and TV Light rockers, so with the Walkway rocker off the walkway bulbs got power only with the scene.
 - Change (user): `living_room_front_door_back_home` also checks and turns on `switch.dining_switch_top` before the 3 s wait. The scene is unchanged (it already has `switch.dining_switch_top: on`; the Walkway Spotlights are not in the scene, the motion automation drives them).
 - Saved live (`ok`) and re-exported; README automation row updated.
