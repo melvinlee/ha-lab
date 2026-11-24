@@ -682,6 +682,13 @@ because MCP can't create automations.
 - **Verified:** live config has the third `or` condition and `switch.dining_switch_top` in the `switch.turn_on` target.
 - **Not yet verified:** a real door open with the Walkway rocker off (all three rockers on, 3 s, then the scene).
 
+### 65. Spotlight T3 named Bedroom Spotlight, Master Bedroom (#117)
+
+- Z2M rename `0x54ef4410011b5686` → **Bedroom Spotlight** with `homeassistant_rename: true`; device area **Master Bedroom**.
+- IDs followed: `light.bedroom_spotlight`, `select.bedroom_spotlight_power_on_behavior`, `number.bedroom_spotlight_min_brightness` / `_max_brightness`, `sensor.bedroom_spotlight_device_temperature`, `update.bedroom_spotlight`; no `0x54ef4410011b5686` IDs left.
+- **Not reachable:** `zigbee2mqtt/Bedroom Spotlight/get` at 10:11:04 failed (`genOnOff.read` timeout). The HA "on, 100 %, 4000 K" before the rename was a stale value. Matches the 2026-11-24 network map, where it was the only router with no links. The HA device dates from 2026-11-16 (paired to the old SLZB-06), so it may never have rejoined the MR5U properly, or it has no power.
+- **Not yet verified:** state, power-on behaviour, which rocker powers it.
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -692,7 +699,7 @@ because MCP can't create automations.
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
 - [x] **Office Mini Switch** (was Aqara E1 Switch, #111) back online 2026-11-24 without a re-pair; single = off / double = on verified 07:27.
 - [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58).
-- [ ] Display LED unavailable since 20:23 (Thread); name the Spotlight T3 `0x54ef4410011b5686`; MR5U firmware channel `dev`.
+- [ ] Display LED unavailable since 20:23 (Thread); Spotlight T3 named Bedroom Spotlight (#117), still unreachable; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
 
 **Living Room walkway (#114)**
