@@ -284,6 +284,7 @@ exported to `automations/living_room_walkway_*.yaml` (#114).
   - on→off (the sensor's own clear) → **20 % / 3500 K**, or **off** between **00:00 and 07:00**.
 - Midnight off: every day at **00:00** → `light.walkway_spotlights` off. The rocker stays on, so the bulbs keep power and motion turns them on again.
 - Neither automation switches the rocker. With the rocker off the bulbs have no power (`unavailable` ~5 min later).
+- `power_outage_memory` stays **on** (user decision): after an outage or a rocker off/on the bulbs restore their last state, so after the midnight off a rocker flip leaves them **off** until motion.
 
 ### Living Room: Living Room Switch slider toggles Sofalamp
 
