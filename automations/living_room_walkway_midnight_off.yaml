@@ -1,9 +1,9 @@
 ---
 id: living_room_walkway_midnight_off
 alias: 'Living Room: walkway lights off at midnight'
-description: 'Every day at 00:00: Walkway Spotlights off. The Dining Switch top rocker
-  (Walkway) stays on, so the bulbs keep power and the motion automation can turn them
-  on again (#114).'
+description: 'Every day at 00:00: Walkway Spotlights fade off over 5 s. The Dining
+  Switch top rocker (Walkway) stays on, so the bulbs keep power and the motion automation
+  can turn them on again (#114).'
 triggers:
 - trigger: time
   at: '00:00:00'
@@ -12,4 +12,6 @@ actions:
 - action: light.turn_off
   target:
     entity_id: light.walkway_spotlights
+  data:
+    transition: 5
 mode: single
