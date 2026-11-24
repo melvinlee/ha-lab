@@ -697,6 +697,14 @@ because MCP can't create automations.
 - **Verified:** HA serves `assets/index-DjqQKsO_.js`, which contains `light.bedroom_spotlight`.
 - **Not yet verified:** the tile on the tablet; which rocker powers the bulb; power-on behaviour.
 
+### 67. Walkway fades running on real motion; Bedroom Spotlight state (#114, #117)
+
+- **Walkway with fades (step 63), real motion:** `living_room_walkway_motion_lights` ran on every occupancy change from 10:02:24 to 10:36:27 (on 10:02:24 / 10:06:31 / 10:08:26 / 10:22:08 / 10:23:45 / 10:25:01 / 10:35:25, off 10:06:25 / 10:07:33 / 10:09:28 / 10:23:10 / 10:24:47 / 10:26:03 / 10:36:27).
+- **Verified:** the 5 stored traces (10:24:47 to 10:36:27) all `stopped` / `finished` with no error. After the 10:36:27 clear, all 3 bulbs and the group read **20 % / 3508 K**. `sensor.walkway_motion_sensor_battery` 100 %.
+- The sensor clears about **62 s** after the last motion (on 10:22:08 → off 10:23:10, 10:23:45 → 10:24:47, 10:35:25 → 10:36:27), so the 80 % phase lasts about a minute after someone passes.
+- **Not yet verified:** that the fade is visible (HA stores only the end levels); the 00:00 off and the 00:00–07:00 clear → off (tonight).
+- **Bedroom Spotlight (#117):** after the rename its state was `unknown` (10:05:58), then on at 10:23:44, before the 10:26:18 `get` answered (step 66). Still on; `select.bedroom_spotlight_power_on_behavior` still `unknown`. PR #118 merged; #117 stays open for the power rocker, the power-on behaviour and the tablet check.
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -715,7 +723,7 @@ because MCP can't create automations.
 - [x] Motion automation + midnight off created; clear → 20 % verified 09:46.
 - [x] Walk-in → 80 % / 3508 K verified 09:55:23.
 - [ ] 00:00 off; a clear between 00:00 and 07:00 → off.
-- [ ] Fade visible on the bulbs (2 s up, 5 s down / off), step 63.
+- [ ] Fade visible on the bulbs (2 s up, 5 s down / off), step 63. Automation runs on real motion are clean (step 67).
 - [ ] Door open with the Walkway rocker off powers it first (step 64).
 - [x] NG Premium Living Room tile (step 62). [ ] Tablet check; North Gaia tile if wanted.
 
