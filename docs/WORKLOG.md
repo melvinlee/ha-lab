@@ -653,6 +653,13 @@ because MCP can't create automations.
 - **Verified:** a direct group command 80 % / 3500 K reached Spotlights 2 and 3. Spotlight 1 was briefly `unavailable`, then online (linkquality 128). Real motion clear at **09:46:11** → the motion automation ran → all 3 bulbs and the group at **20 % / 3508 K**.
 - **Not yet verified:** the motion → 80 % path from a real walk-in; the 00:00–07:00 clear → off; the 00:00 off (tonight); whether the availability option is active before a Z2M restart (Spotlight 1 publishes `availability: online`).
 
+### 62. Walkway Spotlights on NG Premium (#114)
+
+- `premium/src/config.ts`: Living Room control **Walkway Spotlights** (`light.walkway_spotlights`, kind `light`, icon `spot`) after Sofa Spotlights; comment on the Dining Room Walkway rocker that it powers them. Activity timeline: `binary_sensor.walkway_motion_sensor_occupancy` and the two walkway automations.
+- Built (tsc + vite, ok) and deployed with `scripts/deploy-premium.sh`.
+- **Verified:** HA serves `assets/index-BTuUh_ac.js`, which contains `light.walkway_spotlights` and the walkway timeline entities.
+- **Not yet verified:** the tile on the tablet (toggle, brightness slider, motion changes showing in the Living Room badge / timeline).
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -670,7 +677,7 @@ because MCP can't create automations.
 - [x] Power: Dining Switch top rocker; `power_outage_memory` on; availability timeout 5 set (step 61).
 - [x] Motion automation + midnight off created; clear → 20 % verified 09:46.
 - [ ] Walk-in → 80 %; 00:00 off; a clear between 00:00 and 07:00 → off.
-- [ ] Dashboard tiles (NG Premium, North Gaia).
+- [x] NG Premium Living Room tile (step 62). [ ] Tablet check; North Gaia tile if wanted.
 
 **Display LED colour presets (#103)**
 - [ ] Tablet: the 3 colour swatches show under the Display LED slider and read as amber / warm / cool, a tap changes the colour, and the active one is highlighted.
