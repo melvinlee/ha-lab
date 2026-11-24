@@ -70,14 +70,14 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Living Room | Front Door Sensor | Aqara door and window sensor (battery, sleepy) | Z2M `0x00158d008bbf6e42` | `binary_sensor.front_door_sensor_contact` (door; on = open), `sensor.front_door_sensor_battery` / `_voltage` / `_device_temperature` |
 | Living Room | Living Room Mini Switch | Aqara Wireless mini switch E1 (battery, sleepy; no press entity, MQTT trigger on `zigbee2mqtt/Living Room Mini Switch`) | Z2M `0x54ef4410013efd93` | `sensor.living_room_mini_switch_battery` / `_voltage` / `_device_temperature`; **hold → Away scene** (#76); single and double press do nothing (double-press all-off removed in #76) |
 | Living Room | TV Spotlights / Sofa Spotlights | Z2M groups (id 1: TV Spotlight 1+2, id 2: Sofa Spotlight 1+2), one Zigbee broadcast each | Z2M group | `light.tv_spotlights`, `light.sofa_spotlights`; set once to 3500 K / 50% (no default scene/automation) |
-| Living Room | Walkway Spotlight 1 (#114) | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410011a97df` | `light.walkway_spotlight_1`, `switch.walkway_spotlight_1_power_outage_memory` (not set yet), `sensor.walkway_spotlight_1_device_temperature` |
-| Living Room | Walkway Spotlight 2 (#114) | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001289291` | `light.walkway_spotlight_2`, `switch.walkway_spotlight_2_power_outage_memory` (not set yet), `sensor.walkway_spotlight_2_device_temperature` |
-| Living Room | Walkway Spotlight 3 (#114) | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef44100128921c` | `light.walkway_spotlight_3`, `switch.walkway_spotlight_3_power_outage_memory` (not set yet), `sensor.walkway_spotlight_3_device_temperature` |
+| Living Room | Walkway Spotlight 1 (#114) | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410011a97df` | `light.walkway_spotlight_1`, `switch.walkway_spotlight_1_power_outage_memory` (**on**), Z2M availability timeout 5 min; powered by the Dining Switch top rocker (Walkway), `sensor.walkway_spotlight_1_device_temperature` |
+| Living Room | Walkway Spotlight 2 (#114) | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001289291` | `light.walkway_spotlight_2`, `switch.walkway_spotlight_2_power_outage_memory` (**on**), Z2M availability timeout 5 min; powered by the Dining Switch top rocker (Walkway), `sensor.walkway_spotlight_2_device_temperature` |
+| Living Room | Walkway Spotlight 3 (#114) | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef44100128921c` | `light.walkway_spotlight_3`, `switch.walkway_spotlight_3_power_outage_memory` (**on**), Z2M availability timeout 5 min; powered by the Dining Switch top rocker (Walkway), `sensor.walkway_spotlight_3_device_temperature` |
 | Living Room | Walkway Spotlights (#114) | Z2M group (id 4: Walkway Spotlight 1-3), one Zigbee broadcast | Z2M group | `light.walkway_spotlights`; group device in Living Room |
-| Living Room | Walkway Motion Sensor (#114) | Aqara High precision motion sensor RTCGQ13LM (battery, sleepy) | Z2M `0x54ef44100136b369` | `binary_sensor.walkway_motion_sensor_occupancy`, `select.walkway_motion_sensor_motion_sensitivity`, `number.walkway_motion_sensor_detection_interval`, `sensor.walkway_motion_sensor_battery` / `_voltage` / `_device_temperature`; no automation yet |
+| Living Room | Walkway Motion Sensor (#114) | Aqara High precision motion sensor RTCGQ13LM (battery, sleepy) | Z2M `0x54ef44100136b369` | `binary_sensor.walkway_motion_sensor_occupancy`, `select.walkway_motion_sensor_motion_sensitivity`, `number.walkway_motion_sensor_detection_interval`, `sensor.walkway_motion_sensor_battery` / `_voltage` / `_device_temperature`; drives `living_room_walkway_motion_lights` |
 | Living Room | Sofalamp | IKEA TRADFRI bulb E26/E27, white spectrum, globe, clear, 806 lm (2202-4000 K) | Z2M `0x04cd15fffe6bf316` | `light.sofalamp`, `select.sofalamp_power_on_behavior` (**previous**), `sensor.sofalamp_color_options`, `button.sofalamp_identify`, `update.sofalamp`. Not the Sofa Spotlights |
 | Living Room | **Display LED** (was Smart Light; renamed #99, IDs follow) | Chuan Dian Intelligent drive power supply (LED driver, colour temperature) | Matter (serial `10021945800140`) | `light.living_room_display_led`, `select.living_room_display_led_power_on_behavior` (**on**), `number.living_room_display_led_on_level` / `_power_on_level` / transition times, `button.living_room_display_led_identify`, `update.living_room_display_led_firmware`. Daily schedule automation (08:30 on, 09:30 off) and NG Premium Living Room tile (#101) with 3500 / 4000 / 6000 K colour swatches (#103); reports 3508 / 4000 / 6024 K |
-| Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top`, Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
+| Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top` (relay that **powers the Living Room Walkway Spotlights**, #114; left on, the automations switch the bulbs, not the rocker), Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
 | Dining Room | Dining Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001261f11` | `light.dining_spotlight_1`, `switch.dining_spotlight_1_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012624ee` | `light.dining_spotlight_2`, `switch.dining_spotlight_2_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 3 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012b25e9` | `light.dining_spotlight_3`, `switch.dining_spotlight_3_power_outage_memory` (**on**) |
@@ -220,7 +220,7 @@ groups and filters them by room. This table is the record of that mapping (#66).
 | Office | `office_e1_switch_turns_on_ceiling_light`, `office_switch_lighting_scene_by_time` |
 | Bathroom | `bathroom_motion_turns_on_lights`, `bathroom_no_motion_15_min_turns_off_lights`, `bathroom_right_rocker_toggles_its_light`, `bathroom_right_rocker_pauses_auto_off` |
 | Kitchen | `kitchen_switch_1_bottom_toggles_main_light`, `kitchen_switch_1_bottom_status_follows_main_light`, `kitchen_presence_lights` |
-| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_hold_runs_the_away_scene` (whole house), `living_room_switch_slider_toggles_sofalamp`, `living_room_switch_4th_rocker_runs_movie`, `living_room_display_led_daily_schedule` |
+| Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_hold_runs_the_away_scene` (whole house), `living_room_switch_slider_toggles_sofalamp`, `living_room_switch_4th_rocker_runs_movie`, `living_room_display_led_daily_schedule`, `living_room_walkway_motion_lights`, `living_room_walkway_lights_off_at_midnight` |
 | Laundry room | `laundry_room_washer_finished_notification`, `laundry_room_dryer_finished_notification` |
 
 (Entity IDs, i.e. `automation.<name>`.) Set with `config/entity_registry/update` (`area_id`) via `scripts/ha-ws.mjs`.
@@ -272,6 +272,18 @@ exported to `automations/living_room_display_led_schedule.yaml` (#101).
 
 - Time triggers every day: **08:30** (`id: on`) → `light.turn_on` `light.living_room_display_led`; **09:30** (`id: off`) → `light.turn_off`. `choose` on the trigger id, mode `single`, no conditions.
 - `turn_on` without brightness/colour, so it comes on at its last level (power-on behaviour `on`, on level 255).
+
+### Living Room: walkway motion lights and midnight off
+
+`automation.living_room_walkway_motion_lights` (id `living_room_walkway_motion_lights`) and
+`automation.living_room_walkway_lights_off_at_midnight` (id `living_room_walkway_midnight_off`),
+exported to `automations/living_room_walkway_*.yaml` (#114).
+
+- Motion lights, mode `restart`, condition: the Dining Switch top rocker (Walkway, `switch.dining_switch_top`) is **on**:
+  - `binary_sensor.walkway_motion_sensor_occupancy` off→on → `light.walkway_spotlights` **80 % / 3500 K**.
+  - on→off (the sensor's own clear) → **20 % / 3500 K**, or **off** between **00:00 and 07:00**.
+- Midnight off: every day at **00:00** → `light.walkway_spotlights` off. The rocker stays on, so the bulbs keep power and motion turns them on again.
+- Neither automation switches the rocker. With the rocker off the bulbs have no power (`unavailable` ~5 min later).
 
 ### Living Room: Living Room Switch slider toggles Sofalamp
 
