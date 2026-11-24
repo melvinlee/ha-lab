@@ -351,9 +351,9 @@ through HA (if HA or Z2M is down, the right rocker does nothing).
 
 | Automation (id) | Trigger | Condition | Action |
 |---|---|---|---|
-| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | TV Light rocker (`switch.living_room_switch_bottom`) is off **or** `light.tv_spotlights` is off | If the Dining center or TV Light rocker is off: both on → 3 s. Then `scene.turn_on` **`scene.back_home`** (#82) |
+| `living_room_front_door_back_home` (`automation.living_room_front_door_opens_back_home`, mode `single`) | `binary_sensor.front_door_sensor_contact` off→on (door opens) | TV Light rocker (`switch.living_room_switch_bottom`) is off **or** `light.tv_spotlights` is off | If the Dining center, TV Light or Dining top (Walkway) rocker is off: all three on → 3 s (Walkway added #114). Then `scene.turn_on` **`scene.back_home`** (#82) |
 
-- The TV Spotlights are powered by the Living Room **TV Light** rocker (`switch.living_room_switch_bottom`), and the Dining Spotlights by the Dining center rocker. The rockers go on 3 s before the scene sets the bulbs to 3500 K / 50%, so they can boot and rejoin. The condition includes the rocker because unpowered bulbs show `unavailable`, not `off`.
+- The TV Spotlights are powered by the Living Room **TV Light** rocker (`switch.living_room_switch_bottom`), and the Dining Spotlights by the Dining center rocker. The Walkway Spotlights are powered by the Dining top (Walkway) rocker (#114). The rockers go on 3 s before the scene sets the bulbs to 3500 K / 50%, so they can boot and rejoin. The condition includes the rocker because unpowered bulbs show `unavailable`, not `off`.
 - Since #82 the automation **runs the scene**, so `scene.back_home` is the single definition of Back Home. It only powers the spotlight rockers first (3 s for the bulbs to boot and rejoin; unpowered bulbs show `unavailable` within ~5 min, #35), like the Movie automation.
 
 ### Living Room: Mini Switch hold runs the Away scene

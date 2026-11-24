@@ -2,11 +2,11 @@
 ---
 id: living_room_front_door_back_home
 alias: 'Living Room: front door opens → Back Home'
-description: Front door opens while the TV Spotlights are off (or their TV Light rocker
-  is off). If the Dining center or TV Light rocker is off, both spotlight rockers
-  go on first and it waits 3 s for the bulbs to boot; then it runs scene.back_home
-  (Walkway, rockers, Dining + TV Spotlights 3500K/50%, Ceiling Fan). The scene is
-  the single definition of Back Home (#82).
+description: 'Front door opens while the TV Spotlights are off (or their TV Light
+  rocker is off). If the Dining center, TV Light or Dining top (Walkway) rocker is
+  off, all three rockers go on first and it waits 3 s for the bulbs to boot (Walkway
+  added #114); then it runs scene.back_home (Walkway, rockers, Dining + TV Spotlights
+  3500K/50%, Ceiling Fan). The scene is the single definition of Back Home (#82).'
 triggers:
 - trigger: state
   entity_id: binary_sensor.front_door_sensor_contact
@@ -31,12 +31,16 @@ actions:
     - condition: state
       entity_id: switch.living_room_switch_bottom
       state: 'off'
+    - condition: state
+      entity_id: switch.dining_switch_top
+      state: 'off'
   then:
   - action: switch.turn_on
     target:
       entity_id:
       - switch.dining_switch_center
       - switch.living_room_switch_bottom
+      - switch.dining_switch_top
   - delay:
       seconds: 3
 - action: scene.turn_on
