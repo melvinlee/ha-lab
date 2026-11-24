@@ -640,7 +640,7 @@ because MCP can't create automations.
 - Z2M renames with `homeassistant_rename: true`: **Walkway Spotlight 1 / 2 / 3** (in that IEEE order) and **Walkway Motion Sensor** (`0x54ef44100136b369`). IDs followed (`light.walkway_spotlight_*`, `binary_sensor.walkway_motion_sensor_occupancy`, …).
 - Area **Living Room** for the 3 bulbs, the group device and the sensor (the issue first said Dining Room; corrected by the user).
 - **Verified:** `bridge/groups` lists the 3 members in group 4; all new entities exist in the Living Room; no `0x…` IDs left for these 4 devices; after a `/get` the 3 bulbs report on, 255, 4000 K and the group follows.
-- **Not yet verified:** a group command reaching all 3 bulbs; the motion sensor's first occupancy/battery report under the new name.
+- **Not yet verified here:** a group command reaching all 3 bulbs and the motion sensor's first report under the new name. Both were later seen working in step 61 (occupancy clear at 09:46:11 → all 3 bulbs at 20 %).
 
 ### 61. Walkway: power, availability, motion lights and midnight off (#114)
 
