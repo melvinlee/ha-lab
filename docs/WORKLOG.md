@@ -671,6 +671,17 @@ because MCP can't create automations.
 - **Verified:** direct group commands with the same data were accepted: 80 % with `transition: 2` (09:57:31, brightness 203) and 20 % with `transition: 5` (09:57:42, brightness 51). Z2M reports the target level straight away, so this does not show the fade itself.
 - **Not yet verified:** that the fade is visible on the bulbs; a real walk-in / clear through the automation with the transitions.
 
+### 64. Back Home powers the Walkway rocker first (#114 follow-up)
+
+- Checked that Back Home turns on the Dining Spotlight rocker (`switch.dining_switch_center`) and the Walkway rocker (`switch.dining_switch_top`), from the logbook:
+  - 09:16 door open: center on 09:16:48, top on 09:16:51, Dining Spotlights on 09:16:52. Everything stayed on.
+  - 08:29 door open: center on 08:29:52, top on 08:29:55. The Mini Switch hold (Away scene) turned both off at 08:29:56, one second later (leaving the house).
+- Gap: the power-first step only covered the Dining center and TV Light rockers, so with the Walkway rocker off the walkway bulbs got power only with the scene.
+- Change (user): `living_room_front_door_back_home` also checks and turns on `switch.dining_switch_top` before the 3 s wait. The scene is unchanged (it already has `switch.dining_switch_top: on`; the Walkway Spotlights are not in the scene, the motion automation drives them).
+- Saved live (`ok`) and re-exported; README automation row updated.
+- **Verified:** live config has the third `or` condition and `switch.dining_switch_top` in the `switch.turn_on` target.
+- **Not yet verified:** a real door open with the Walkway rocker off (all three rockers on, 3 s, then the scene).
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -690,6 +701,7 @@ because MCP can't create automations.
 - [x] Walk-in → 80 % / 3508 K verified 09:55:23.
 - [ ] 00:00 off; a clear between 00:00 and 07:00 → off.
 - [ ] Fade visible on the bulbs (2 s up, 5 s down / off), step 63.
+- [ ] Door open with the Walkway rocker off powers it first (step 64).
 - [x] NG Premium Living Room tile (step 62). [ ] Tablet check; North Gaia tile if wanted.
 
 **Display LED colour presets (#103)**
