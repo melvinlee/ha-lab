@@ -1,0 +1,53 @@
+---
+id: living_room_walkway_motion_lights
+alias: 'Living Room: walkway motion lights'
+description: 'Walkway Spotlights (group 4, powered by the Dining Switch top rocker).
+  Motion: 80 % / 3500 K. Motion stops: 20 % / 3500 K, or off between 00:00 and 07:00.
+  Only while the rocker is on; never switches the rocker (#114).'
+triggers:
+- trigger: state
+  entity_id: binary_sensor.walkway_motion_sensor_occupancy
+  from: 'off'
+  to: 'on'
+  id: motion
+- trigger: state
+  entity_id: binary_sensor.walkway_motion_sensor_occupancy
+  from: 'on'
+  to: 'off'
+  id: clear
+conditions:
+- condition: state
+  entity_id: switch.dining_switch_top
+  state: 'on'
+actions:
+- choose:
+  - conditions:
+    - condition: trigger
+      id: motion
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id: light.walkway_spotlights
+      data:
+        brightness_pct: 80
+        color_temp_kelvin: 3500
+  - conditions:
+    - condition: trigger
+      id: clear
+    sequence:
+    - if:
+      - condition: time
+        after: '00:00:00'
+        before: '07:00:00'
+      then:
+      - action: light.turn_off
+        target:
+          entity_id: light.walkway_spotlights
+      else:
+      - action: light.turn_on
+        target:
+          entity_id: light.walkway_spotlights
+        data:
+          brightness_pct: 20
+          color_temp_kelvin: 3500
+mode: restart

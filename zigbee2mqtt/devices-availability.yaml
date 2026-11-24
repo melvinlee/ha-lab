@@ -1,6 +1,6 @@
 # Per-device Zigbee2MQTT availability (reference copy, #35).
 # Live: /config/zigbee2mqtt/configuration.yaml, under `devices:` (global `availability:` stays OFF).
-# Only the 7 Aqara Spotlight T2 bulbs: they sit behind relay rockers, so they lose power when the rocker is off.
+# Only the 10 Aqara Spotlight T2 bulbs (7 + the 3 Walkway Spotlights, #114): they sit behind relay rockers, so they lose power when the rocker is off.
 # With this set, Z2M pings each bulb after 5 min of silence and marks it (and its group) `unavailable` in HA,
 # instead of HA keeping a stale `on`.
 #
@@ -13,7 +13,9 @@
 #
 # Power: TV Spotlights <- switch.living_room_switch_bottom (TV Light rocker);
 #        Dining Spotlights <- switch.dining_switch_center (Spotlight rocker);
-#        Sofa Spotlights <- no HA rocker (wall circuit).
+#        Sofa Spotlights <- no HA rocker (wall circuit);
+#        Walkway Spotlights <- switch.dining_switch_top (Dining Switch Walkway rocker, #114).
+# The 3 Walkway entries were set via bridge/request/device/options on 2026-11-24; not read back from the live file.
 
 devices:
   '0x54ef441001163f74':
@@ -42,5 +44,17 @@ devices:
       timeout: 5
   '0x54ef4410012b25e9':
     friendly_name: Dining Spotlight 3
+    availability:
+      timeout: 5
+  '0x54ef4410011a97df':
+    friendly_name: Walkway Spotlight 1
+    availability:
+      timeout: 5
+  '0x54ef441001289291':
+    friendly_name: Walkway Spotlight 2
+    availability:
+      timeout: 5
+  '0x54ef44100128921c':
+    friendly_name: Walkway Spotlight 3
     availability:
       timeout: 5

@@ -642,6 +642,17 @@ because MCP can't create automations.
 - **Verified:** `bridge/groups` lists the 3 members in group 4; all new entities exist in the Living Room; no `0x…` IDs left for these 4 devices; after a `/get` the 3 bulbs report on, 255, 4000 K and the group follows.
 - **Not yet verified:** a group command reaching all 3 bulbs; the motion sensor's first occupancy/battery report under the new name.
 
+### 61. Walkway: power, availability, motion lights and midnight off (#114)
+
+- Power: the **Dining Switch top rocker (Walkway)** `switch.dining_switch_top` powers the 3 Walkway Spotlights (user).
+- `switch.walkway_spotlight_{1,2,3}_power_outage_memory` **on** (read back: on on on).
+- Z2M per-device `availability: {timeout: 5}` for the 3 bulbs via `bridge/request/device/options` (reference copy `zigbee2mqtt/devices-availability.yaml` updated; the live file was not read back).
+- New automations (Living Room area, exported):
+  - `living_room_walkway_motion_lights`: motion → 80 % / 3500 K; clear → 20 % / 3500 K, or off between 00:00 and 07:00; only while the Walkway rocker is on; mode `restart`.
+  - `living_room_walkway_midnight_off`: 00:00 daily → `light.walkway_spotlights` off, rocker stays on.
+- **Verified:** a direct group command 80 % / 3500 K reached Spotlights 2 and 3. Spotlight 1 was briefly `unavailable`, then online (linkquality 128). Real motion clear at **09:46:11** → the motion automation ran → all 3 bulbs and the group at **20 % / 3508 K**.
+- **Not yet verified:** the motion → 80 % path from a real walk-in; the 00:00–07:00 clear → off; the 00:00 off (tonight); whether the availability option is active before a Z2M restart (Spotlight 1 publishes `availability: online`).
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -656,9 +667,10 @@ because MCP can't create automations.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
 
 **Living Room walkway (#114)**
-- [ ] Which rocker powers the walkway bulbs; `power_outage_memory` on and availability timeout if they sit behind a relay.
-- [ ] Walkway motion automation (off delay, brightness / colour temperature); dashboard tiles.
-- [ ] Group on/off test; motion sensor first report.
+- [x] Power: Dining Switch top rocker; `power_outage_memory` on; availability timeout 5 set (step 61).
+- [x] Motion automation + midnight off created; clear → 20 % verified 09:46.
+- [ ] Walk-in → 80 %; 00:00 off; a clear between 00:00 and 07:00 → off.
+- [ ] Dashboard tiles (NG Premium, North Gaia).
 
 **Display LED colour presets (#103)**
 - [ ] Tablet: the 3 colour swatches show under the Display LED slider and read as amber / warm / cool, a tap changes the colour, and the active one is highlighted.
