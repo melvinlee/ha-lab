@@ -651,7 +651,8 @@ because MCP can't create automations.
   - `living_room_walkway_motion_lights`: motion → 80 % / 3500 K; clear → 20 % / 3500 K, or off between 00:00 and 07:00; only while the Walkway rocker is on; mode `restart`.
   - `living_room_walkway_midnight_off`: 00:00 daily → `light.walkway_spotlights` off, rocker stays on.
 - **Verified:** a direct group command 80 % / 3500 K reached Spotlights 2 and 3. Spotlight 1 was briefly `unavailable`, then online (linkquality 128). Real motion clear at **09:46:11** → the motion automation ran → all 3 bulbs and the group at **20 % / 3508 K**.
-- **Not yet verified:** the motion → 80 % path from a real walk-in; the 00:00–07:00 clear → off; the 00:00 off (tonight); whether the availability option is active before a Z2M restart (Spotlight 1 publishes `availability: online`).
+- **Verified later (walk-in):** occupancy on at **09:55:23** → `living_room_walkway_motion_lights` ran the same instant → all 3 bulbs and the group at **80 % / 3508 K**.
+- **Not yet verified:** the 00:00–07:00 clear → off; the 00:00 off (tonight); whether the availability option is active before a Z2M restart (Spotlight 1 publishes `availability: online`).
 
 ### 62. Walkway Spotlights on NG Premium (#114)
 
@@ -676,7 +677,8 @@ because MCP can't create automations.
 **Living Room walkway (#114)**
 - [x] Power: Dining Switch top rocker; `power_outage_memory` on; availability timeout 5 set (step 61).
 - [x] Motion automation + midnight off created; clear → 20 % verified 09:46.
-- [ ] Walk-in → 80 %; 00:00 off; a clear between 00:00 and 07:00 → off.
+- [x] Walk-in → 80 % / 3508 K verified 09:55:23.
+- [ ] 00:00 off; a clear between 00:00 and 07:00 → off.
 - [x] NG Premium Living Room tile (step 62). [ ] Tablet check; North Gaia tile if wanted.
 
 **Display LED colour presets (#103)**
