@@ -705,16 +705,32 @@ because MCP can't create automations.
 - **Not yet verified:** that the fade is visible (HA stores only the end levels); the 00:00 off and the 00:00–07:00 clear → off (tonight).
 - **Bedroom Spotlight (#117):** after the rename its state was `unknown` (10:05:58), then on at 10:23:44, before the 10:26:18 `get` answered (step 66). Still on; `select.bedroom_spotlight_power_on_behavior` still `unknown`. PR #118 merged; #117 stays open for the power rocker, the power-on behaviour and the tablet check.
 
+### 68. Network map at 10:42: walkway and bedroom spotlights join the mesh (#105)
+
+Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:42:16. Compared with the 07:49 map.
+
+- **32 nodes, 247 links** (07:49: 26 nodes, 118 links). New: Walkway Spotlight 1–3, Walkway Motion Sensor; now linked: Bedroom Spotlight (no links at 07:49), Sofalamp.
+- **Bathroom Switch D1** still parents 8 end devices: Bedroom Z1 Pro 118, Bathroom Motion Sensor P1 117, Office Temperature Sensor 101, Office Mini Switch 87, Drybox Sensor 83, Living Room Switch 82, Junior Bedroom Temperature Sensor 72, Dining Switch 59. Its direct link to the coordinator is still weak (**46**).
+- **New always-powered routers near the D1:** Walkway Spotlight 3 (D1 link 110), Bedroom Spotlight (100), Walkway Spotlight 1 (92), Walkway Spotlight 2 (91), besides the Office Light. Walkway Spotlights 2 and 3 and the Bedroom Spotlight have the D1 as parent (154 / 190 / 154). Walkway Spotlight 1 reaches the coordinator directly (111) and via TV Spotlight 1 (193), so the D1 now has a strong path to the coordinator through the walkway bulbs.
+- **Caveat:** the walkway bulbs are only powered while the Dining Switch top rocker (Walkway) is on. The automations keep it on, but the Away scene (Mini Switch hold) turns it off (seen 08:29:29 and 08:29:56). With it off, the mesh falls back to the D1's weak 46 link.
+- **Walkway Motion Sensor:** child of Walkway Spotlight 1, lqi **239**.
+- **Bedroom Spotlight:** parent Bathroom Switch D1 154, Bedlamp 140 / Office Light 138 as siblings, coordinator only 25. Bedlamp's parent is the Bedroom Spotlight (199).
+- **Sofalamp:** in the map as a router (coordinator 165, parent Sofa Spotlight 1 207). In HA `light.sofalamp` on since 10:25:30, so it is back on the network (open item since step 56).
+- **Master Bedroom Aqara Motion sensor P1:** still a child of Sofa Spotlight 2 at lqi **24** (weak). It reports in HA (`binary_sensor.aqara_motion_sensor_p1_occupancy` last reported 10:38:41, battery 89 %), so it has rejoined the MR5U.
+- **Kitchen Switch 2:** coordinator 51; children Kitchen Presence Sensor 161, Kitchen Switch 1 107, Front Door Sensor 64 (unchanged).
+- TRADFRI not in the map (sleepy; not seen at 07:49 either). Sofa Spotlight 2 still lists Kitchen Switch 1 at lqi 0 (stale entry).
+- **Not yet verified:** Sofalamp and Master Bedroom P1 entity IDs and a press / walk test; the mesh with the Walkway rocker off.
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
-- [ ] Re-pair the Sofalamp (6 power cycles) and the **Master Bedroom** Aqara Motion sensor P1 `0x54ef4410013ddb88` (hold 5 s). Not the Bathroom one, which is done.
+- [ ] Sofalamp and the **Master Bedroom** Aqara Motion sensor P1 `0x54ef4410013ddb88` are back on the network (map 10:42, step 68); check their entity IDs and test them. The P1 hangs off Sofa Spotlight 2 at lqi 24.
 - [ ] Test the TRADFRI (single = LED Cove, double = Bedlamp); re-read the Dining Switch operation modes; press-test the Kitchen Switch 2 right rocker.
 - [x] Bathroom Motion Sensor P1 re-paired and configured; walk-in verified (22:29).
 - [ ] Bathroom Motion Sensor P1 battery reads 0 % (2800 mV) since the re-pair: recheck after its next report; replace the batteries if it stays low.
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
 - [x] **Office Mini Switch** (was Aqara E1 Switch, #111) back online 2026-11-24 without a re-pair; single = off / double = on verified 07:27.
-- [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58).
+- [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58). Partly covered by the Walkway Spotlights and Bedroom Spotlight while their rockers are on (step 68); the Away scene turns the Walkway rocker off.
 - [ ] Display LED unavailable since 20:23 (Thread); Spotlight T3 named Bedroom Spotlight (#117), reachable 10:26, NG Premium tile; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
 
