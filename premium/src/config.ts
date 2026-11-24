@@ -62,6 +62,8 @@ export const ROOMS: Room[] = [
       { entity: "switch.living_room_switch_bottom", name: "TV Light", kind: "switch", icon: "tv" },
       { entity: "light.tv_spotlights", name: "TV Spotlights", kind: "light", icon: "spot" },
       { entity: "light.sofa_spotlights", name: "Sofa Spotlights", kind: "light", icon: "spot" },
+      // Z2M group 4, powered by the Dining Switch top rocker (Walkway); motion 80 % / clear 20 %, off at 00:00 (#114)
+      { entity: "light.walkway_spotlights", name: "Walkway Spotlights", kind: "light", icon: "spot" },
       { entity: "light.sofalamp", name: "Sofalamp", kind: "light", icon: "lamp" },
       // Matter LED driver (#99); on 08:30, off 09:30 by automation (#101)
       { entity: "light.living_room_display_led", name: "Display LED", kind: "light", icon: "strip", kelvinPresets: [3500, 4000, 6000] },
@@ -83,6 +85,7 @@ export const ROOMS: Room[] = [
     // Center rocker is the relay that powers the spotlights (decision A): the group is unavailable while it is off
     controls: [
       { entity: "light.dining_spotlights", name: "Dining Spotlights", kind: "light", icon: "spot" },
+      // Top rocker also powers the Living Room Walkway Spotlights (#114)
       { entity: "switch.dining_switch_top", name: "Walkway", kind: "switch", icon: "lamp" },
       { entity: "switch.dining_switch_center", name: "Spotlight", kind: "switch", icon: "spot" },
       { entity: "switch.dining_switch_bottom", name: "Dining Table", kind: "switch", icon: "ceiling" },
@@ -202,6 +205,9 @@ export const TIMELINE_ENTITIES = [
   "binary_sensor.front_door_sensor_contact",
   "automation.living_room_front_door_opens_back_home",
   "automation.living_room_display_led_daily_schedule",
+  "binary_sensor.walkway_motion_sensor_occupancy",
+  "automation.living_room_walkway_motion_lights",
+  "automation.living_room_walkway_lights_off_at_midnight",
   "automation.master_bedroom_tradfri_button_toggles_led_cove",
   "automation.office_e1_switch_turns_on_ceiling_light",
   "automation.office_switch_lighting_scene_by_time",
