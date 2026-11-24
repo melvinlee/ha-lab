@@ -689,6 +689,14 @@ because MCP can't create automations.
 - **Not reachable:** `zigbee2mqtt/Bedroom Spotlight/get` at 10:11:04 failed (`genOnOff.read` timeout). The HA "on, 100 %, 4000 K" before the rename was a stale value. Matches the 2026-11-24 network map, where it was the only router with no links. The HA device dates from 2026-11-16 (paired to the old SLZB-06), so it may never have rejoined the MR5U properly, or it has no power.
 - **Not yet verified:** state, power-on behaviour, which rocker powers it.
 
+### 66. Bedroom Spotlight reachable, NG Premium tile (#117)
+
+- **Reachable:** a `get` at **10:26:18** answered: on, brightness 254, `color_temp` 250 (4000 K), linkquality **140**, device temperature 32 °C. HA `light.bedroom_spotlight` on, 100 %, 4000 K.
+- `select.bedroom_spotlight_power_on_behavior` still `unknown` (options `on` / `previous` / `off`); the bulb did not report it on a `get`, so it shows a value only once set.
+- `premium/src/config.ts`: Master Bedroom control **Bedroom Spotlight** (`light.bedroom_spotlight`, kind `light`, icon `spot`) after the Bedlamp. Built and deployed with `scripts/deploy-premium.sh`.
+- **Verified:** HA serves `assets/index-DjqQKsO_.js`, which contains `light.bedroom_spotlight`.
+- **Not yet verified:** the tile on the tablet; which rocker powers the bulb; power-on behaviour.
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
@@ -699,7 +707,7 @@ because MCP can't create automations.
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
 - [x] **Office Mini Switch** (was Aqara E1 Switch, #111) back online 2026-11-24 without a re-pair; single = off / double = on verified 07:27.
 - [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58).
-- [ ] Display LED unavailable since 20:23 (Thread); Spotlight T3 named Bedroom Spotlight (#117), still unreachable; MR5U firmware channel `dev`.
+- [ ] Display LED unavailable since 20:23 (Thread); Spotlight T3 named Bedroom Spotlight (#117), reachable 10:26, NG Premium tile; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
 
 **Living Room walkway (#114)**
@@ -710,6 +718,10 @@ because MCP can't create automations.
 - [ ] Fade visible on the bulbs (2 s up, 5 s down / off), step 63.
 - [ ] Door open with the Walkway rocker off powers it first (step 64).
 - [x] NG Premium Living Room tile (step 62). [ ] Tablet check; North Gaia tile if wanted.
+
+**Bedroom Spotlight (#117)**
+- [ ] Which rocker powers it; set power-on behaviour (e.g. `previous`).
+- [ ] Tablet: Bedroom Spotlight tile in the Master Bedroom card.
 
 **Display LED colour presets (#103)**
 - [ ] Tablet: the 3 colour swatches show under the Display LED slider and read as amber / warm / cool, a tap changes the colour, and the active one is highlighted.
