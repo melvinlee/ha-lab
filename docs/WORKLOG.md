@@ -743,6 +743,15 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - **single** → `light.toggle` `light.aqara_ceiling_light_t1_white` (main light); **double** → `light.toggle` `light.aqara_ceiling_light_t1_rgb` (ring, comes back in its last colour and brightness). Mode stays `queued`. Before: double = main light on, single = off.
 - **Verified 2026-11-25** with presses on `zigbee2mqtt/Office Mini Switch` (battery 81 %): single 08:04:46 → main off, single 08:04:48 → on, double 08:04:50 → ring on, single 08:04:51 → main off, double 08:04:54 → ring off, single 08:04:56 → main on. Each press ran the automation (traces `stopped` / `finished`, no error).
 
+### 72. TruffleHog secret scanning: history scan, pre-commit hook, CI (#125)
+
+- **History scan** with TruffleHog 3.100.0 (local, `--no-verification`, so nothing was sent anywhere): `trufflehog git file://.` over 165 commits / 1004 chunks: **0 findings**. Working tree incl. git-ignored files (`node_modules`, `premium/dist` excluded): **0 findings**.
+- **pre-commit:** local hook `trufflehog git file://. --since-commit HEAD --results=verified,unknown --fail` (local binary, `language: system`), next to gitleaks, which stays for pattern rules such as `home-assistant-token`. `pre-commit run --all-files` passes.
+- **Verified:** a staged fake GitHub token was caught (`--since-commit HEAD` sees staged changes, exit 183); the test file was unstaged and deleted.
+- **CI:** new `.github/workflows/secret-scan.yml` (the repo had no `.github/`): `trufflesecurity/trufflehog@v3.100.0` with `--results=verified,unknown` on pushes to `main`, on PRs and by hand; `actions/checkout@v7.0.1` with full history; `contents: read`.
+- Choices (the issue's open questions): keep gitleaks; fail on verified + unknown; verification allowed in CI and the hook.
+- **Not yet verified:** the workflow's first run on GitHub (this PR).
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**

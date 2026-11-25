@@ -36,7 +36,7 @@ scripts/start-issue-branch.sh <issue> [slug]   # new feature/<n>-<slug> branch f
 node scripts/mqtt-listen.mjs 'zigbee2mqtt/<Z2M name>' 60     # watch device messages (button/slider payloads), read-only
 node scripts/ota-on-wake.mjs <Z2M name> update.<entity> 180  # OTA for a sleepy device: waits for its next message, calls update.install once
 
-pre-commit install && pre-commit run --all-files   # gitleaks + file checks; first run on this Mac needs SSL_CERT_FILE=/etc/ssl/cert.pem
+pre-commit install && pre-commit run --all-files   # gitleaks + TruffleHog + file checks (CI: .github/workflows/secret-scan.yml); first run on this Mac needs SSL_CERT_FILE=/etc/ssl/cert.pem
 ```
 
 Export an automation/scene after creating it in HA (same pattern for `scene`):

@@ -6,7 +6,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](premium/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](premium/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-7-3178C6?logo=typescript&logoColor=white)](premium/)
-[![pre-commit](https://img.shields.io/badge/pre--commit-gitleaks-FAB040?logo=pre-commit&logoColor=white)](.pre-commit-config.yaml)
+[![pre-commit](https://img.shields.io/badge/pre--commit-gitleaks%20%2B%20trufflehog-FAB040?logo=pre-commit&logoColor=white)](.pre-commit-config.yaml)
 [![Last commit](https://img.shields.io/github/last-commit/melvinlee/ha-lab)](https://github.com/melvinlee/ha-lab/commits/main)
 [![Open issues](https://img.shields.io/github/issues/melvinlee/ha-lab)](https://github.com/melvinlee/ha-lab/issues)
 [![Open PRs](https://img.shields.io/github/issues-pr/melvinlee/ha-lab)](https://github.com/melvinlee/ha-lab/pulls)
@@ -47,7 +47,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `helpers/` | Reference copies of helpers created via the config-flow API (not loaded by HA) |
 | `premium/` | Premium SaaS-style dashboard app (issue #3), see `premium/README.md` |
 | `scripts/deploy-premium.sh` | Build the premium app, copy to HA `/config/www/premium`, create the **NG Premium** dashboard |
-| `.pre-commit-config.yaml`, `.gitleaks.toml` | Pre-commit hooks: gitleaks secret scan + basic file checks |
+| `.pre-commit-config.yaml`, `.gitleaks.toml` | Pre-commit hooks: gitleaks + TruffleHog secret scans + basic file checks |
+| `.github/workflows/secret-scan.yml` | CI: TruffleHog secret scan on pushes to `main` and on PRs (#125) |
 | `.mcp.json` | Project MCP server config (uses `HA_URL`, `HA_TOKEN`) |
 
 ## Areas & devices
@@ -486,9 +487,10 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
   | ruby -rjson -ryaml -e 'puts JSON.parse(STDIN.read).to_yaml' > automations/<id>.yaml
 ```
 
-## Pre-commit hooks (gitleaks)
+## Secret scanning (gitleaks + TruffleHog)
 
-`.pre-commit-config.yaml` runs **gitleaks** (v8.30.1, config `.gitleaks.toml`: default rules + a `home-assistant-token` rule) and
+`.pre-commit-config.yaml` runs **gitleaks** (v8.30.1, config `.gitleaks.toml`: default rules + a `home-assistant-token` rule),
+**TruffleHog** (local binary, `brew install trufflehog`; staged changes, fails on *verified* or *unknown* secrets) and
 basic checks (YAML with HA `!include` tags allowed, JSON, end of file, trailing whitespace, large files, merge conflicts,
 private keys) on every commit.
 
@@ -498,6 +500,12 @@ SSL_CERT_FILE=/etc/ssl/cert.pem pre-commit run --all-files # first run downloads
 ```
 
 - History scan (2026-11-16): 108 commits, **no leaks**.
+- TruffleHog 3.100.0 (2026-11-25, #125): full git history (165 commits, 1004 chunks) and the working tree incl. git-ignored files
+  (`.env*`, `.claude/settings.local.json`; `node_modules`, `premium/dist` excluded), `--no-verification`: **0 findings**.
+- Verified: a staged fake GitHub token is **caught** by `trufflehog git file://. --since-commit HEAD` (exit 183).
+- CI: `.github/workflows/secret-scan.yml` runs `trufflesecurity/trufflehog@v3.100.0` (`--results=verified,unknown`) on pushes to `main`
+  and on PRs. It contacts the detectors' providers to check whether a match is live. False positive: add `trufflehog:ignore` on that line.
+- The repo is **public**: rotate any secret that is found first, then remove it from history (ask before rewriting history).
 - Verified: a commit containing a fake `HA_TOKEN="eyJ…"` is **blocked** (rules `jwt` + `home-assistant-token`).
 
 ## Claude Code skills
