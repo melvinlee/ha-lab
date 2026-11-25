@@ -750,7 +750,7 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - **Verified:** a staged fake GitHub token was caught (`--since-commit HEAD` sees staged changes, exit 183); the test file was unstaged and deleted.
 - **CI:** new `.github/workflows/secret-scan.yml` (the repo had no `.github/`): `trufflesecurity/trufflehog@v3.100.0` with `--results=verified,unknown` on pushes to `main`, on PRs and by hand; `actions/checkout@v7.0.1` with full history; `contents: read`.
 - Choices (the issue's open questions): keep gitleaks; fail on verified + unknown; verification allowed in CI and the hook.
-- **Not yet verified:** the workflow's first run on GitHub (this PR).
+- **Verified:** the workflow's first run on PR #126 passed (job `trufflehog`, 11 s).
 
 ## Open items
 
