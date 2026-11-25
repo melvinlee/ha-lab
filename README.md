@@ -24,7 +24,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `README.md` | Setup and reference (areas/devices, MCP, Zigbee/MQTT, automations, dashboard, scripts, workflow) |
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
-| `automations/office_e1_switch_light_on.yaml` | E1 switch automation, exported from HA |
+| `automations/office_e1_switch_light_on.yaml` | Office Mini Switch: single toggles the main light, double toggles the ring (#122), exported from HA |
 | `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
 | `automations/master_bedroom_tradfri_double_click.yaml` | TRADFRI double-click → Bedlamp toggle, exported from HA |
 | `automations/kitchen_*.yaml` | Kitchen: Switch 1 bottom → Main Light, Main Light status mirror, presence lights, exported from HA |
@@ -226,20 +226,22 @@ groups and filters them by room. This table is the record of that mapping (#66).
 
 (Entity IDs, i.e. `automation.<name>`.) Set with `config/entity_registry/update` (`area_id`) via `scripts/ha-ws.mjs`.
 
-### Office: E1 switch controls ceiling light
+### Office: Mini Switch toggles main light and ring
 
 `automation.office_e1_switch_turns_on_ceiling_light` (id `office_e1_switch_light_on`; entity id kept
 from the original name), created via `POST /api/config/automation/config/<id>`
 (the MCP tools can't create automations).
 
-| E1 press     | Action                                                 |
-|--------------|--------------------------------------------------------|
-| double-click | `light.turn_on` → `light.aqara_ceiling_light_t1_white`  |
-| single-click | `light.turn_off` → `light.aqara_ceiling_light_t1_white` |
+| Mini Switch press | Action |
+|---|---|
+| single-click | `light.toggle` → `light.aqara_ceiling_light_t1_white` (main light) |
+| double-click | `light.toggle` → `light.aqara_ceiling_light_t1_rgb` (ambient ring, last colour / brightness) |
+
+Until #122 (2026-11-25) a double press turned the main light on and a single press turned it off; the ring had no button.
 
 - Trigger: MQTT topic `zigbee2mqtt/Office Mini Switch` (was `zigbee2mqtt/Aqara E1 Switch` until #111), matched on `value_json.action`
   (Aqara Wireless mini switch E1, WXKG20LM, `0x54ef441001328ec0`)
-- Light: **Office Light** (Aqara Ceiling Light T1, `0x54ef44100130d787`), main white channel
+- Light: **Office Light** (Aqara Ceiling Light T1, `0x54ef44100130d787`): main white channel and ambient ring. Mode `queued`, alias "Office: Mini Switch toggles main light and ring"
 - The topic uses the Z2M friendly name. If the device is renamed in Z2M, update the triggers.
 
 ### Master Bedroom: TRADFRI button toggles LED Cove

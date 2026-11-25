@@ -721,6 +721,13 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - TRADFRI not in the map (sleepy; not seen at 07:49 either). Sofa Spotlight 2 still lists Kitchen Switch 1 at lqi 0 (stale entry).
 - **Not yet verified:** Sofalamp and Master Bedroom P1 entity IDs and a press / walk test; the mesh with the Walkway rocker off.
 
+### 71. Office Mini Switch: single toggles the main light, double toggles the ring (#122)
+
+- Automation `office_e1_switch_light_on` (`automation.office_e1_switch_turns_on_ceiling_light`, id and entity id unchanged) updated live via the REST config API (`ok`) and exported. Alias now "Office: Mini Switch toggles main light and ring".
+- **single** → `light.toggle` `light.aqara_ceiling_light_t1_white` (main light); **double** → `light.toggle` `light.aqara_ceiling_light_t1_rgb` (ring, comes back in its last colour and brightness). Mode stays `queued`. Before: double = main light on, single = off.
+- **Verified 2026-11-25** with presses on `zigbee2mqtt/Office Mini Switch` (battery 81 %): single 08:04:46 → main off, single 08:04:48 → on, double 08:04:50 → ring on, single 08:04:51 → main off, double 08:04:54 → ring off, single 08:04:56 → main on. Each press ran the automation (traces `stopped` / `finished`, no error).
+- Step numbers 69–70 are in PR #121 (TRADFRI re-pair, Bedroom Mini Switch), not yet merged.
+
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**

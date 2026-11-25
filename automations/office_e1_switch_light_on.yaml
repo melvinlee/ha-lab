@@ -1,34 +1,35 @@
 # Exported from HA via GET /api/config/automation/config/office_e1_switch_light_on
+---
 id: office_e1_switch_light_on
-alias: 'Office: E1 switch controls ceiling light'
-description: 'Aqara E1 wireless switch: double press turns ON, single press turns
-  OFF the Office Light (Aqara Ceiling Light T1) in the office.'
+alias: 'Office: Mini Switch toggles main light and ring'
+description: 'Office Mini Switch (Aqara E1, WXKG20LM): single press toggles the Office
+  Light main light, double press toggles the ambient ring (#122).'
 triggers:
-- id: 'on'
-  trigger: mqtt
-  topic: zigbee2mqtt/Office Mini Switch
-  value_template: "{{ value_json.action }}"
-  payload: double
-- id: 'off'
+- id: single
   trigger: mqtt
   topic: zigbee2mqtt/Office Mini Switch
   value_template: "{{ value_json.action }}"
   payload: single
+- id: double
+  trigger: mqtt
+  topic: zigbee2mqtt/Office Mini Switch
+  value_template: "{{ value_json.action }}"
+  payload: double
 conditions: []
 actions:
 - choose:
   - conditions:
     - condition: trigger
-      id: 'on'
+      id: single
     sequence:
-    - action: light.turn_on
+    - action: light.toggle
       target:
         entity_id: light.aqara_ceiling_light_t1_white
   - conditions:
     - condition: trigger
-      id: 'off'
+      id: double
     sequence:
-    - action: light.turn_off
+    - action: light.toggle
       target:
-        entity_id: light.aqara_ceiling_light_t1_white
+        entity_id: light.aqara_ceiling_light_t1_rgb
 mode: queued
