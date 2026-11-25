@@ -1,11 +1,12 @@
 # Exported from HA via GET /api/config/automation/config/master_bedroom_tradfri_button
+---
 id: master_bedroom_tradfri_button
-alias: 'Master Bedroom: TRADFRI button toggles LED Cove'
-description: 'IKEA TRADFRI shortcut button (E1812): a single press (action "on") toggles
-  LED Cove (Z1 Pro center rocker).'
+alias: 'Master Bedroom: Mini Switch toggles LED Cove'
+description: 'Bedroom Mini Switch, an IKEA TRADFRI shortcut button (E1812): a single
+  press (action "on") toggles LED Cove (Z1 Pro center rocker).'
 triggers:
 - trigger: mqtt
-  topic: zigbee2mqtt/TRADFRI
+  topic: zigbee2mqtt/Bedroom Mini Switch
   value_template: "{{ value_json.action }}"
   payload: 'on'
 conditions: []

@@ -1,6 +1,6 @@
 // Listen to an MQTT topic through Home Assistant's websocket API (mqtt/subscribe) and print messages.
 // Usage: node scripts/mqtt-listen.mjs <topic> [seconds=60]
-//   e.g. node scripts/mqtt-listen.mjs 'zigbee2mqtt/TRADFRI' 90
+//   e.g. node scripts/mqtt-listen.mjs 'zigbee2mqtt/Bedroom Mini Switch' 90
 // Read-only. Env: HA_TOKEN (required), HA_URL (default http://192.168.1.40). Needs Node >= 22.
 
 const [topic, secs = "60"] = process.argv.slice(2);

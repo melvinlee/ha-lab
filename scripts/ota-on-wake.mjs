@@ -2,7 +2,7 @@
 // Waits for the first MQTT message from the device (e.g. you press its button), then calls update.install once.
 //
 // Usage: node scripts/ota-on-wake.mjs <z2m friendly name> <update entity> [wait seconds=180]
-//   e.g. node scripts/ota-on-wake.mjs TRADFRI update.tradfri 180
+//   e.g. node scripts/ota-on-wake.mjs "Bedroom Mini Switch" update.bedroom_mini_switch 180
 // Env: HA_TOKEN (required), HA_URL (default http://192.168.1.40). Needs Node >= 22.
 
 const [name, updateEntity, secs = "180"] = process.argv.slice(2);

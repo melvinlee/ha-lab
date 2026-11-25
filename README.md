@@ -25,8 +25,8 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `docs/WORKLOG.md` | Dated log of changes, findings and open items |
 | `dashboards/home.yaml` | Lovelace dashboard (phone + 10" landscape tablet) |
 | `automations/office_e1_switch_light_on.yaml` | Office Mini Switch: single toggles the main light, double toggles the ring (#122), exported from HA |
-| `automations/master_bedroom_tradfri_button.yaml` | TRADFRI → LED Cove toggle, exported from HA |
-| `automations/master_bedroom_tradfri_double_click.yaml` | TRADFRI double-click → Bedlamp toggle, exported from HA |
+| `automations/master_bedroom_tradfri_button.yaml` | Bedroom Mini Switch → LED Cove toggle, exported from HA |
+| `automations/master_bedroom_tradfri_double_click.yaml` | Bedroom Mini Switch double-click → Bedlamp toggle (3 s fade), exported from HA |
 | `automations/kitchen_*.yaml` | Kitchen: Switch 1 bottom → Main Light, Main Light status mirror, presence lights, exported from HA |
 | `automations/master_bedroom_slider_dims_bedlamp.yaml` | Z1 Pro slider → Bedlamp brightness, exported from HA |
 | `automations/bathroom_motion_lights_on.yaml`, `bathroom_no_motion_lights_off.yaml` | Bathroom motion on / 15-min auto-off, exported from HA |
@@ -90,7 +90,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Master Bedroom | **Bedroom Switch** (Z2M: Smart wall switch Z1 Pro) | ZNQBKG45LM, 4-rocker | Z2M `0x54ef4410011fd575` | `switch.smart_wall_switch_z1_pro_top` = **Main light**, `_center` = **LED Cove**, `_bottom` = **Night Curtain** (a curtain on the relay: **ON = open, OFF = closed**) |
 | Master Bedroom | Bedlamp | IKEA TRADFRI bulb E26/E27 white spectrum 806 lm (LED2004G8) | Z2M `0x04cd15fffe73e97e` | `light.bedlamp` (2200–4000 K) |
 | Master Bedroom | **Bedroom Spotlight** (#117) | Aqara Spotlight T3 (TDL01LM, 2702-6024 K, colour temperature only) | Z2M `0x54ef4410011b5686` | `light.bedroom_spotlight`, `select.bedroom_spotlight_power_on_behavior`, `number.bedroom_spotlight_min_brightness` / `_max_brightness`, `sensor.bedroom_spotlight_device_temperature`; NG Premium Master Bedroom tile (toggle + brightness) |
-| Master Bedroom | TRADFRI | IKEA E1812 shortcut button | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/TRADFRI` (`action: "on"`); `sensor.tradfri_battery` |
+| Master Bedroom | **Bedroom Mini Switch** (was TRADFRI; re-paired and renamed 2026-11-24, IDs follow) | IKEA TRADFRI shortcut button E1812 (battery) | Z2M `0xb4e3f9fffe249914` | presses on MQTT `zigbee2mqtt/Bedroom Mini Switch` (`action: "on"` single, `"off"` double); `sensor.bedroom_mini_switch_battery` |
 | Bathroom | **Bathroom Switch D1** | Aqara D1 triple rocker, with neutral (QBKG26LM) | Z2M `0x54ef441000d3a1ee` | `switch.bathroom_switch_d1_left` = **LED Cove**, `_center` = **Main Light**, `_right` = **Bath mode** (decoupled; toggled by its rocker via HA; ON pauses the auto-off) |
 | Bathroom | **Bathroom Motion Sensor P1** | RTCGQ14LM | Z2M `0x54ef4410013de0db` | `binary_sensor.bathroom_motion_sensor_p1_occupancy`, `_illuminance`, `_battery` |
 | Laundry Room | Samsung washer / Samsung dryer | SmartThings (washer `DA_WM_TP1_21_COMMON`) | SmartThings cloud | `sensor.laundry_room_{washer,dryer}_{machine_state,job_state,progress,completion_time,power}`; shown read-only on NG Premium (#47). `_power` has only ever reported **0 W** (even mid-cycle), so the card doesn't show power (#84). `_energy` is real **kWh** in **0.1 kWh steps**, updated every **15 min** (SmartThings power consumption report), display precision 1 (#84) |
@@ -101,7 +101,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Living Room | SHIELD | NVIDIA SHIELD Android TV | `cast` | `media_player.shield` |
 | Living Room | HASS Bridge:21064 | HomeKit Bridge (HomeBridge) | `homekit` (bridge, port 21064) | exposes HA entities to Apple Home; no entities of its own |
 
-Wireless buttons (E1, TRADFRI) have **no press entity** in Z2M 2.x. Their automations
+Wireless buttons (E1, IKEA E1812) have **no press entity** in Z2M 2.x. Their automations
 use MQTT triggers on `value_json.action`.
 
 **Renaming:** rename in **Z2M** (with "update HA entity ID") to change entity IDs and the MQTT topic. Rename in **HA** (device
@@ -244,18 +244,18 @@ Until #122 (2026-11-25) a double press turned the main light on and a single pre
 - Light: **Office Light** (Aqara Ceiling Light T1, `0x54ef44100130d787`): main white channel and ambient ring. Mode `queued`, alias "Office: Mini Switch toggles main light and ring"
 - The topic uses the Z2M friendly name. If the device is renamed in Z2M, update the triggers.
 
-### Master Bedroom: TRADFRI button toggles LED Cove
+### Master Bedroom: Mini Switch toggles LED Cove and Bedlamp
 
 `automation.master_bedroom_tradfri_button_toggles_led_cove` (id `master_bedroom_tradfri_button`),
 exported to `automations/master_bedroom_tradfri_button.yaml`.
 
-| TRADFRI press | Action |
+| Bedroom Mini Switch press | Action |
 |---|---|
 | single press (`action: "on"`) | `switch.toggle` → `switch.smart_wall_switch_z1_pro_center` (LED Cove) |
-| double-click (`action: "off"`, firmware ≥ 604241926) | `light.toggle` → `light.bedlamp` (automation `master_bedroom_tradfri_double_click`, `automations/master_bedroom_tradfri_double_click.yaml`) |
+| double-click (`action: "off"`, firmware ≥ 604241926) | `light.toggle` → `light.bedlamp` with `transition: 3` (ramps up / down over 3 s; automation `master_bedroom_tradfri_double_click`, `automations/master_bedroom_tradfri_double_click.yaml`) |
 
-- Trigger: MQTT topic `zigbee2mqtt/TRADFRI`, `value_json.action == "on"` (IKEA E1812, `0xb4e3f9fffe249914`).
-  Payload confirmed with `node scripts/mqtt-listen.mjs zigbee2mqtt/TRADFRI 60`.
+- Trigger: MQTT topic `zigbee2mqtt/Bedroom Mini Switch` (was `zigbee2mqtt/TRADFRI` until 2026-11-24), `value_json.action` (IKEA E1812, `0xb4e3f9fffe249914`).
+  Payloads confirmed on the old topic (2026-11-24, step 69); watch with `node scripts/mqtt-listen.mjs 'zigbee2mqtt/Bedroom Mini Switch' 60`. The automation IDs keep `tradfri`.
 - Long press (`brightness_move_up` / `brightness_stop`) isn't used.
 
 ### Master Bedroom: Bedroom Switch slider dims Bedlamp
@@ -433,7 +433,7 @@ the unnamed Spotlight T3 `light.0x54ef4410011b5686` (not set up yet), the SHIELD
 
 | View | Sections |
 |---|---|
-| **Home** | tablet header (greeting, clock, weather, drybox RH) · weather (phone) · **Office** (ceiling light, ring, E1 automation, **Drybox** subsection: humidity gauge, desiccant alert >50% RH, temperature, 7-day history) · **Living Room** (Roborock controls, alerts, routines, mop settings) · Roborock map · **Master Bedroom** (Main light / LED Cove / Night Curtain toggles, Bedlamp brightness and colour temperature, power, motion, light level, TRADFRI, automation tiles, low-battery alerts) · Media (SHIELD) · Shopping list |
+| **Home** | tablet header (greeting, clock, weather, drybox RH) · weather (phone) · **Office** (ceiling light, ring, E1 automation, **Drybox** subsection: humidity gauge, desiccant alert >50% RH, temperature, 7-day history) · **Living Room** (Roborock controls, alerts, routines, mop settings) · Roborock map · **Master Bedroom** (Main light / LED Cove / Night Curtain toggles, Bedlamp brightness and colour temperature, power, motion, light level, Mini Switch, automation tiles, low-battery alerts) · Media (SHIELD) · Shopping list |
 | **System** | Zigbee2MQTT · SLZB-MR5U coordinator · Roborock maintenance · Device health (batteries, temperatures) · Updates & backups |
 
 Badges at the top: person, weather, Office light, Drybox RH, plus Bedroom motion / Roborock / SHIELD / Pairing
@@ -477,7 +477,7 @@ All need `HA_TOKEN` (and optionally `HA_URL`, default `http://192.168.1.40`) and
 | `node scripts/ha-ws.mjs '<json>' ...` | Raw websocket commands. `"$1.area_id"` references an earlier result. E.g. create an area and assign a device:<br>`node scripts/ha-ws.mjs '{"type":"config/area_registry/create","name":"X"}' '{"type":"config/device_registry/update","device_id":"…","area_id":"$1.area_id"}'` |
 | `scripts/deploy-premium.sh` | Build `premium/`, rsync to `/Volumes/config/www/premium/`, create/update the NG Premium dashboard |
 | `node scripts/ota-on-wake.mjs <z2m name> <update.entity> [s]` | Firmware update for a sleepy device: waits for its next message (press it), then calls `update.install` **once** |
-| `node scripts/mqtt-listen.mjs <topic> [seconds]` | Print MQTT messages through HA (read-only). E.g. `zigbee2mqtt/TRADFRI 60` to see button payloads |
+| `node scripts/mqtt-listen.mjs <topic> [seconds]` | Print MQTT messages through HA (read-only). E.g. `'zigbee2mqtt/Bedroom Mini Switch' 60` to see button payloads |
 
 Automations are created with the REST config API (`POST /api/config/automation/config/<id>`), then exported:
 

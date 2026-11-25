@@ -1,10 +1,12 @@
+# Exported from HA via GET /api/config/automation/config/master_bedroom_tradfri_double_click
 ---
 id: master_bedroom_tradfri_double_click
-alias: 'Master Bedroom: TRADFRI double-click toggles Bedlamp'
-description: 'E1812 fw 604241926: double-click publishes action "off".'
+alias: 'Master Bedroom: Mini Switch double-click toggles Bedlamp'
+description: 'Bedroom Mini Switch (IKEA E1812, fw 604241926+): double-click publishes
+  action "off" and toggles the Bedlamp. Fades over 3 s (on ramps up, off ramps down).'
 triggers:
 - trigger: mqtt
-  topic: zigbee2mqtt/TRADFRI
+  topic: zigbee2mqtt/Bedroom Mini Switch
   value_template: "{{ value_json.action }}"
   payload: 'off'
 conditions: []
@@ -12,4 +14,6 @@ actions:
 - action: light.toggle
   target:
     entity_id: light.bedlamp
+  data:
+    transition: 3
 mode: single

@@ -11,11 +11,11 @@ How-to and reference details live in the [README](../README.md).
 | MQTT | Mosquitto broker app + MQTT integration: **loaded** |
 | Zigbee | Zigbee2MQTT 2.14.3 app: **running**; SMLIGHT SLZB-06 coordinator (192.168.1.41, Ethernet, `zstack`) |
 | Areas | Office, Living Room, Master Bedroom, **Bathroom** (new), Bedroom, Kitchen (empty) |
-| Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), TRADFRI button, Bedlamp (IKEA bulb) |
+| Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), Bedroom Mini Switch (IKEA E1812, was TRADFRI), Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
 | Scenes | 7: Good morning, Movie, Away (whole house off), Goodnight, Office hour, After office, Back Home (`scenes/`) |
 | REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT; Nasdaq QQQ quote `sensor.qqq_price` (`ha-config/rest.yaml`) |
-| Automations | 4: E1 single = office light off / double = on; TRADFRI press = toggle LED Cove; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
+| Automations | 4: E1 single = office light off / double = on; Mini Switch (was TRADFRI) single = toggle LED Cove, double = Bedlamp with 3 s fade; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
 | Dashboards | **North Gaia** `/dashboard-north-gaia` (Lovelace, `dashboards/home.yaml`) · **NG Premium** `/dashboard-premium` (app in `premium/`) |
 | Repo / tracking | github.com/melvinlee/ha-lab. Issue #1 → PR #2 `feature/1-master-bedroom` (open). Issue #3 → `feature/3-premium-dashboard` (stacked on #2, no PR yet) |
 
@@ -721,18 +721,35 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - TRADFRI not in the map (sleepy; not seen at 07:49 either). Sofa Spotlight 2 still lists Kitchen Switch 1 at lqi 0 (stale entry).
 - **Not yet verified:** Sofalamp and Master Bedroom P1 entity IDs and a press / walk test; the mesh with the Walkway rocker off.
 
+### 69. TRADFRI button re-paired to the MR5U (#105)
+
+- **Symptom:** the Master Bedroom TRADFRI (IKEA E1812, `0xb4e3f9fffe249914`) did nothing. Both automations last ran before the migration (LED Cove 2026-11-23 16:18, Bedlamp 2026-11-22). Z2M listed it as interviewed and bound to the MR5U (`0x982ac3fffe77f520`), but no press reached `zigbee2mqtt/TRADFRI` (listened 19:56–20:04).
+- Pairing button presses only gave `device_announce` (19:58:18, 19:59:10, 20:00:36). `device/configure` at 20:00:15 failed: `Bind … genOnOff … Delivery failed for '62656'`, followed by `ROUTE_ERROR_INDIRECT_TRANSACTION_EXPIRY` (the parent held messages the button never collected). Log level set to `debug` for this and back to `info`.
+- **Fix (with the user's OK):** `device/remove` `{"id":"TRADFRI","force":true}` at 20:01:24, `permit_join` 254 s, reset with the pairing button 4×, next to the Bedroom Spotlight. Joined 20:02:15; first interview **failed** at 20:02:24 (fell asleep), second **successful** at 20:02:37 while the main button was pressed about once a second. Renamed `0xb4e3f9fffe249914` → **TRADFRI** (`homeassistant_rename: true`); pairing closed.
+- **Verified:** firmware 24.4.6; bound `genOnOff`, `genLevelCtrl`, `genPollCtrl`, `genPowerCfg` to the coordinator; entity IDs unchanged (`sensor.tradfri_battery`, `button.tradfri_identify`, `update.tradfri`) and still in the Master Bedroom; no `0x…` IDs left. Presses arrive at lqi 104–108: `on` (single) ran `master_bedroom_tradfri_button_toggles_led_cove` (last 20:03:22), `off` (double) ran `master_bedroom_tradfri_double_click_toggles_bedlamp` (last 20:03:20). No automation change needed.
+- **Not yet verified:** the battery level after the re-pair (`unknown` until its next report; it read 30 % before, so a new CR2032 is advised).
+
+### 70. TRADFRI renamed Bedroom Mini Switch; Bedlamp double-click fades (#105)
+
+- Z2M rename **TRADFRI → Bedroom Mini Switch** (`homeassistant_rename: true`). "Mini Switch" alone would clash with the Office and Living Room Mini Switches. IDs followed: `sensor.bedroom_mini_switch_battery`, `button.bedroom_mini_switch_identify`, `update.bedroom_mini_switch`, still in the Master Bedroom; no `tradfri` entity left except the automation IDs.
+- The MQTT topic changes with the name, so both automations now trigger on `zigbee2mqtt/Bedroom Mini Switch` (saved live, `ok`, exported). Aliases: "Master Bedroom: Mini Switch toggles LED Cove" / "… Mini Switch double-click toggles Bedlamp"; entity IDs unchanged.
+- At the user's request the double-click now runs `light.toggle` on `light.bedlamp` with **`transition: 3`**, so it ramps up to its last brightness when turning on and fades down when turning off.
+- North Gaia: 4 `sensor.tradfri_battery` references → `sensor.bedroom_mini_switch_battery`, labels "Mini Switch …"; pushed.
+- **Not yet verified:** a press on the new topic (single = LED Cove, double = Bedlamp) and that the 3 s fade is visible.
+
 ### 71. Office Mini Switch: single toggles the main light, double toggles the ring (#122)
 
 - Automation `office_e1_switch_light_on` (`automation.office_e1_switch_turns_on_ceiling_light`, id and entity id unchanged) updated live via the REST config API (`ok`) and exported. Alias now "Office: Mini Switch toggles main light and ring".
 - **single** → `light.toggle` `light.aqara_ceiling_light_t1_white` (main light); **double** → `light.toggle` `light.aqara_ceiling_light_t1_rgb` (ring, comes back in its last colour and brightness). Mode stays `queued`. Before: double = main light on, single = off.
 - **Verified 2026-11-25** with presses on `zigbee2mqtt/Office Mini Switch` (battery 81 %): single 08:04:46 → main off, single 08:04:48 → on, double 08:04:50 → ring on, single 08:04:51 → main off, double 08:04:54 → ring off, single 08:04:56 → main on. Each press ran the automation (traces `stopped` / `finished`, no error).
-- Step numbers 69–70 are in PR #121 (TRADFRI re-pair, Bedroom Mini Switch), not yet merged.
 
 ## Open items
 
 **Zigbee migration to the SLZB-MR5U (#105)**
 - [ ] Sofalamp and the **Master Bedroom** Aqara Motion sensor P1 `0x54ef4410013ddb88` are back on the network (map 10:42, step 68); check their entity IDs and test them. The P1 hangs off Sofa Spotlight 2 at lqi 24.
-- [ ] Test the TRADFRI (single = LED Cove, double = Bedlamp); re-read the Dining Switch operation modes; press-test the Kitchen Switch 2 right rocker.
+- [x] TRADFRI re-paired and tested 2026-11-24 (single = LED Cove, double = Bedlamp), step 69. Battery level still to read; 30 % before.
+- [ ] Bedroom Mini Switch (was TRADFRI, step 70): press-test on the new topic and check the Bedlamp's 3 s fade.
+- [ ] Re-read the Dining Switch operation modes; press-test the Kitchen Switch 2 right rocker.
 - [x] Bathroom Motion Sensor P1 re-paired and configured; walk-in verified (22:29).
 - [ ] Bathroom Motion Sensor P1 battery reads 0 % (2800 mV) since the re-pair: recheck after its next report; replace the batteries if it stays low.
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
