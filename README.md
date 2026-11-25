@@ -490,7 +490,7 @@ curl -s "$HA_URL/api/config/automation/config/<id>" -H "Authorization: Bearer $H
 ## Secret scanning (gitleaks + TruffleHog)
 
 `.pre-commit-config.yaml` runs **gitleaks** (v8.30.1, config `.gitleaks.toml`: default rules + a `home-assistant-token` rule),
-**TruffleHog** (local binary, `brew install trufflehog`; staged changes only, fails on *verified* secrets so commits work offline) and
+**TruffleHog** (local binary, `brew install trufflehog`; staged changes only, fails on **any** match, verified or not, so an unverifiable or offline secret still blocks) and
 basic checks (YAML with HA `!include` tags allowed, JSON, end of file, trailing whitespace, large files, merge conflicts,
 private keys) on every commit.
 
@@ -505,11 +505,16 @@ pre-commit run trufflehog-full --hook-stage manual          # TruffleHog over th
 - History scan (2026-11-16): 108 commits, **no leaks**.
 - TruffleHog 3.100.0 (2026-11-25, #125): full git history (165 commits, 1004 chunks) and the working tree incl. git-ignored files
   (`.env*`, `.claude/settings.local.json`; `node_modules`, `premium/dist` excluded), `--no-verification`: **0 findings**.
-- Verified: a staged fake GitHub token is **caught** by `trufflehog git file://. --since-commit HEAD` (exit 183).
+- Verified (scratch repo, the hook's exact entry): a staged fake GitHub token is **caught** (exit 183). With `--results=verified` it passed
+  (exit 0), which is why the hook doesn't filter. A fake HA token (JWT) isn't a TruffleHog detector at all; **gitleaks** blocks it.
+  The whole history with *all* result types (unverified too, `--no-verification`): **0 findings**, so the strict hook flags nothing existing.
+- No `trufflehog` binary: every commit fails ("Executable `trufflehog` not found"). Install it rather than skip the hook.
 - CI: `.github/workflows/secret-scan.yml` runs TruffleHog v3.100.0 (`--results=verified,unknown`): pushed commits on `main`, a PR's commits,
   and the **whole history** weekly (Mondays 03:17 UTC) and by hand (`workflow_dispatch`). Actions pinned to commit SHAs, image pinned with
   `version`, checkout with `persist-credentials: false`. It contacts the detectors' providers to check whether a match is live.
   False positive: add `trufflehog:ignore` on that line.
+- `unknown` means verification couldn't finish (provider down, rate limit), so the weekly full scan can go red with no leak. Re-run it
+  before rotating anything.
 - After a history rewrite (force-push to `main`) the push run can't resolve the old commit and fails: run the workflow by hand for a full scan.
 - The repo is **public**: rotate any secret that is found first, then remove it from history (ask before rewriting history).
 - Verified: a commit containing a fake `HA_TOKEN="eyJ…"` is **blocked** (rules `jwt` + `home-assistant-token`).

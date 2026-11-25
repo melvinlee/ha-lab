@@ -8,16 +8,18 @@ repos:
       - id: gitleaks # scans staged changes for secrets (config: .gitleaks.toml)
 
   # TruffleHog (#125): 800+ detectors; checks with the provider whether a found secret is live.
-  # Needs the local binary (brew install trufflehog); it isn't built by pre-commit.
-  # `trufflehog`: staged changes only (`--since-commit HEAD`; `--all-files` doesn't widen it). Fails only on
-  #   **verified** (live) secrets, so a commit isn't blocked offline; CI also fails on unknown (could not verify).
+  # Needs the local binary (brew install trufflehog); it isn't built by pre-commit. Without it every commit fails
+  #   ("Executable `trufflehog` not found"); that is on purpose, so the scan is never skipped silently.
+  # TruffleHog has no detector for HA long-lived tokens (JWTs): gitleaks' home-assistant-token / jwt rules cover those.
+  # `trufflehog`: staged changes only (`--since-commit HEAD`; `--all-files` doesn't widen it). Fails on
+  #   **any** match (verified, unverified or unknown), so a secret that can't be checked (offline, dead, test) still blocks.
   # `trufflehog-full`: whole git history, on demand: pre-commit run trufflehog-full --hook-stage manual
   # Mark a false positive with a `trufflehog:ignore` comment on its line.
   - repo: local
     hooks:
       - id: trufflehog
         name: TruffleHog (staged changes)
-        entry: trufflehog git file://. --since-commit HEAD --results=verified --fail --no-update
+        entry: trufflehog git file://. --since-commit HEAD --fail --no-update
         language: system
         pass_filenames: false
         stages: [pre-commit]
