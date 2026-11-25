@@ -761,6 +761,10 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 
 ## Open items
 
+**Secret scanning (#125)**
+- [ ] First weekly full-history run of `secret-scan.yml` (Mondays 03:17 UTC) passes.
+- [ ] A manual `workflow_dispatch` full-history run passes.
+
 **Zigbee migration to the SLZB-MR5U (#105)**
 - [ ] Sofalamp and the **Master Bedroom** Aqara Motion sensor P1 `0x54ef4410013ddb88` are back on the network (map 10:42, step 68); check their entity IDs and test them. The P1 hangs off Sofa Spotlight 2 at lqi 24.
 - [x] TRADFRI re-paired and tested 2026-11-24 (single = LED Cove, double = Bedlamp), step 69. Battery level still to read; 30 % before.

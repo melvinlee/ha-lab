@@ -48,7 +48,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `premium/` | Premium SaaS-style dashboard app (issue #3), see `premium/README.md` |
 | `scripts/deploy-premium.sh` | Build the premium app, copy to HA `/config/www/premium`, create the **NG Premium** dashboard |
 | `.pre-commit-config.yaml`, `.gitleaks.toml` | Pre-commit hooks: gitleaks + TruffleHog secret scans + basic file checks |
-| `.github/workflows/secret-scan.yml` | CI: TruffleHog secret scan on pushes to `main` and on PRs (#125) |
+| `.github/workflows/secret-scan.yml` | CI: TruffleHog secret scan on pushes to `main` and on PRs, full history weekly and by hand (`workflow_dispatch`) (#125) |
 | `.mcp.json` | Project MCP server config (uses `HA_URL`, `HA_TOKEN`) |
 
 ## Areas & devices
