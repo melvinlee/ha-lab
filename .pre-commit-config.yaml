@@ -1,22 +1,33 @@
-# Install once: pre-commit install
-# Run on everything: pre-commit run --all-files
+# Install once: pre-commit install (needs `brew install trufflehog` for the TruffleHog hooks)
+# Run on everything: pre-commit run --all-files (TruffleHog still scans only staged changes; for a full scan:
+#   pre-commit run trufflehog-full --hook-stage manual)
 repos:
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1
     hooks:
       - id: gitleaks # scans staged changes for secrets (config: .gitleaks.toml)
 
-  # TruffleHog (#125): 800+ detectors; verifies whether a found secret is live. Uses the local binary
-  # (brew install trufflehog) instead of building it with Go. Scans staged changes; fails on verified or
-  # unknown (could not verify) secrets. Mark a false positive with a `trufflehog:ignore` comment on its line.
+  # TruffleHog (#125): 800+ detectors; checks with the provider whether a found secret is live.
+  # Needs the local binary (brew install trufflehog); it isn't built by pre-commit.
+  # `trufflehog`: staged changes only (`--since-commit HEAD`; `--all-files` doesn't widen it). Fails only on
+  #   **verified** (live) secrets, so a commit isn't blocked offline; CI also fails on unknown (could not verify).
+  # `trufflehog-full`: whole git history, on demand: pre-commit run trufflehog-full --hook-stage manual
+  # Mark a false positive with a `trufflehog:ignore` comment on its line.
   - repo: local
     hooks:
       - id: trufflehog
-        name: TruffleHog
-        entry: trufflehog git file://. --since-commit HEAD --results=verified,unknown --fail --no-update --trust-local-git-config
+        name: TruffleHog (staged changes)
+        entry: trufflehog git file://. --since-commit HEAD --results=verified --fail --no-update
         language: system
         pass_filenames: false
-        stages: [pre-commit, pre-push]
+        stages: [pre-commit]
+      - id: trufflehog-full
+        name: TruffleHog (full history)
+        entry: trufflehog git file://. --results=verified,unknown --fail --no-update
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0

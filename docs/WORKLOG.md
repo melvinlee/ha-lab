@@ -14,6 +14,7 @@ How-to and reference details live in the [README](../README.md).
 | Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), Bedroom Mini Switch (IKEA E1812, was TRADFRI), Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
 | Scenes | 7: Good morning, Movie, Away (whole house off), Goodnight, Office hour, After office, Back Home (`scenes/`) |
+| Secret scanning | gitleaks + TruffleHog pre-commit hooks; TruffleHog CI on push / PR / weekly full history (`.github/workflows/secret-scan.yml`, #125) |
 | REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT; Nasdaq QQQ quote `sensor.qqq_price` (`ha-config/rest.yaml`) |
 | Automations | 4: E1 single = office light off / double = on; Mini Switch (was TRADFRI) single = toggle LED Cove, double = Bedlamp with 3 s fade; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
 | Dashboards | **North Gaia** `/dashboard-north-gaia` (Lovelace, `dashboards/home.yaml`) · **NG Premium** `/dashboard-premium` (app in `premium/`) |
@@ -743,13 +744,14 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - **single** → `light.toggle` `light.aqara_ceiling_light_t1_white` (main light); **double** → `light.toggle` `light.aqara_ceiling_light_t1_rgb` (ring, comes back in its last colour and brightness). Mode stays `queued`. Before: double = main light on, single = off.
 - **Verified 2026-11-25** with presses on `zigbee2mqtt/Office Mini Switch` (battery 81 %): single 08:04:46 → main off, single 08:04:48 → on, double 08:04:50 → ring on, single 08:04:51 → main off, double 08:04:54 → ring off, single 08:04:56 → main on. Each press ran the automation (traces `stopped` / `finished`, no error).
 
-### 72. TruffleHog secret scanning: history scan, pre-commit hook, CI (#125)
+### 72. TruffleHog secret scanning: history scan, pre-commit hook, CI (#125, 2026-11-25)
 
 - **History scan** with TruffleHog 3.100.0 (local, `--no-verification`, so nothing was sent anywhere): `trufflehog git file://.` over 165 commits / 1004 chunks: **0 findings**. Working tree incl. git-ignored files (`node_modules`, `premium/dist` excluded): **0 findings**.
-- **pre-commit:** local hook `trufflehog git file://. --since-commit HEAD --results=verified,unknown --fail` (local binary, `language: system`), next to gitleaks, which stays for pattern rules such as `home-assistant-token`. `pre-commit run --all-files` passes.
+- **pre-commit:** local hook `trufflehog git file://. --since-commit HEAD --results=verified --fail` (local binary, `language: system`, needs `brew install trufflehog`; staged diff only, pre-commit stage only), next to gitleaks, which stays for pattern rules such as `home-assistant-token`. Manual hook `trufflehog-full` scans the whole history (`pre-commit run trufflehog-full --hook-stage manual`). Both pass.
 - **Verified:** a staged fake GitHub token was caught (`--since-commit HEAD` sees staged changes, exit 183); the test file was unstaged and deleted.
-- **CI:** new `.github/workflows/secret-scan.yml` (the repo had no `.github/`): `trufflesecurity/trufflehog@v3.100.0` with `--results=verified,unknown` on pushes to `main`, on PRs and by hand; `actions/checkout@v7.0.1` with full history; `contents: read`.
-- Choices (the issue's open questions): keep gitleaks; fail on verified + unknown; verification allowed in CI and the hook.
+- **CI:** new `.github/workflows/secret-scan.yml` (the repo had no `.github/`): TruffleHog v3.100.0 with `--results=verified,unknown` on pushes to `main` and on PRs; whole history weekly (Mon 03:17 UTC) and by hand. Actions pinned to commit SHAs (`actions/checkout` v7.0.1, `trufflesecurity/trufflehog` v3.100.0), image pinned with `version`, `persist-credentials: false`, `contents: read`.
+- **Review fixes (PR #126):** dropped the `pre-push` stage (it scanned nothing at push time); local hook fails only on verified secrets so commits work offline (CI still fails on unknown); dropped `--trust-local-git-config` (a staged fake token is still caught without it, exit 183); docs say `--all-files` doesn't widen the TruffleHog hook and a force-push to `main` needs a manual full scan.
+- Choices (the issue's open questions): keep gitleaks; CI fails on verified + unknown, the local hook on verified only; verification allowed.
 - **Verified:** the workflow's first run on PR #126 passed (job `trufflehog`, 11 s).
 
 ## Open items
