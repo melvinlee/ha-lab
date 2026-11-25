@@ -747,12 +747,17 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 ### 72. TruffleHog secret scanning: history scan, pre-commit hook, CI (#125, 2026-11-25)
 
 - **History scan** with TruffleHog 3.100.0 (local, `--no-verification`, so nothing was sent anywhere): `trufflehog git file://.` over 165 commits / 1004 chunks: **0 findings**. Working tree incl. git-ignored files (`node_modules`, `premium/dist` excluded): **0 findings**.
-- **pre-commit:** local hook `trufflehog git file://. --since-commit HEAD --results=verified --fail` (local binary, `language: system`, needs `brew install trufflehog`; staged diff only, pre-commit stage only), next to gitleaks, which stays for pattern rules such as `home-assistant-token`. Manual hook `trufflehog-full` scans the whole history (`pre-commit run trufflehog-full --hook-stage manual`). Both pass.
-- **Verified:** a staged fake GitHub token was caught (`--since-commit HEAD` sees staged changes, exit 183); the test file was unstaged and deleted.
+- **pre-commit:** local hook `trufflehog git file://. --since-commit HEAD --fail` (all result types; local binary, `language: system`, needs `brew install trufflehog`; staged diff only, pre-commit stage only), next to gitleaks, which stays for pattern rules such as `home-assistant-token`. Manual hook `trufflehog-full` scans the whole history (`pre-commit run trufflehog-full --hook-stage manual`). Both pass.
+- **Verified** (scratch repo, the hook's exact entry, 2026-11-25 20:47): a staged fake GitHub token is caught (exit 183). The earlier
+  `--results=verified` entry let the same token through (exit 0). A fake HA token (JWT) isn't detected by TruffleHog with any setting;
+  gitleaks blocks it (`home-assistant-token` + `jwt`). Whole history with all result types (`--no-verification`): 0 findings.
 - **CI:** new `.github/workflows/secret-scan.yml` (the repo had no `.github/`): TruffleHog v3.100.0 with `--results=verified,unknown` on pushes to `main` and on PRs; whole history weekly (Mon 03:17 UTC) and by hand. Actions pinned to commit SHAs (`actions/checkout` v7.0.1, `trufflesecurity/trufflehog` v3.100.0), image pinned with `version`, `persist-credentials: false`, `contents: read`.
-- **Review fixes (PR #126):** dropped the `pre-push` stage (it scanned nothing at push time); local hook fails only on verified secrets so commits work offline (CI still fails on unknown); dropped `--trust-local-git-config` (a staged fake token is still caught without it, exit 183); docs say `--all-files` doesn't widen the TruffleHog hook and a force-push to `main` needs a manual full scan.
-- Choices (the issue's open questions): keep gitleaks; CI fails on verified + unknown, the local hook on verified only; verification allowed.
-- **Verified:** the workflow's first run on PR #126 passed (job `trufflehog`, 11 s).
+- **Review fixes (PR #126):** dropped the `pre-push` stage (it scanned nothing at push time); dropped `--trust-local-git-config` (a staged fake token is still caught without it, exit 183); docs say `--all-files` doesn't widen the TruffleHog hook and a force-push to `main` needs a manual full scan.
+- **Second review:** the local hook now fails on **every** result (verified-only let unverifiable and test tokens through, so public CI
+  would be the first to see them); a missing binary fails the commit on purpose; docs note the weekly scan can go red on a provider outage.
+- Choices (the issue's open questions): keep gitleaks; CI fails on verified + unknown, the local hook on any result; verification allowed.
+- **Verified:** the workflow passed on PR #126 at every head, including `5aa0f14` with the SHA pins, image pin, `persist-credentials: false`
+  and schedule (run 45541957269). The schedule and `workflow_dispatch` full scans have **not** run yet.
 
 ## Open items
 
