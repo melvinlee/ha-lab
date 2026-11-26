@@ -771,6 +771,22 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - **Verified:** rename, readbacks above, off → on at 80 % / 3508 K, served build, tile service calls (all via HA API, Curtain LED only).
 - **Not yet verified:** power cycle at the wall comes back at 80 % / 3500 K (needs the user); the tiles on the tablet (look, swatch highlight); Cabinet LED tile (device unavailable).
 
+### 74. Dining Switch slider dims the TV, Sofa and Dining Spotlights (#127, 2026-11-25)
+
+- New automation `dining_switch_slider_dims_spotlights` (`automation.dining_room_dining_switch_slider_dims_the_spotlights`, area **Dining Room**), created via the REST config API and exported. Same pattern as the Bedroom slider: MQTT `zigbee2mqtt/Dining Switch` (Z2M friendly name of `0x54ef441000be746f`, checked in the device registry), `slider_up` / `slider_down` → `light.turn_on` on `light.tv_spotlights`, `light.sofa_spotlights`, `light.dining_spotlights` with `brightness_step_pct` = delta, 0.2 s transition, mode `queued` (max 30). Tap and other gestures unused; relays untouched.
+- Open question decided (default): **all groups move by the same step and keep their offset**.
+- **Payload capture** (`mqtt-listen.mjs`, 22:04:40–22:05:03, 55 slider messages: 47 `slider_up`, 8 `slider_down`, plus one `single_bottom`): one message every ~200–300 ms with `action_slide_speed` (signed delta), `action_slide_relative_displacement` (since the slide started), `action_slide_time`, `action_slide_time_delta`. The last message of a slide has speed 0. The first message after a direction change is a new action with time 0 and relative displacement = speed.
+- **Quirk found:** when the finger lifts and slides again within about a second, the switch starts a new segment (relative displacement back to ~3) but reports a **bogus speed of 87–94** (3 times in the capture: 22:04:48, 22:04:50, 22:04:56). The first live version (speed clamped to ±100) would have jumped the lights by ~90 %. Fixed in place (same id, 22:07): the step is the speed, or the relative displacement when the speed is larger; messages whose step rounds to 0 are ignored. Checked with `render_template` against the captured values: 2.5/2.5 → 3, 12.1/9.6 → 10, -25.1/-22.1 → -22, 3.5/86.9 → 4, 3.0/94.0 → 3, speed 0 → ignored, `single_bottom` / state reports → ignored.
+- **Verified (real slides, first version, 22:04:41–22:05:04):** the automation ran on the slides (`last_triggered` 22:05:03; trace `456b1883…` `stopped` / `finished` at `action/0`; non-slider messages `failed_conditions`). The logbook shows all three groups updated together on each slide message, each attributed to this automation. Sofa Spotlights went off → on (slide up from off, 22:04:41) and on → off (slide down to 0, 22:04:55), then on again on the next slide up (22:05:00). The 22:05:05 Sofa off was the Movie scene (Living Room Switch 4th rocker), not this automation.
+- **Verified (real slides, fixed version, 2026-11-26 09:29–09:31):** MQTT capture (91 slider messages) next to a brightness poll of the three groups every ~0.6 s, plus the logbook:
+  - Slide down: all three dimmed together; TV Spotlights turned off (09:30:08.5) and Dining Spotlights turned off (09:30:10.98), both by this automation.
+  - Slide up from off: all three turned on together (09:30:20.7, ~9 / 9 / 20 %) and rose together; the offset stayed until a group hit 100 %.
+  - Step cap: 5 bogus-speed segment starts (speed 36–51, relative displacement 3.5–4.5) moved the lights by 3–5 %, not by ~40–50 %.
+    The jumps to 100 % at 09:30:27 came from real fast slides (relative displacement ≈ speed, ~90 % of the slider in 0.2 s).
+  - **Issue:** 0.4 s after the Dining Spotlights turned off, the next queued slide-down step turned them back **on at 1 %** (09:30:11.40, same automation),
+    and their reported brightness then jumped (1 % → 49 %). Likely the group brightness HA steps from lags the bulbs during fast slides. Left as an open item (user decision).
+- **Not yet verified:** a slide down that ends with all three groups off and staying off.
+
 ## Open items
 
 **Curtain LED / Cabinet LED (#129)**
@@ -779,6 +795,12 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - [ ] Tablet: Curtain LED tile in the Master Bedroom card and the renamed Cabinet LED tile in the Living Room card.
 - [ ] Cabinet LED unavailable on Thread (since 21:09 on 2026-11-27): bring it back, then check its power-on settings.
 - [ ] `automation.living_room_display_led_daily_schedule` targets the gone `light.living_room_display_led`: point it at `light.living_room_cabinet_led` (and rename/re-export) or remove it.
+
+**Dining Switch slider → Spotlights (#127)**
+- [x] Slide with the fixed step cap: a quick lift-and-slide no longer jumps the lights to nearly full (2026-11-26 09:30).
+- [x] Slide up from off turns all three on together; the offset stays below 100 % (2026-11-26 09:30).
+- [ ] A slide down turned the Dining Spotlights off, then the next queued step turned them back on at 1 % (09:30:11). Fix if it recurs: on `slider_down`, target only groups that are on, so a slide down never turns a group on.
+- [ ] The Bedroom and Living Room sliders use the uncapped speed; check whether they show the same bogus-speed jump and apply the same cap if so.
 
 **Secret scanning (#125)**
 - [ ] First weekly full-history run of `secret-scan.yml` (Mondays 03:17 UTC) passes.

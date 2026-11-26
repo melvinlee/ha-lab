@@ -36,6 +36,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | `automations/living_room_switch_slider_toggles_sofalamp.yaml` | Living Room Switch slider → Sofalamp (tap toggles, slide dims), exported from HA |
 | `automations/living_room_display_led_schedule.yaml` | Display LED on 08:30, off 09:30 every day (#101), exported from HA |
 | `automations/living_room_switch_4th_rocker_movie.yaml` | Living Room Switch 4th (wireless) rocker → `scene.movie`, exported from HA |
+| `automations/dining_switch_slider_dims_spotlights.yaml` | Dining Switch slider → TV, Sofa and Dining Spotlights brightness (#127), exported from HA |
 | `ha-config/` | Copies of HA YAML managed here: `configuration.yaml` (adds `rest: !include rest.yaml`), `rest.yaml` (bus API sensors, QQQ quote) |
 | `scenes/*.yaml` | Good morning / Movie / Away / Goodnight / Office hour / After office / Back Home, exported from HA |
 | `zigbee2mqtt/app-config.yaml` | Z2M app `serial` config (reference copy, not exported) |
@@ -78,7 +79,7 @@ Claude Code ↔ Home Assistant (http://ha.home, 192.168.1.40) via HA's built-in
 | Living Room | Walkway Motion Sensor (#114) | Aqara High precision motion sensor RTCGQ13LM (battery, sleepy) | Z2M `0x54ef44100136b369` | `binary_sensor.walkway_motion_sensor_occupancy`, `select.walkway_motion_sensor_motion_sensitivity`, `number.walkway_motion_sensor_detection_interval`, `sensor.walkway_motion_sensor_battery` / `_voltage` / `_device_temperature`; drives `living_room_walkway_motion_lights` |
 | Living Room | Sofalamp | IKEA TRADFRI bulb E26/E27, white spectrum, globe, clear, 806 lm (2202-4000 K) | Z2M `0x04cd15fffe6bf316` | `light.sofalamp`, `select.sofalamp_power_on_behavior` (**previous**), `sensor.sofalamp_color_options`, `button.sofalamp_identify`, `update.sofalamp`. Not the Sofa Spotlights |
 | Living Room | **Cabinet LED** (was Display LED / Smart Light, #99; re-paired as Matter node 4, IDs now `living_room_cabinet_led`, #129) | Chuan Dian Intelligent drive power supply (LED driver, colour temperature only, 2702-6535 K), firmware 1.1.0 | Matter over Thread (serial `10021945800140`, node 4) | `light.living_room_cabinet_led`, `select.living_room_cabinet_led_power_on_behavior`, `number.living_room_cabinet_led_on_level` / `_power_on_level` / `_power_on_color_temperature` / `_on_transition_time` / `_off_transition_time` / `_on_off_transition_time`, `button.living_room_cabinet_led_identify`, `update.living_room_cabinet_led_firmware`. NG Premium Living Room tile with 3500 / 4000 / 6000 K swatches (#103, entity switched in #129). **Unavailable** (Thread) on and off since 16:17 on 2026-11-27, last since 21:09. The daily schedule automation still targets the old `light.living_room_display_led` (see below) |
-| Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top` (relay that **powers the Living Room Walkway Spotlights**, #114; left on, the automations switch the bulbs, not the rocker), Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; `sensor.dining_switch_power` / `_energy` |
+| Dining Room | Dining Switch | Aqara Smart wall switch Z1 Pro (Z2M: quadruple rocker; 3 relay rockers wired, all `control_relay`) | Z2M `0x54ef441000be746f` | Top **Walkway** `switch.dining_switch_top` (relay that **powers the Living Room Walkway Spotlights**, #114; left on, the automations switch the bulbs, not the rocker), Center **Spotlight** `switch.dining_switch_center` (relay that **powers the Dining Spotlights**, decision A: while it is off the bulbs lose power and show `unavailable` within ~5 min, via Z2M availability, #35), Bottom **Dining Table** `switch.dining_switch_bottom`; touch **slider** `slider_up`/`slider_down` → dims the TV, Sofa and Dining Spotlights together (#127, tap/other gestures unused); `sensor.dining_switch_power` / `_energy` |
 | Dining Room | Dining Spotlight 1 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef441001261f11` | `light.dining_spotlight_1`, `switch.dining_spotlight_1_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 2 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012624ee` | `light.dining_spotlight_2`, `switch.dining_spotlight_2_power_outage_memory` (**on**) |
 | Dining Room | Dining Spotlight 3 | Aqara Spotlight T2 (SSWQD03LM, 2702-6535 K) | Z2M `0x54ef4410012b25e9` | `light.dining_spotlight_3`, `switch.dining_spotlight_3_power_outage_memory` (**on**) |
@@ -224,6 +225,7 @@ groups and filters them by room. This table is the record of that mapping (#66).
 | Bathroom | `bathroom_motion_turns_on_lights`, `bathroom_no_motion_15_min_turns_off_lights`, `bathroom_right_rocker_toggles_its_light`, `bathroom_right_rocker_pauses_auto_off` |
 | Kitchen | `kitchen_switch_1_bottom_toggles_main_light`, `kitchen_switch_1_bottom_status_follows_main_light`, `kitchen_presence_lights` |
 | Living Room | `living_room_front_door_opens_back_home`, `living_room_mini_switch_hold_runs_the_away_scene` (whole house), `living_room_switch_slider_toggles_sofalamp`, `living_room_switch_4th_rocker_runs_movie`, `living_room_display_led_daily_schedule`, `living_room_walkway_motion_lights`, `living_room_walkway_lights_off_at_midnight` |
+| Dining Room | `dining_room_dining_switch_slider_dims_the_spotlights` |
 | Laundry room | `laundry_room_washer_finished_notification`, `laundry_room_dryer_finished_notification` |
 
 (Entity IDs, i.e. `automation.<name>`.) Set with `config/entity_registry/update` (`area_id`) via `scripts/ha-ws.mjs`.
@@ -269,6 +271,25 @@ exported to `automations/master_bedroom_slider_dims_bedlamp.yaml`.
 - `action_slide_speed` = displacement **delta** since the last message (signed; a full slider ≈ 0–100). Each message runs
   `light.turn_on` `light.bedlamp` with `brightness_step_pct` = that delta (0.2 s transition), mode `queued` (max 30).
 - Up from off turns it on; down to 0 turns it off. The relays are not affected by sliding.
+
+### Dining Room: Dining Switch slider dims the Spotlights
+
+`automation.dining_room_dining_switch_slider_dims_the_spotlights` (id `dining_switch_slider_dims_spotlights`),
+exported to `automations/dining_switch_slider_dims_spotlights.yaml` (#127).
+
+- Trigger: MQTT `zigbee2mqtt/Dining Switch` (Z1 Pro, `0x54ef441000be746f`), `action` in `slider_up` / `slider_down`
+  (captured 2026-11-25: a message every ~200–300 ms while sliding, with `action_slide_speed`, `action_slide_relative_displacement`,
+  `action_slide_time`, `action_slide_time_delta`). Tap and the other gestures are not mapped (user decision).
+- Each message runs `light.turn_on` on `light.tv_spotlights`, `light.sofa_spotlights` and `light.dining_spotlights` with
+  `brightness_step_pct` = the `action_slide_speed` delta (0.2 s transition), mode `queued` (max 30). Up from off turns a group on; down to 0 turns it off.
+- **All three groups move by the same step**, so they keep their offset (chosen default; syncing them to one level was the alternative).
+- **Step cap:** when a new slide segment starts mid-gesture, this switch sometimes reports a bogus speed (87–94 with a relative
+  displacement of 3), which would jump the lights to nearly full. The step is the speed, or the relative displacement when the speed
+  is larger. End-of-slide messages (speed 0) are ignored.
+- **Known issue:** with fast slides the group brightness HA steps from can lag. Once (2026-11-26) a slide down turned the Dining
+  Spotlights off and the next queued step turned them back on at 1 % 0.4 s later. Possible fix: on `slider_down`, target only groups that are on.
+- The relay rockers are not touched. The TV Spotlights need the Living Room Switch bottom rocker on, the Dining Spotlights the Dining Switch
+  center rocker; while a rocker is off its bulbs are unpowered and the slider can't reach them.
 
 ### Living Room: Display LED daily schedule
 

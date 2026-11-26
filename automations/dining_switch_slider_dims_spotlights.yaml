@@ -1,0 +1,34 @@
+# Exported from HA via GET /api/config/automation/config/dining_switch_slider_dims_spotlights
+id: dining_switch_slider_dims_spotlights
+alias: 'Dining Room: Dining Switch slider dims the Spotlights'
+description: Z1 Pro touch slider on the Dining Switch dims the TV, Sofa and Dining
+  Spotlights (Z2M groups) together. Each slider_up/slider_down message steps brightness
+  by its displacement delta (action_slide_speed, about 0-100 = full slider); all groups
+  move by the same step, so they keep their offset. When a new slide segment starts
+  mid-gesture the switch reports a bogus speed (e.g. 87-94 with relative displacement
+  3), so the step is capped at the relative displacement. End-of-slide messages (speed
+  0) are ignored. Up from off turns a group on; down to 0 turns it off. The relay
+  rockers are not touched.
+triggers:
+- trigger: mqtt
+  topic: zigbee2mqtt/Dining Switch
+conditions:
+- condition: template
+  value_template: "{% set p = trigger.payload_json %}{% set s = p.get('action_slide_speed',
+    0) | float(0) %}{% set r = p.get('action_slide_relative_displacement', 0) | float(0)
+    %}{{ p.get('action', '') in ['slider_up', 'slider_down'] and (r if s | abs > r
+    | abs else s) | round(0) != 0 }}"
+actions:
+- action: light.turn_on
+  target:
+    entity_id:
+    - light.tv_spotlights
+    - light.sofa_spotlights
+    - light.dining_spotlights
+  data:
+    brightness_step_pct: "{% set p = trigger.payload_json %}{% set s = p.get('action_slide_speed',
+      0) | float(0) %}{% set r = p.get('action_slide_relative_displacement', 0) |
+      float(0) %}{{ (r if s | abs > r | abs else s) | round(0) | int }}"
+    transition: 0.2
+mode: queued
+max: 30
