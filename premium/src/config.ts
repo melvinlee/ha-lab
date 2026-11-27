@@ -65,8 +65,8 @@ export const ROOMS: Room[] = [
       // Z2M group 4, powered by the Dining Switch top rocker (Walkway); motion 80 % / clear 20 %, off at 00:00 (#114)
       { entity: "light.walkway_spotlights", name: "Walkway Spotlights", kind: "light", icon: "spot" },
       { entity: "light.sofalamp", name: "Sofalamp", kind: "light", icon: "lamp" },
-      // Matter LED driver (#99); on 08:30, off 09:30 by automation (#101)
-      { entity: "light.living_room_display_led", name: "Display LED", kind: "light", icon: "strip", kelvinPresets: [3500, 4000, 6000] },
+      // Matter LED driver (#99), re-paired as Cabinet LED (#129); daily schedule automation (#101)
+      { entity: "light.living_room_cabinet_led", name: "Cabinet LED", kind: "light", icon: "strip", kelvinPresets: [3500, 4000, 6000] },
       { entity: "vacuum.living_room_qrevo_2_breeze", name: "Roborock", kind: "vacuum", icon: "vacuum" },
     ],
     // Roborock app routines, exposed by the roborock integration as buttons
@@ -155,6 +155,8 @@ export const ROOMS: Room[] = [
       // Curtain on the Z1 Pro bottom relay: relay ON = curtain OPEN, OFF = closed.
       { entity: "switch.smart_wall_switch_z1_pro_bottom", name: "Night Curtain", kind: "curtain", icon: "curtain", openState: "on" },
       { entity: "light.bedlamp", name: "Bedlamp", kind: "light", icon: "lamp" },
+      // Matter LED driver: comes on at 80 % / 3500 K (#129)
+      { entity: "light.master_bedroom_curtain_led", name: "Curtain LED", kind: "light", icon: "strip", kelvinPresets: [3500, 4000, 6000] },
       // Aqara Spotlight T3 (#117)
       { entity: "light.bedroom_spotlight", name: "Bedroom Spotlight", kind: "light", icon: "spot" },
     ],

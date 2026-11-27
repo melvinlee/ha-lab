@@ -14,6 +14,7 @@ How-to and reference details live in the [README](../README.md).
 | Zigbee devices | **Office:** E1 switch, Ceiling Light T1, drybox sensor · **Master Bedroom:** Motion sensor P1, Bedroom Switch (Z1 Pro: Main light / LED Cove / Night Curtain), Bedroom Mini Switch (IKEA E1812, was TRADFRI), Bedlamp (IKEA bulb) |
 | Other devices | Roborock Qrevo 2 Breeze + dock (Living Room), SHIELD (no area), body composition scale (Bedroom) |
 | Scenes | 7: Good morning, Movie, Away (whole house off), Goodnight, Office hour, After office, Back Home (`scenes/`) |
+| Matter | Master Bedroom **Curtain LED** (node 10, 80 % / 3500 K on power-on, #129) · Living Room **Cabinet LED** (node 4, was Display LED, Thread, unavailable) |
 | Secret scanning | gitleaks + TruffleHog pre-commit hooks; TruffleHog CI on push / PR / weekly full history (`.github/workflows/secret-scan.yml`, #125) |
 | REST sensors | NG Shuttle bus arrivals for NG + Yishun MRT; Nasdaq QQQ quote `sensor.qqq_price` (`ha-config/rest.yaml`) |
 | Automations | 4: E1 single = office light off / double = on; Mini Switch (was TRADFRI) single = toggle LED Cove, double = Bedlamp with 3 s fade; motion = Main light on; no motion 5 min = Main light + LED Cove off (Master Bedroom) |
@@ -759,7 +760,25 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - **Verified:** the workflow passed on PR #126 at every head, including `5aa0f14` with the SHA pins, image pin, `persist-credentials: false`
   and schedule (run 45541957269). The schedule and `workflow_dispatch` full scans have **not** run yet.
 
+### 73. Master Bedroom Curtain LED: 80 % / 3500 K, renamed, NG Premium tile (#129, 2026-11-27)
+
+- **Rename:** 10 entities of the Matter Curtain LED (node 10, serial `10019619600042`) moved from `*.intelligent_drive_power_supply*` to `*.master_bedroom_curtain_led*` via `config/entity_registry/update` (`new_entity_id`, all `success: true`). Nothing referenced the old IDs first: `search/related` lists only the device/area/integration, no automation or script; the North Gaia, NG Premium and Map Lovelace configs, `dashboards/home.yaml`, `premium/src/config.ts` and `scenes.yaml` / `automations.yaml` / `scripts.yaml` on the share have no match. Device `name_by_user` Curtain LED and area Master Bedroom unchanged.
+- **Defaults** (`number.set_value`): `on_level` 255 → **204**, `power_on_level` 255 → **204**, `power_on_color_temperature` 0 (unset) → **3500** (the entity takes K; reads back **3508**, so the firmware holds it). `power_on_behavior` stays **on**. No automation needed.
+- **Light now:** 100 % / 6535 K → brightness **204**, **3508 K** (`light.turn_on` brightness 204, color_temp_kelvin 3500).
+- **Off → on with no data** (21:32:40): brightness **205**, **3508 K**. After `6000 K / 50 %` then off → on: brightness **205**, **6024 K**: the on level applies on every turn-on, the colour temperature only after power returns (Matter StartUpColorTemperature). Left on at 204 / 3508 K.
+- **NG Premium:** Master Bedroom card gets a **Curtain LED** tile (toggle, brightness, 3500 / 4000 / 6000 K swatches, same as #103). The Living Room tile pointed at the gone `light.living_room_display_led` ("Not found"); it now uses `light.living_room_cabinet_led`, named **Cabinet LED**. `npm run build` passed; deployed with `scripts/deploy-premium.sh` (`?v=1795786837`); the served `assets/index-BUMoSOTk.js` contains `light.master_bedroom_curtain_led` and `light.living_room_cabinet_led`, no `living_room_display_led`. The tile's service calls on the Curtain LED read back: swatch 4000 → **4000 K**, 6000 → **6024 K**, 3500 → **3508 K**; slider 50 % → brightness **128**, 80 % → **204**.
+- **Cabinet LED** (Living Room, same model, serial `10021945800140`, Matter node 4, re-paired; IDs `*.living_room_cabinet_led*`): Thread device, `unavailable` 16:17–20:00, briefly 20:02–20:07, 20:40–20:59 and since 21:09 on 2026-11-27. `automation.living_room_display_led_daily_schedule` still targets `light.living_room_display_led` (no such entity now), so it does nothing; not changed here.
+- **Verified:** rename, readbacks above, off → on at 80 % / 3508 K, served build, tile service calls (all via HA API, Curtain LED only).
+- **Not yet verified:** power cycle at the wall comes back at 80 % / 3500 K (needs the user); the tiles on the tablet (look, swatch highlight); Cabinet LED tile (device unavailable).
+
 ## Open items
+
+**Curtain LED / Cabinet LED (#129)**
+- [ ] Power-cycle the Curtain LED at the wall: comes back on at 80 % / 3500 K (~3508 K).
+- [ ] Decide whether a plain turn-on should also reset the colour to 3500 K (today it keeps the last swatch until power is cut); that would need an automation.
+- [ ] Tablet: Curtain LED tile in the Master Bedroom card and the renamed Cabinet LED tile in the Living Room card.
+- [ ] Cabinet LED unavailable on Thread (since 21:09 on 2026-11-27): bring it back, then check its power-on settings.
+- [ ] `automation.living_room_display_led_daily_schedule` targets the gone `light.living_room_display_led`: point it at `light.living_room_cabinet_led` (and rename/re-export) or remove it.
 
 **Secret scanning (#125)**
 - [ ] First weekly full-history run of `secret-scan.yml` (Mondays 03:17 UTC) passes.
@@ -775,7 +794,7 @@ Raw map (`bridge/request/networkmap`, `type: raw`, `routes: true`), answered 10:
 - [x] Stale references: North Gaia System view moved to `living_room_slzb_mr5u_*`; bridge entity renamed back to `binary_sensor.zigbee2mqtt_bridge_connection_state` (#107).
 - [x] **Office Mini Switch** (was Aqara E1 Switch, #111) back online 2026-11-24 without a re-pair; single = off / double = on verified 07:27.
 - [ ] **Always-on router** near the Office/Bathroom: the SLZB-06 in router mode, or a Zigbee smart plug (step 58). Partly covered by the Walkway Spotlights and Bedroom Spotlight while their rockers are on (step 68); the Away scene turns the Walkway rocker off.
-- [ ] Display LED unavailable since 20:23 (Thread); Spotlight T3 named Bedroom Spotlight (#117), reachable 10:26, NG Premium tile; MR5U firmware channel `dev`.
+- [ ] Display LED (now Cabinet LED, #129) unavailable on Thread; Spotlight T3 named Bedroom Spotlight (#117), reachable 10:26, NG Premium tile; MR5U firmware channel `dev`.
 - [x] Docs: CLAUDE.md, README, `zigbee2mqtt/app-config.yaml` (#107).
 
 **Living Room walkway (#114)**
